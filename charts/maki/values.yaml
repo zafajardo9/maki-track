@@ -1,0 +1,178 @@
+# Global values
+nameOverride: ""
+fullnameOverride: ""
+replicaCount: 1
+# Autoscaling configuration
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+# Pod configuration
+podAnnotations: {}
+podSecurityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+topologySpreadConstraints: []
+imagePullSecrets: []
+enableServiceLinks: false
+# Service account configuration
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+# PostgreSQL database configuration
+postgresql:
+  # Set to true to deploy PostgreSQL as part of this chart
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+    pullPolicy: IfNotPresent
+  # Database configuration
+  auth:
+    database: maki
+    username: maki_user
+    password: maki_password
+    # Use existing secret for database credentials (optional)
+    existingSecret: ""
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+  # Persistence for PostgreSQL data
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+    accessMode: ReadWriteOnce
+  # PostgreSQL service configuration
+  service:
+    type: ClusterIP
+    port: 5432
+  # Resources for PostgreSQL
+  resources: {}
+  # resources:
+  #   limits:
+  #     cpu: 500m
+  #     memory: 512Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 128Mi
+# Maki application configuration (combined API + web frontend)
+maki:
+  image:
+    repository: ghcr.io/usekaneo/kaneo
+    # Defaults to Chart.appVersion when empty.
+    tag: ""
+    pullPolicy: IfNotPresent
+  securityContext: {}
+  service:
+    type: ClusterIP
+    port: 5173
+    targetPort: 5173
+  # Resources are optional and disabled by default
+  resources: {}
+  # resources:
+  #   limits:
+  #     cpu: 500m
+  #     memory: 512Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 128Mi
+
+  env:
+    # Public URL of this Maki instance (e.g. https://maki.example.com)
+    # MAKI_API_URL is derived automatically as clientUrl/api if not set
+    clientUrl: ""
+    # Allowed CORS origins. Accepts a comma-separated string or YAML list.
+    # Defaults to clientUrl when left empty.
+    corsOrigins: []
+    # Required Better Auth secret (minimum 32 characters), unless existingSecret is enabled.
+    # Generate with: openssl rand -hex 32
+    authSecret: ""
+    existingSecret:
+      enabled: false
+      name: ""
+      key: auth-secret
+    disableRegistration: false
+    # Database configuration
+    database:
+      # Use external PostgreSQL (set postgresql.enabled to false)
+      # Important: when using external postgres, make sure you have set up the db user correctly:
+      #   CREATE DATABASE maki;
+      #   CREATE USER maki_user WITH PASSWORD 'your_password';
+      #   GRANT ALL PRIVILEGES ON DATABASE maki TO maki_user;
+      #   \c maki;
+      #   GRANT USAGE ON SCHEMA public TO maki_user;
+      #   GRANT CREATE ON SCHEMA public TO maki_user;
+      #   ALTER SCHEMA public OWNER TO maki_user;
+      external:
+        enabled: false
+        host: ""
+        port: 5432
+        database: maki
+        username: maki_user
+        password: ""
+        # Use existing secret for external database credentials in the form of a uri, e.g.: "postgresql://user:pass@host:port/db"
+        existingSecret:
+          enabled: false
+          name: ""
+          passwordKey: postgres_uri
+  # Additional environment variables for the maki container.
+  # Each entry is a standard Kubernetes EnvVar (supports `value` or `valueFrom`).
+  # Useful for RESEND_*, IMAGEKIT_*, SSO, Sentry, etc. without editing the chart.
+  # extraEnv entries are appended after chart-defined vars; duplicate names override.
+  extraEnv: []
+  # extraEnv:
+  #   - name: RESEND_API_KEY
+  #     valueFrom:
+  #       secretKeyRef:
+  #         name: resend-secret
+  #         key: api-key
+  extraEnvFrom: []
+  # extraEnvFrom:
+  #   - secretRef:
+  #       name: oauth-secret
+  livenessProbe:
+    httpGet:
+      path: /api/health
+      port: maki
+    initialDelaySeconds: 60
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /api/health
+      port: maki
+    initialDelaySeconds: 30
+    periodSeconds: 10
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: maki.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: maki
+          port: 5173
+  tls: []
+
+# Gateway API configuration
+gateway:
+  enabled: false
+  annotations: {}
+  labels: {}
+  parentRefs: []
+  hostnames: []
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - service: maki
+          port: 5173

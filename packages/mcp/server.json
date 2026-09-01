@@ -1,0 +1,36 @@
+{
+	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+	"name": "io.github.usekaneo/kaneo",
+	"description": "Official MCP server for Maki: manage tasks, projects, and labels from Claude and other MCP clients",
+	"repository": {
+		"url": "https://github.com/usekaneo/kaneo",
+		"source": "github"
+	},
+	"version": "0.1.11",
+	"packages": [
+		{
+			"registryType": "npm",
+			"identifier": "@maki/mcp",
+			"version": "0.1.11",
+			"transport": {
+				"type": "stdio"
+			},
+			"environmentVariables": [
+				{
+					"name": "MAKI_API_URL",
+					"description": "Base URL of your Maki API (defaults to http://localhost:1337)",
+					"isRequired": false,
+					"format": "string",
+					"isSecret": false
+				},
+				{
+					"name": "MAKI_API_KEY",
+					"description": "Maki API key for non-interactive auth; omit to use the interactive device flow",
+					"isRequired": false,
+					"format": "string",
+					"isSecret": true
+				}
+			]
+		}
+	]
+}

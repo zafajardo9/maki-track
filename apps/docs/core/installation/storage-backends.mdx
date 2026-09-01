@@ -1,0 +1,76 @@
+---
+title: ImageKit setup
+description: Configure ImageKit for private uploads in task descriptions and comments.
+---
+
+## Overview
+
+Maki stores uploads in ImageKit. There is one supported backend, so setup is a
+single configuration block instead of a per-backend guide.
+
+Maki uses uploads in:
+
+- task descriptions
+- task comments
+
+The browser uploads directly to ImageKit's upload endpoint using a short-lived
+signed token issued by the Maki API.
+
+Maki then serves uploaded assets back through its own API.
+
+Current behavior:
+
+- images render inline
+- non-image files such as CSV, PDF, and ZIP render as attachment cards/links
+- assets are private by default and are fetched with signed URLs only
+
+## Creating API keys
+
+1. Sign in to your [ImageKit dashboard](https://dashboard.imagekit.io).
+2. Open **Developer options → API keys**.
+3. Copy the **Public Key** and the **Private Key**.
+4. Copy your **URL endpoint** from the same page (it looks like
+   `https://ik.imagekit.io/<media-library-id>`).
+
+The private key is only ever used server-side by Maki to sign upload tokens and
+signed read URLs. It is never sent to the browser.
+
+## Required Maki variables
+
+```env
+IMAGEKIT_PUBLIC_KEY=public_...
+IMAGEKIT_PRIVATE_KEY=private_...
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your-media-library-id
+```
+
+Optional:
+
+| Name | Description |
+| --- | --- |
+| `IMAGEKIT_MAX_UPLOAD_BYTES` | Maximum upload size in bytes. Default: `10485760` (10 MB). |
+| `IMAGEKIT_UPLOAD_TTL_SECONDS` | Upload token lifetime in seconds. Default: `300`. |
+
+## Self-hosted example
+
+Add the ImageKit variables to your existing `.env`:
+
+```env
+MAKI_CLIENT_URL=https://cloud.kaneo.app
+MAKI_API_URL=https://cloud.kaneo.app/api
+
+IMAGEKIT_PUBLIC_KEY=public_...
+IMAGEKIT_PRIVATE_KEY=private_...
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your-media-library-id
+```
+
+There is nothing to deploy: no bucket, no extra service, and no CORS rules.
+ImageKit creates the folder structure automatically on the first upload.
+
+## Troubleshooting
+
+If uploads fail:
+
+- check that all three `IMAGEKIT_*` variables are set and the API was restarted
+- check that the URL endpoint matches your media library ID
+- check the browser console: ImageKit returns a `message` field on failed uploads
+- check that the API host can reach `upload.imagekit.io` and `api.imagekit.io`

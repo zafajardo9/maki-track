@@ -1,0 +1,101 @@
+---
+title: The compose.yml file
+description: The Docker Compose file is used to start the required services.
+---
+
+## The initial compose file
+
+The first step is to create a Docker Compose file. We will call it `compose.yml`.
+
+```yml
+services:
+  postgres:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maki -d maki"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  maki:
+    image: ghcr.io/usekaneo/kaneo:latest
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5173/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+```
+
+## The services and volumes
+
+Maki uses the following services:
+
+- `postgres`: The PostgreSQL database.
+- `maki`: The combined API and web container.
+
+Additionally, the following volumes are used:
+
+- `postgres_data`: The PostgreSQL data.
+
+## Required URL configuration
+
+Copy `.env.sample` to `.env` and uncomment or set these values:
+
+```env
+MAKI_CLIENT_URL=http://localhost:5173
+POSTGRES_DB=maki
+POSTGRES_USER=maki
+POSTGRES_PASSWORD=changeme
+AUTH_SECRET=                             # generate: openssl rand -hex 32
+```
+
+`MAKI_API_URL` defaults to `MAKI_CLIENT_URL/api`; set it explicitly only if you need to override the default (e.g. a reverse proxy changes the path).
+
+This keeps the browser on one origin while the container proxies `/api` requests to the internal API process.
+
+For this Compose setup, the bundled Maki container reaches PostgreSQL at the service hostname `postgres`.
+If you run the API directly on your host instead, use `localhost` or set `DATABASE_URL` explicitly.
+
+## Notes on object storage
+
+Maki uses [ImageKit](https://imagekit.io) for private uploads in task descriptions and comments.
+
+- Object storage is optional. Maki runs without it, but uploads in task descriptions and comments will be unavailable.
+- Set `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY`, and `IMAGEKIT_URL_ENDPOINT` to enable uploads.
+- The Maki API issues signed upload parameters and the browser uploads files directly to ImageKit.
+- Maki serves uploaded assets back through its own API, so files stay private.
+- If you do not configure object storage, leave the `IMAGEKIT_*` variables unset.
+- For the full setup, see the [storage backends guide](/core/installation/storage-backends).
+
+### Enabling uploads
+
+Add these variables to your `.env`:
+
+```env
+IMAGEKIT_PUBLIC_KEY=public_...
+IMAGEKIT_PRIVATE_KEY=private_...
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your-media-library-id
+```
+
+Get the keys from the [ImageKit dashboard](https://dashboard.imagekit.io) under **Developer options → API keys**. There is nothing else to deploy: no bucket, no extra service, and no CORS rules.
+
+After creating the compose file, the next step is to set up the environment variables.

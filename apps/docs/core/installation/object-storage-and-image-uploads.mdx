@@ -1,0 +1,82 @@
+---
+title: Object storage and uploads
+description: Configure ImageKit for private images and attachments in task descriptions and comments.
+---
+
+## Overview
+
+Maki supports private uploads in task descriptions and task comments.
+
+Uploads go through [ImageKit](https://imagekit.io), which both stores the files and serves them:
+
+- the Maki API issues signed upload parameters (public key + signature + token)
+- the browser uploads files directly to ImageKit's upload endpoint
+- Maki finalizes uploads into private asset records
+- Maki serves uploaded files back through its own API using short-lived signed URLs
+
+Current behavior:
+
+- images render inline
+- other files such as CSV, PDF, or ZIP are inserted as attachment cards/links
+- uploaded files are private by default and are not served from public CDN URLs
+
+Because the browser uploads straight to ImageKit, there is no bucket CORS configuration to manage — ImageKit's upload endpoint accepts browser uploads out of the box.
+
+## Setup
+
+1. Create an ImageKit account and a media library (you get one free tier account).
+2. Open **Developer options → API keys** and copy:
+   - **Public Key**
+   - **Private Key**
+3. Note your **URL endpoint** (e.g. `https://ik.imagekit.io/your-media-library-id`).
+
+Then set these in your Maki environment:
+
+```env
+IMAGEKIT_PUBLIC_KEY=public_...
+IMAGEKIT_PRIVATE_KEY=private_...
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your-media-library-id
+```
+
+No bucket creation is needed — ImageKit creates the folder structure automatically on upload.
+
+## How the upload flow works
+
+1. The Maki API validates the request and returns:
+   - the upload endpoint URL
+   - a scoped `folder` (e.g. `workspace/<id>/project/<id>/task/<id>/descriptions`)
+   - a sanitized `fileName`
+   - the public key, plus a short-lived `signature`, `token`, and `expire`
+2. The browser POSTs the file as `multipart/form-data` directly to ImageKit with those fields and `isPrivateFile=true`.
+3. Maki's finalize route verifies the returned file path belongs to the task's workspace/project scope and records the asset.
+4. Reads go through `/api/asset/:id`, which authorizes the request and fetches the file from ImageKit with a short-lived signed URL.
+
+## Required Maki variables
+
+| Name | Description |
+| --- | --- |
+| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key (used by the browser upload) |
+| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key (used to sign uploads and reads; never exposed to the browser) |
+| `IMAGEKIT_URL_ENDPOINT` | Your ImageKit delivery endpoint, e.g. `https://ik.imagekit.io/your-media-library-id` |
+
+Optional:
+
+| Name | Description |
+| --- | --- |
+| `IMAGEKIT_MAX_UPLOAD_BYTES` | Maximum allowed upload size in bytes. Default: `10485760` (10 MB). |
+| `IMAGEKIT_UPLOAD_TTL_SECONDS` | Lifetime of the upload token in seconds. Default: `300`. |
+
+## Testing uploads
+
+Once storage is configured:
+
+1. Open a task.
+2. Paste, drag, or select a file inside the description or a comment.
+3. Confirm images render inline and other files render as attachment cards/links.
+
+If uploads fail:
+
+- confirm all three `IMAGEKIT_*` variables are set and the API was restarted
+- confirm the URL endpoint matches your media library (it appears in ImageKit's dashboard)
+- check the browser console for the ImageKit upload response — it includes the exact error message
+- confirm the API can reach `upload.imagekit.io` and `api.imagekit.io` (no egress restrictions)

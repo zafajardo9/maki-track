@@ -1,0 +1,172 @@
+---
+title: Environment variables
+description: The environment variables are used to configure the application.
+---
+
+## Set up the file
+
+The environment variables are used to configure the application. We will use a `.env` file to store the variables.
+For the sample environment file, see the [example .env file](https://github.com/usekaneo/kaneo/blob/main/.env.sample).
+
+The variables are split up into the following sections:
+
+- [General URLs](#general-urls)
+- [Database](#database)
+- [Authentication](#authentication)
+- [MCP](#mcp)
+- [Object Storage](#object-storage)
+- [Access Control](#access-control)
+- [GitHub integration](#github-integration)
+- [Redis](#redis)
+- [Resend Configuration](#resend-configuration)
+- [ImageKit Configuration](#imagekit-configuration)
+
+## Required variables
+
+### General URLs
+
+This section will cover all the variables related to the general URLs.
+
+Name | Description |
+--- | --- |
+| `MAKI_CLIENT_URL` | The URL of the web application.
+| `MAKI_API_URL` | The URL of the API.
+
+### Database
+
+This section will cover all the variables related to the database.
+
+Name | Description |
+--- | --- |
+| `DATABASE_URL` | The full PostgreSQL connection string, in the format `postgresql://[user]:[password]@[host]:[port]/[database]`. Example: `postgresql://maki:maki@localhost:5432/maki`. The user/password/database must match the `POSTGRES_*` values below.
+| `POSTGRES_DB` | The name of the PostgreSQL database. Example: `maki`.
+| `POSTGRES_USER` | The username for the PostgreSQL database. Example: `maki`.
+| `POSTGRES_PASSWORD` | The password for the PostgreSQL database. Use a strong value in production.
+
+### Authentication
+
+This section will cover all the variables related to the authentication.
+
+Name | Description |
+--- | --- |
+| `AUTH_SECRET` | The secret key for the JWT token. **Must be at least 32 characters long**, use a long, random value in production. Example: use `openssl rand -base64 32` to generate a secure key in Linux/macOS.
+| `DEVICE_AUTH_CLIENT_IDS` | **Optional.** Comma-separated list of allowed device authorization client IDs. When unset, Maki implicitly allows `maki-cli` and `maki-mcp` by default, so no extra configuration is required for the CLI or MCP. Override only when you need additional trusted clients, for example `maki-cli,maki-mcp,my-desktop-app`. |
+
+Maki uses email and password for interactive sign-in. Configure Resend (set `RESEND_API_KEY`) if users need password-reset email. After upgrading an installation that previously used OAuth-only accounts, those users should use **Forgot password** once to create a credential password for their existing account.
+
+
+## Optional variables
+
+### MCP
+
+Name | Description | Default |
+--- | --- | --- |
+| `MAKI_INTERNAL_API_URL` | API origin used only for server-side requests from the built-in HTTP MCP endpoint. Override it only if the API is not reachable at the default loopback address from its own process. | `http://127.0.0.1:1337` |
+
+### Object Storage
+
+Maki uses [ImageKit](https://imagekit.io) for private uploads in task descriptions and task comments. Get the keys from the ImageKit dashboard under **Developer options → API keys**. See the [storage backends guide](/core/installation/storage-backends) for the full setup.
+
+Name | Description | Default |
+--- | --- | --- |
+| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key, used by the browser to upload files directly. |  |
+| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key, used server-side to sign uploads and reads. Never expose it to the browser. |  |
+| `IMAGEKIT_URL_ENDPOINT` | ImageKit delivery endpoint, e.g. `https://ik.imagekit.io/your-media-library-id`. |  |
+| `IMAGEKIT_MAX_UPLOAD_BYTES` | Maximum allowed upload size in bytes for images and other uploaded files. | `10485760` |
+| `IMAGEKIT_UPLOAD_TTL_SECONDS` | How long signed upload tokens remain valid. | `300` |
+
+### Access Control
+
+Name | Description | Default |
+--- | --- | --- |
+| `DISABLE_REGISTRATION` | Disable public email/password registration. Users with valid workspace invitations can still register, and the first user can always complete instance setup. | `false` |
+
+### Proxies
+
+Name | Description | Default |
+--- | --- | --- |
+| `TRUSTED_PROXIES` | Comma-separated IPs or CIDR ranges of the reverse proxies in front of Maki. The forwarded header chain is walked right to left, trusted hops are skipped, and the first untrusted address is taken as the client IP. Only set this if your proxies sit outside the default ranges; the default covers loopback and private networks, which is correct for the standard Docker Compose setup. | `127.0.0.0/8, ::1/128, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16` |
+
+<Warning>
+  Only list addresses you control. Any host in this range can set `X-Forwarded-For` and have it believed, so do not include a range that clients can reach Maki from directly. The client IP is used for rate limiting and session records.
+</Warning>
+
+### Notifications
+
+Name | Description | Default |
+--- | --- | --- |
+| `MAKI_ALLOW_PRIVATE_WEBHOOK_DESTINATIONS` | Allow outbound notification destinations (ntfy, Gotify, generic webhooks) that resolve to private or non-routable addresses. Off by default to prevent SSRF; the `http`/`https` requirement still applies. Only enable on a trusted, isolated deployment. | `false` |
+
+### GitHub integration
+
+Repository sync and webhooks use a [GitHub App](https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps). These variables do not affect email/password sign-in.
+
+Name | Description |
+--- | --- |
+| `GITHUB_APP_ID` | The GitHub App ID.
+| `GITHUB_WEBHOOK_SECRET` | Secret used to verify GitHub webhook payloads.
+| `GITHUB_PRIVATE_KEY` | PEM private key for the GitHub App (JWT authentication). Accepts a real multi-line PEM, or a single line where every newline is replaced with the literal characters `\n` (useful when the host's env editor strips newlines, e.g. Portainer's form-based stack editor).
+| `GITHUB_PRIVATE_KEY_BASE64` | (Optional) Alternative to `GITHUB_PRIVATE_KEY`: a base64-encoded PEM. Takes precedence when both are set. Convenient when your orchestrator can't carry newlines at all.
+| `GITHUB_APP_NAME` | (Optional) GitHub App slug, used for installation links in the UI.
+
+### Redis
+
+Maki supports Redis for horizontal scaling of WebSocket broadcasts. When any Redis mode is configured, multiple API instances can relay real-time updates via Redis Pub/Sub. When none are set, an in-memory adapter is used (single-instance only).
+
+Three deployment modes are supported: **Standalone**, **Sentinel**, and **Cluster**. Only one mode should be configured at a time. If multiple are set, the priority is: Cluster > Sentinel > Standalone.
+
+#### Standalone (single server)
+
+Name | Description |
+--- | --- |
+| `REDIS_URL` | Redis connection string (e.g., `redis://localhost:6379`).
+
+#### Sentinel (high-availability with automatic failover)
+
+Name | Description | Default |
+--- | --- | --- |
+| `REDIS_SENTINELS` | Comma-separated list of Sentinel nodes (e.g., `sentinel-1:26379,sentinel-2:26379,sentinel-3:26379`). | |
+| `REDIS_SENTINEL_MASTER_NAME` | Name of the Sentinel master group. | `mymaster` |
+| `REDIS_SENTINEL_PASSWORD` | Password for Sentinel instances, if different from the Redis password. | |
+| `REDIS_SENTINEL_TLS` | Set to `true` to enable TLS for Sentinel connections. | `false` |
+
+#### Cluster (horizontal sharding)
+
+Name | Description |
+--- | --- |
+| `REDIS_CLUSTER_NODES` | Comma-separated list of cluster seed nodes (e.g., `node-1:6379,node-2:6379,node-3:6379`).
+
+#### Shared (used by Sentinel and Cluster modes)
+
+Name | Description |
+--- | --- |
+| `REDIS_PASSWORD` | Password for the Redis data nodes (used by both Sentinel and Cluster modes, not for Sentinel auth itself; use `REDIS_SENTINEL_PASSWORD` for that).
+
+### Resend Configuration
+
+Maki sends transactional email through [Resend](https://resend.com). To enable it, create an API key at https://resend.com/api-keys.
+
+Name | Description |
+--- | --- |
+| `RESEND_API_KEY` | The Resend API key. Required to send email.
+| `RESEND_FROM` | The sender address, e.g. `Maki <no-reply@maki.app>`. Must use a domain verified in your Resend account. Defaults to Resend's sandbox sender `Maki <onboarding@resend.dev>`, which only delivers to your account email.
+
+> **Note:** Without a verified domain, Resend runs in sandbox mode: emails include a sandbox header and only reach your account's inbox. Verify a domain to send to real recipients.
+
+### ImageKit Configuration
+
+Maki stores task images and attachments in [ImageKit](https://imagekit.io). Create the keys in the ImageKit dashboard under **Developer options → API keys**.
+
+Name | Description |
+--- | --- |
+| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key, used by the browser to upload files directly. Required for uploads.
+| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key, used server-side to sign uploads and reads. Required for uploads. Never expose it to the browser.
+| `IMAGEKIT_URL_ENDPOINT` | Your ImageKit delivery endpoint, e.g. `https://ik.imagekit.io/your-media-library-id`. Required for uploads.
+| `IMAGEKIT_MAX_UPLOAD_BYTES` | Maximum upload size in bytes. Default: `10485760` (10 MB).
+| `IMAGEKIT_UPLOAD_TTL_SECONDS` | Upload token lifetime in seconds. Default: `300`.
+
+## Key points
+
+- If you use the GitHub repository integration, configure a GitHub App and set the integration variables in [GitHub integration](#github-integration). See the [GitHub integration configuration](/core/integrations/github/configuration) guide.
+- Sign-in always uses email and password. Resend is optional and is used for password resets, invitations, and other outgoing notifications.
+- If you need device authorization for clients beyond the defaults (`maki-cli`, `maki-mcp` when `DEVICE_AUTH_CLIENT_IDS` is unset), set `DEVICE_AUTH_CLIENT_IDS` to the full comma-separated list of trusted client IDs for your deployment.

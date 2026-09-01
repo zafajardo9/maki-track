@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Maki Documentation
+    url: https://kaneo.app/docs/core
+    about: Check our documentation for answers to common questions
+  - name: Maki Discord Community
+    url: https://discord.gg/rU4tSyhXXU
+    about: Join our Discord server to chat with the community and get help
+  - name: GitHub Discussions
+    url: https://github.com/orgs/usekaneo/discussions
+    about: For general questions and discussions about Maki
+  - name: Support Maki
+    url: https://github.com/sponsors/andrejsshell
+    about: Help keep Maki maintained and evolving

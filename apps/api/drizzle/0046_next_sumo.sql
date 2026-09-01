@@ -1,0 +1,1 @@
+ALTER TABLE "asset" ADD COLUMN "image_kit_file_id" text;

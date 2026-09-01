@@ -1,0 +1,120 @@
+{{- $corsOrigins := .Values.maki.env.corsOrigins -}}
+{{- $corsOriginsValue := "" -}}
+{{- if kindIs "slice" $corsOrigins -}}
+  {{- $corsOriginsValue = join "," $corsOrigins -}}
+{{- else if $corsOrigins -}}
+  {{- $corsOriginsValue = $corsOrigins -}}
+{{- else if .Values.maki.env.clientUrl -}}
+  {{- $corsOriginsValue = .Values.maki.env.clientUrl -}}
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "maki.fullname" . }}
+  labels:
+    {{- include "maki.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "maki.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "maki.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: maki
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "maki.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      enableServiceLinks: {{ default false .Values.enableServiceLinks }}
+      containers:
+        - name: maki
+          securityContext:
+            {{- toYaml .Values.maki.securityContext | nindent 12 }}
+          image: "{{ .Values.maki.image.repository }}:{{ .Values.maki.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.maki.image.pullPolicy }}
+          ports:
+            - name: maki
+              containerPort: {{ .Values.maki.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: MAKI_CLIENT_URL
+              value: "{{ .Values.maki.env.clientUrl }}"
+            - name: CORS_ORIGINS
+              value: {{ $corsOriginsValue | quote }}
+            - name: AUTH_SECRET
+              {{- if .Values.maki.env.existingSecret.enabled }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.maki.env.existingSecret.name }}
+                  key: {{ .Values.maki.env.existingSecret.key }}
+              {{- else }}
+              value: {{ .Values.maki.env.authSecret | quote }}
+              {{- end }}
+            {{- if and (not .Values.maki.env.database.external.enabled) .Values.postgresql.auth.existingSecret }}
+            - name: MAKI_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.auth.existingSecret }}
+                  key: {{ .Values.postgresql.auth.secretKeys.userPasswordKey }}
+            {{- end }}
+            - name: DATABASE_URL
+              {{- if .Values.maki.env.database.external.enabled }}
+              {{- if .Values.maki.env.database.external.existingSecret.enabled }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.maki.env.database.external.existingSecret.name }}
+                  key: {{ .Values.maki.env.database.external.existingSecret.passwordKey }}
+              {{- else }}
+              value: "postgresql://{{ include "maki.urlencodeUserinfo" .Values.maki.env.database.external.username }}:{{ include "maki.urlencodeUserinfo" .Values.maki.env.database.external.password }}@{{ .Values.maki.env.database.external.host }}:{{ .Values.maki.env.database.external.port }}/{{ .Values.maki.env.database.external.database }}"
+              {{- end }}
+              {{- else }}
+              {{- if .Values.postgresql.auth.existingSecret }}
+              value: "postgresql://{{ include "maki.urlencodeUserinfo" .Values.postgresql.auth.username }}:$(MAKI_POSTGRES_PASSWORD)@{{ include "maki.fullname" . }}-postgresql:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.auth.database }}"
+              {{- else }}
+              value: "postgresql://{{ include "maki.urlencodeUserinfo" .Values.postgresql.auth.username }}:{{ include "maki.urlencodeUserinfo" .Values.postgresql.auth.password }}@{{ include "maki.fullname" . }}-postgresql:{{ .Values.postgresql.service.port }}/{{ .Values.postgresql.auth.database }}"
+              {{- end }}
+              {{- end }}
+            - name: DISABLE_REGISTRATION
+              value: {{ .Values.maki.env.disableRegistration | quote }}
+            {{- with .Values.maki.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.maki.extraEnvFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.maki.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.maki.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.maki.resources | nindent 12 }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
