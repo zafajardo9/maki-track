@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { BlogPostCard } from "@/components/landing/blog-post-card";
 import { ContentCard } from "@/components/landing/content-card";
 import { FadeIn } from "@/components/landing/fade-in";
 import { Footer } from "@/components/landing/footer";
 import { breadcrumbJsonLd, JsonLd } from "@/components/landing/json-ld";
 import { Navbar } from "@/components/landing/navbar";
 import { SectionSeparator } from "@/components/landing/section-separator";
-import { getPosts } from "@/lib/blog";
-import { formatBlogDateShort } from "@/lib/blog/format";
+import { formatBlogDateShort } from "@/lib/format-date";
 import { guideList, guidePath } from "@/lib/guides";
 
 export const metadata: Metadata = {
@@ -18,8 +16,6 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  const posts = getPosts().slice(0, 3);
-
   return (
     <>
       <JsonLd
@@ -81,31 +77,6 @@ export default function Page() {
             </div>
           </div>
         </section>
-
-        {posts.length > 0 ? (
-          <SectionSeparator>
-            <section className="px-6 py-12 md:py-16">
-              <div className="mx-auto w-full max-w-6xl">
-                <div className="flex flex-wrap items-baseline justify-between gap-4">
-                  <h2 className="font-medium text-2xl md:text-3xl">
-                    Latest from the blog
-                  </h2>
-                  <a
-                    className="text-foreground/60 text-sm transition-colors hover:text-foreground"
-                    href="/blog"
-                  >
-                    All posts
-                  </a>
-                </div>
-                <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {posts.map((post) => (
-                    <BlogPostCard key={post.slug} post={post} />
-                  ))}
-                </div>
-              </div>
-            </section>
-          </SectionSeparator>
-        ) : null}
       </main>
       <Footer />
     </>

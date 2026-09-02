@@ -40,17 +40,7 @@ type NavigationLink =
 const navigationLinks: NavigationLink[] = [
   { href: "#features", label: "Features" },
   { href: "#why", label: "Why MAKI" },
-  {
-    items: [
-      { href: "/blog", label: "Latest posts" },
-      { href: "/blog/category/alternatives", label: "Alternatives" },
-      { href: "/guides", label: "Guides" },
-      { href: "/alternatives", label: "Compare tools" },
-    ],
-    label: "Blog",
-    submenu: true,
-    type: "simple",
-  },
+  { href: "/guides", label: "Guides" },
 ];
 
 export function Navbar() {

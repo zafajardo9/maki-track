@@ -32,39 +32,15 @@ export function Footer() {
               </a>
               <a
                 className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="/alternatives"
-              >
-                Comparisons
-              </a>
-              <a
-                className="block text-muted-foreground transition-colors hover:text-foreground"
                 href="/guides"
               >
                 Guides
               </a>
               <a
                 className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="/blog"
-              >
-                Blog
-              </a>
-              <a
-                className="block text-muted-foreground transition-colors hover:text-foreground"
                 href="#why"
               >
                 Why MAKI
-              </a>
-              <a
-                className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="/jira-alternative"
-              >
-                vs Jira
-              </a>
-              <a
-                className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="/linear-alternative"
-              >
-                vs Linear
               </a>
             </div>
 

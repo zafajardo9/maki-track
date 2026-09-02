@@ -34,7 +34,7 @@ if [ ! -z "$MAKI_CLIENT_URL" ]; then
   echo "Found MAKI_CLIENT_URL: $MAKI_CLIENT_URL"
   
   # Only process files that actually contain the string
-  find /usr/share/nginx/html -type f -name "*.js" -exec grep -l "MAKI_CLIENT_URL" {} \; | xargs -r sed -i "s#MAKI_CLIENT_URL#$MAKI_CLIENT_URL#g"
+  find /usr/share/nginx/html -type f \( -name "*.js" -o -name "*.html" -o -name "*.txt" -o -name "*.xml" \) -exec grep -l "MAKI_CLIENT_URL" {} \; | xargs -r sed -i "s#MAKI_CLIENT_URL#$MAKI_CLIENT_URL#g"
   find /usr/share/nginx/html -type f -name "*.js" -exec grep -l "\"MAKI_CLIENT_URL\"" {} \; | xargs -r sed -i "s#\"MAKI_CLIENT_URL\"#\"$MAKI_CLIENT_URL\"#g"
   
   echo "✅ Replaced MAKI_CLIENT_URL with $MAKI_CLIENT_URL"

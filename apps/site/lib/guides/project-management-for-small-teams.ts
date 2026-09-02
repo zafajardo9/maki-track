@@ -25,27 +25,22 @@ export const projectManagementForSmallTeams: Guide = {
       items: [
         {
           name: "You want to own your data",
-          href: "/alternatives",
           body: "Self-host an open-source tracker. Maki is MIT licensed, one container plus PostgreSQL, with single sign-on and time tracking in the free build. Vikunja and Kanboard are lighter still if the team is small and the needs are simple.",
         },
         {
           name: "You want the fastest start",
-          href: "/trello-alternative",
           body: "Trello. It is free, immediately understandable, and everyone has used one. The limits appear when you need a backlog, roles, or reporting.",
         },
         {
           name: "You have more than fifteen people and hate per-seat billing",
-          href: "/basecamp-alternative",
           body: "Basecamp's flat pricing gets cheaper per head as you grow, and it bundles messages and docs. Maki Cloud at $5 per user a month is cheaper below roughly twenty people, and self-hosting is cheaper at any size if you can run it.",
         },
         {
           name: "You are a software team that wants polish",
-          href: "/linear-alternative",
           body: "Linear, if cloud-only is acceptable. Maki or Plane if you want something open source you can host, with Maki the smaller of the two.",
         },
         {
           name: "You need real project management",
-          href: "/openproject-alternative",
           body: "Gantt charts, budgets, and cost reporting mean OpenProject among open-source tools. Most small teams do not need this, and buying it early is a common mistake.",
         },
       ],

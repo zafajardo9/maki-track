@@ -27,6 +27,7 @@ import {
   Folder,
   Forward,
   MoreHorizontal,
+  Plus,
   Settings,
   Trash2,
 } from "lucide-react";
@@ -351,9 +352,10 @@ export function NavProjects() {
                     <SidebarMenuItem className="mt-1">
                       <SidebarMenuButton
                         size="default"
-                        className="h-8 ps-3.5 text-sm hover:bg-transparent hover:text-sidebar-accent-foreground active:bg-transparent"
+                        className="h-8 gap-2 ps-3.5 text-sm text-primary bg-primary/10 hover:bg-primary/15 hover:text-primary active:bg-primary/20"
                         onClick={() => setIsCreateProjectModalOpen(true)}
                       >
+                        <Plus className="size-3.5" />
                         <span>{t("navigation:projectList.addProject")}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

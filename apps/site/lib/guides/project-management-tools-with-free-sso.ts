@@ -25,37 +25,31 @@ export const projectManagementToolsWithFreeSso: Guide = {
         {
           name: "Vikunja",
           meta: "Free",
-          href: "/vikunja-alternative",
           body: "OIDC is supported in the free build. Note that other features, including time tracking and audit logs, belong to the paid Vikunja Pro add-on for self-hosters.",
         },
         {
           name: "WeKan",
           meta: "Free",
-          href: "/wekan-alternative",
           body: "OAuth2 and OIDC providers are supported on the MIT-licensed build.",
         },
         {
           name: "Redmine and Kanboard",
           meta: "Plugin",
-          href: "/redmine-alternative",
           body: "Both can authenticate against an identity provider through community plugins, with the usual caveat that plugins are pinned to versions and maintained by volunteers.",
         },
         {
           name: "OpenProject",
           meta: "Enterprise add-on",
-          href: "/openproject-alternative",
           body: "SAML, OIDC, Kerberos, and Okta support belong to the Enterprise add-on rather than the GPLv3 Community edition.",
         },
         {
           name: "Plane",
           meta: "Paid tiers",
-          href: "/plane-alternative",
           body: "SSO with SAML and OIDC starts at the Pro tier, with LDAP and group sync on Enterprise Grid.",
         },
         {
           name: "PLANKA",
           meta: "Pro tier since 2.2",
-          href: "/planka-alternative",
           body: "OIDC moved into the paid Pro tier in version 2.2. Self-hosters who had been signing in with OIDC found those accounts deactivated after upgrading.",
         },
       ],
@@ -91,8 +85,6 @@ export const projectManagementToolsWithFreeSso: Guide = {
     },
   ],
   related: [
-    { label: "Maki vs PLANKA", href: "/planka-alternative" },
-    { label: "Maki vs OpenProject", href: "/openproject-alternative" },
-  ],
+          ],
   updatedOn: "2026-08-19",
 };

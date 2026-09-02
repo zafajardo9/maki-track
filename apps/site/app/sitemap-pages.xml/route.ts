@@ -1,10 +1,3 @@
-import {
-  blogCategoryPath,
-  blogPath,
-  getPosts,
-  getUsedCategories,
-} from "@/lib/blog";
-import { alternativePath, comparisonList } from "@/lib/comparisons";
 import { guideList, guidePath } from "@/lib/guides";
 
 export const dynamic = "force-static";
@@ -15,9 +8,7 @@ type Entry = { path: string; changefreq: string; priority: string };
 
 const staticEntries: Entry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
-  { path: "/alternatives", changefreq: "weekly", priority: "0.8" },
   { path: "/guides", changefreq: "weekly", priority: "0.8" },
-  { path: "/blog", changefreq: "weekly", priority: "0.8" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },
 ];
@@ -27,23 +18,8 @@ export function GET() {
 
   const entries: Entry[] = [
     ...staticEntries,
-    ...comparisonList.map((comparison) => ({
-      path: alternativePath(comparison.slug),
-      changefreq: "monthly",
-      priority: "0.7",
-    })),
     ...guideList.map((guide) => ({
       path: guidePath(guide.slug),
-      changefreq: "monthly",
-      priority: "0.7",
-    })),
-    ...getUsedCategories().map((category) => ({
-      path: blogCategoryPath(category.slug),
-      changefreq: "weekly",
-      priority: "0.5",
-    })),
-    ...getPosts().map((post) => ({
-      path: blogPath(post.slug),
       changefreq: "monthly",
       priority: "0.7",
     })),

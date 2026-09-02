@@ -62,7 +62,6 @@ export const euHostedProjectManagementGdpr: Guide = {
       href: "/guides/self-host-project-management-docker",
     },
     { label: "Privacy policy", href: "/privacy" },
-    { label: "All comparisons", href: "/alternatives" },
-  ],
+      ],
   updatedOn: "2026-08-19",
 };

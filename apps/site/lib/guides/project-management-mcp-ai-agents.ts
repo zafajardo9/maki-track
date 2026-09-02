@@ -75,8 +75,6 @@ export const projectManagementMcpAiAgents: Guide = {
   ],
   related: [
     { label: "MCP documentation", href: "/docs/core/integrations/mcp" },
-    { label: "Maki vs Linear", href: "/linear-alternative" },
-    { label: "All comparisons", href: "/alternatives" },
-  ],
+          ],
   updatedOn: "2026-08-19",
 };

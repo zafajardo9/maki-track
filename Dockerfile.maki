@@ -81,6 +81,26 @@ RUN pnpm run build
 WORKDIR /app/apps/web
 RUN pnpm run build
 
+FROM --platform=$BUILDPLATFORM node:24.19.0-alpine AS site-builder
+
+RUN apk add --no-cache python3 make g++ && \
+  corepack enable && \
+  corepack prepare pnpm@10.32.1 --activate
+
+WORKDIR /app
+
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY apps/site/package.json ./apps/site/
+COPY apps/site ./apps/site
+
+RUN pnpm install --frozen-lockfile
+
+WORKDIR /app/apps/site
+
+# Keep the app URL replaceable when the same image is promoted between hosts.
+ENV NEXT_PUBLIC_MAKI_APP_URL=MAKI_CLIENT_URL
+RUN pnpm run build
+
 FROM node:24.19.0-alpine AS runtime
 
 RUN apk add --no-cache nginx=~1.30.4 && \
@@ -99,7 +119,8 @@ COPY --from=api-runtime --chown=appuser:appuser /app /app
 # Fail the build early if the runtime dependency layout is broken on the target architecture
 RUN cd /app/apps/api && node -e "const fs=require('fs');for(const m of ['bcryptjs','hono','pg','drizzle-orm','better-auth','ioredis','valibot','octokit','@modelcontextprotocol/sdk']){fs.accessSync('node_modules/'+m+'/package.json')}"
 
-COPY --from=web-builder --chown=appuser:appuser /app/apps/web/dist /usr/share/nginx/html
+COPY --from=web-builder --chown=appuser:appuser /app/apps/web/dist /usr/share/nginx/html/app
+COPY --from=site-builder --chown=appuser:appuser /app/apps/site/out /usr/share/nginx/html/site
 COPY --chown=appuser:appuser apps/web/nginx.maki.conf /etc/nginx/conf.d/default.conf
 RUN chown -R appuser:appuser /etc/nginx/conf.d
 COPY --chown=appuser:appuser apps/web/env.sh /docker-entrypoint.d/env.sh
