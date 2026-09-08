@@ -13,13 +13,13 @@
 	},
 	"devDependencies": {
 		"@types/react": "^19.2.18",
-		"@types/react-dom": "^19.2.4",
+		"@types/react-dom": "^19.2.7",
 		"@maki/api": "workspace:*",
-		"hono": "^4.13.0",
+		"hono": "^4.13.7",
 		"react": "^19.2.8",
 		"@maki/typescript-config": "workspace:*",
 		"typescript": "^7.0.2",
-		"vite": "^8.2.0",
+		"vite": "^8.2.2",
 		"vitest": "^4.1.10"
 	}
 }
