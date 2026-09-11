@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -21,6 +22,7 @@ import { toast } from "@/lib/toast";
 export type SignInFormValues = {
   email: string;
   password: string;
+  rememberMe: boolean;
 };
 
 type SignInFormProps = {
@@ -31,6 +33,7 @@ type SignInFormProps = {
 const signInSchema = z.object({
   email: z.email(),
   password: z.string(),
+  rememberMe: z.boolean(),
 });
 
 export function SignInForm({ onSuccess, defaultEmail }: SignInFormProps) {
@@ -42,6 +45,10 @@ export function SignInForm({ onSuccess, defaultEmail }: SignInFormProps) {
     defaultValues: {
       email: defaultEmail || "",
       password: "",
+      // On by default, which matches better-auth's own default, so the control
+      // records the behaviour rather than changing it. Clearing it stores a
+      // session cookie that the browser drops when it closes.
+      rememberMe: true,
     },
   });
 
@@ -51,6 +58,7 @@ export function SignInForm({ onSuccess, defaultEmail }: SignInFormProps) {
       const result = await authClient.signIn.email({
         email: data.email,
         password: data.password,
+        rememberMe: data.rememberMe,
       });
 
       if (result.error) {
@@ -142,6 +150,33 @@ export function SignInForm({ onSuccess, defaultEmail }: SignInFormProps) {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="rememberMe"
+          render={({ field }) => (
+            <div className="space-y-1 pt-1">
+              <label
+                className="flex cursor-pointer items-center gap-2.5"
+                htmlFor="sign-in-remember-me"
+              >
+                <Checkbox
+                  id="sign-in-remember-me"
+                  checked={field.value}
+                  onCheckedChange={(checked) =>
+                    field.onChange(Boolean(checked))
+                  }
+                />
+                <span className="text-sm font-medium">
+                  {t("auth:signInForm.rememberMe")}
+                </span>
+              </label>
+              <p className="pl-[1.625rem] text-muted-foreground text-xs">
+                {t("auth:signInForm.rememberMeHint")}
+              </p>
+            </div>
+          )}
+        />
 
         <Button
           type="submit"

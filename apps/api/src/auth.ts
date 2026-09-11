@@ -422,6 +422,17 @@ export const auth = betterAuth({
     openAPI(),
   ],
   session: {
+    // "Remember me" sessions last a month and slide forward: once a session is
+    // a day old, the next request pushes its expiry out another month, so a
+    // browser that comes back regularly is never signed out while an abandoned
+    // one still lapses. Sessions stay database-backed and revocable, and the
+    // cookie stays httpOnly; only its lifetime changes.
+    expiresIn: 60 * 60 * 24 * 30,
+    updateAge: 60 * 60 * 24,
+    // Deliberately left at a day. The longer session does not widen the window
+    // for sensitive account changes: better-auth rejects those from a session
+    // older than `freshAge` (it asks the user to sign in again first).
+    freshAge: 60 * 60 * 24,
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,

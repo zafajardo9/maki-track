@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export type BarDatum = {
@@ -9,6 +10,8 @@ export type BarDatum = {
   color: string;
   /** Optional trailing note, e.g. "3 of 8 tasks". */
   caption?: string;
+  /** Optional node before the label, e.g. the assignee's avatar. */
+  leading?: ReactNode;
 };
 
 type BarChartProps = {
@@ -36,10 +39,13 @@ export function BarChart({ bars, max, className }: BarChartProps) {
 
         return (
           <li key={bar.key} className="space-y-1.5">
-            <div className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="min-w-0 truncate" title={bar.label}>
-                {bar.label}
-              </span>
+            <div className="flex items-center justify-between gap-3 text-sm">
+              <div className="flex min-w-0 items-center gap-2">
+                {bar.leading}
+                <span className="min-w-0 truncate" title={bar.label}>
+                  {bar.label}
+                </span>
+              </div>
               <span className="shrink-0 text-muted-foreground tabular-nums">
                 {bar.caption ?? bar.value}
               </span>

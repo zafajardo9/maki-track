@@ -30,6 +30,9 @@ vi.mock("./extensions/embed-block", () => ({
 vi.mock("./extensions/attachment-card", () => ({
   AttachmentCard: inert("attachmentCardStub"),
 }));
+vi.mock("./extensions/maki-image", () => ({
+  MakiImage: inert("makiImageStub"),
+}));
 vi.mock("./extensions/maki-issue-link", () => ({
   MakiIssueLink: inert("makiIssueLinkStub"),
 }));

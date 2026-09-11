@@ -198,11 +198,32 @@
       "ProjectStatistics": {
         "type": "object",
         "properties": {
-          "completionPercentage": {
-            "type": "number"
-          },
           "totalTasks": {
-            "type": "number"
+            "type": "number",
+            "description": "Every task in the project, including the ones parked in the planned and archived buckets."
+          },
+          "completedTasks": {
+            "type": "number",
+            "description": "Tasks sitting in a column marked final. Completion is a property of the column, not of a hardcoded status slug."
+          },
+          "openTasks": {
+            "type": "number",
+            "description": "Tasks sitting in a column that is not marked final. Excludes planned and archived tasks, which belong to no column."
+          },
+          "overdueTasks": {
+            "type": "number",
+            "description": "Open tasks whose due date has already passed. Completed, planned, and archived tasks are never counted."
+          },
+          "completionPercentage": {
+            "type": "number",
+            "description": "completedTasks / (completedTasks + openTasks), rounded. Planned and archived tasks are outside this population, so parking work neither raises nor lowers it."
+          },
+          "byPriority": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Task counts keyed by priority (no-priority, low, medium, high, urgent) across all of the project's tasks, backlog included."
           },
           "dueDate": {
             "type": [
@@ -214,8 +235,12 @@
           }
         },
         "required": [
-          "completionPercentage",
           "totalTasks",
+          "completedTasks",
+          "openTasks",
+          "overdueTasks",
+          "completionPercentage",
+          "byPriority",
           "dueDate"
         ]
       },

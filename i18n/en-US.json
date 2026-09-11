@@ -11,9 +11,7 @@
 			"remove": "Remove",
 			"reset": "Reset",
 			"filter": "Filter",
-			"clearAllFilters": "Clear all filters",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "Clear all filters"
 		},
 		"a11y": {
 			"toggleSidebar": "Toggle sidebar"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "Signed in successfully",
 			"signingIn": "Signing In...",
 			"signIn": "Sign In",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"forgotPassword": {
 			"pageTitle": "Forgot Password",
@@ -1289,9 +1289,8 @@
 		},
 		"projectList": {
 			"viewProject": "View Project",
-			"shareProject": "Share Project",
+			"shareProject": "Share project",
 			"projectSettings": "Project settings",
-			"linkCopied": "Project link copied to clipboard",
 			"addProject": "Add project",
 			"deleteConfirmTitle": "Delete Project?",
 			"deleteConfirmDescription": "This will permanently remove the project and all its data. You can't undo this action.",
@@ -1570,7 +1569,8 @@
 		"boardSearchPlaceholder": "Search tickets...",
 		"view": {
 			"board": "Board",
-			"list": "List"
+			"list": "List",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "Select task",
@@ -1808,6 +1808,9 @@
 				"noDueDate": "No due date"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "Sort",
 			"by": "Sort By",
@@ -1969,6 +1972,40 @@
 				"deleteRow": "Delete row",
 				"deleteTable": "Delete table"
 			}
+		},
+		"overview": {
+			"stats": {
+				"total": "Tasks on the board",
+				"completed": "Completed",
+				"open": "Open",
+				"overdue": "Overdue",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"unassigned": "Unassigned"
+			},
+			"completion": {
+				"title": "Completion",
+				"description": "Tasks sitting in a column this project marks final.",
+				"completed": "Completed",
+				"open": "Open",
+				"centerCaption": "done",
+				"empty": "No tasks in this project yet."
+			},
+			"priority": {
+				"title": "Tasks by priority",
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet."
+			},
+			"workload": {
+				"title": "Open tasks per assignee",
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet."
+			},
+			"deadlines": {
+				"title": "Upcoming deadlines",
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date."
+			}
 		}
 	},
 	"invitations": {
@@ -2023,6 +2060,10 @@
 			"reorderError": "Failed to reorder projects"
 		},
 		"overview": {
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
+			},
 			"completion": {
 				"title": "Completion",
 				"description": "Tasks sitting in a final column across this workspace.",
@@ -2138,6 +2179,11 @@
 	"publicProject": {
 		"pageTitle": "Public View",
 		"badge": "Public",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "Read-only",
 		"error": {
 			"title": "Project Not Found",
@@ -2171,5 +2217,15 @@
 		"branding": {
 			"poweredBy": "Powered by"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

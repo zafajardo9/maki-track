@@ -34,6 +34,7 @@ import {
 import { type CSSProperties, type ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { ShareProjectDialog } from "@/components/project/share-project-dialog";
 import {
   Collapsible,
   CollapsiblePanel,
@@ -144,6 +145,13 @@ export function NavProjects() {
   const [projectToDeleteId, setProjectToDeleteID] = useState<string | null>(
     null,
   );
+  // Holds the whole project rather than just its id: the dialog needs the name
+  // and visibility for its copy, and the list can re-render underneath it.
+  const [shareProject, setShareProject] = useState<{
+    id: string;
+    name: string;
+    isPublic: boolean | null;
+  } | null>(null);
   const [draggingProjectId, setDraggingProjectId] = useState<string | null>(
     null,
   );
@@ -294,14 +302,7 @@ export function NavProjects() {
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="h-7 items-start cursor-pointer text-sm"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(
-                                    `${window.location.origin}/dashboard/workspace/${workspace?.id}/project/${project.id}`,
-                                  );
-                                  toast.success(
-                                    t("navigation:projectList.linkCopied"),
-                                  );
-                                }}
+                                onClick={() => setShareProject(project)}
                               >
                                 <Forward className="text-muted-foreground" />
                                 <span>
@@ -429,6 +430,15 @@ export function NavProjects() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ShareProjectDialog
+        open={Boolean(shareProject)}
+        onClose={() => setShareProject(null)}
+        projectId={shareProject?.id ?? ""}
+        projectName={shareProject?.name ?? ""}
+        workspaceId={workspace?.id ?? ""}
+        isPublic={shareProject?.isPublic}
+      />
     </>
   );
 }

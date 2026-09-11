@@ -19,6 +19,7 @@ import {
   assertImageKitFilePathMatchesContext,
   createImageUploadAuth,
   isImageContentType,
+  normalizeImageKitFilePath,
   validateTaskAssetUploadInput,
 } from "../storage/imagekit";
 import { normalizeApiServerUrl } from "../utils/openapi-spec";
@@ -836,7 +837,7 @@ const task = apiRouter<BaseVariables & { workspaceId: string }>()
       throw new HTTPException(404, { message: "Task not found" });
     }
 
-    const normalizedPath = filePath.trim();
+    const normalizedPath = normalizeImageKitFilePath(filePath);
     if (
       !assertImageKitFilePathMatchesContext(normalizedPath, {
         workspaceId: taskContext.workspaceId,

@@ -84,6 +84,52 @@ describe("public project route", () => {
     expect(response.status).toBe(403);
     expect(await response.text()).not.toContain(project.name);
   });
+
+  it("serves a public project to an anonymous visitor", async () => {
+    const { workspace } = await createWorkspaceMember();
+    const { project } = await createProjectFixture({
+      workspaceId: workspace.id,
+    });
+
+    await db
+      .update(schema.projectTable)
+      .set({ isPublic: true })
+      .where(eq(schema.projectTable.id, project.id));
+
+    const { app } = createApp();
+    // Deliberately no mocked session: this is a client following a share link.
+    const response = await app.request(`/api/public-project/${project.id}`);
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as { name?: string };
+    expect(body.name).toBe(project.name);
+  });
+
+  it("stops serving a project once it is made private again", async () => {
+    const { workspace } = await createWorkspaceMember();
+    const { project } = await createProjectFixture({
+      workspaceId: workspace.id,
+    });
+
+    await db
+      .update(schema.projectTable)
+      .set({ isPublic: true })
+      .where(eq(schema.projectTable.id, project.id));
+
+    const { app } = createApp();
+    expect(
+      (await app.request(`/api/public-project/${project.id}`)).status,
+    ).toBe(200);
+
+    await db
+      .update(schema.projectTable)
+      .set({ isPublic: false })
+      .where(eq(schema.projectTable.id, project.id));
+
+    expect(
+      (await app.request(`/api/public-project/${project.id}`)).status,
+    ).toBe(403);
+  });
 });
 
 describe("task assignees stay inside the workspace", () => {

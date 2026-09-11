@@ -11,9 +11,7 @@
 			"remove": "제거",
 			"reset": "재설정",
 			"filter": "필터",
-			"clearAllFilters": "모든 필터 지우기",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "모든 필터 지우기"
 		},
 		"a11y": {
 			"toggleSidebar": "사이드바 토글"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "로그인되었습니다",
 			"signingIn": "로그인 중...",
 			"signIn": "로그인",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "이름",
@@ -1288,9 +1288,8 @@
 		},
 		"projectList": {
 			"viewProject": "프로젝트 보기",
-			"shareProject": "프로젝트 공유",
+			"shareProject": "Share project",
 			"projectSettings": "프로젝트 설정",
-			"linkCopied": "프로젝트 링크가 클립보드에 복사되었습니다",
 			"addProject": "프로젝트 추가",
 			"deleteConfirmTitle": "프로젝트를 삭제하시겠습니까?",
 			"deleteConfirmDescription": "프로젝트와 모든 데이터가 영구적으로 제거됩니다. 이 작업은 취소할 수 없습니다.",
@@ -1558,7 +1557,8 @@
 		"boardSearchPlaceholder": "티켓 검색...",
 		"view": {
 			"board": "보드",
-			"list": "목록"
+			"list": "목록",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "작업 선택",
@@ -1796,6 +1796,9 @@
 				"noDueDate": "마감일 없음"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "정렬",
 			"by": "정렬 기준",
@@ -1963,6 +1966,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2067,6 +2104,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2131,6 +2172,11 @@
 	"publicProject": {
 		"pageTitle": "공개 보기",
 		"badge": "공개",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "읽기 전용",
 		"error": {
 			"title": "프로젝트를 찾을 수 없음",
@@ -2164,5 +2210,15 @@
 		"branding": {
 			"poweredBy": "제공"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

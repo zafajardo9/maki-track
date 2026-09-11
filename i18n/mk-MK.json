@@ -11,9 +11,7 @@
 			"remove": "Отстрани",
 			"reset": "Ресетирај",
 			"filter": "Филтрирај",
-			"clearAllFilters": "Исчисти ги сите филтри",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "Исчисти ги сите филтри"
 		},
 		"a11y": {
 			"toggleSidebar": "Вклучи/исклучи странична лента"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "Успешно најавен",
 			"signingIn": "Се најавува...",
 			"signIn": "Најави се",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "Целосно име",
@@ -1289,9 +1289,8 @@
 		},
 		"projectList": {
 			"viewProject": "Погледни проект",
-			"shareProject": "Сподели проект",
+			"shareProject": "Share project",
 			"projectSettings": "Поставки на проектот",
-			"linkCopied": "Линкот на проектот е копиран во клипборд",
 			"addProject": "Додади проект",
 			"deleteConfirmTitle": "Избриши проект?",
 			"deleteConfirmDescription": "Ова трајно ќе го отстрани проектот и сите негови податоци. Не можеш да ја вратиш оваа акција.",
@@ -1563,7 +1562,8 @@
 		"boardSearchPlaceholder": "Пребарај тикети...",
 		"view": {
 			"board": "Табла",
-			"list": "Листа"
+			"list": "Листа",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "Избери задача",
@@ -1801,6 +1801,9 @@
 				"noDueDate": "Без краен рок"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "Подреди",
 			"by": "Подреди по",
@@ -1969,6 +1972,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2074,6 +2111,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2138,6 +2179,11 @@
 	"publicProject": {
 		"pageTitle": "Јавен приказ",
 		"badge": "Јавен",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "Само за читање",
 		"error": {
 			"title": "Проектот не е пронајден",
@@ -2171,5 +2217,15 @@
 		"branding": {
 			"poweredBy": "Овозможено од"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

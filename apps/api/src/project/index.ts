@@ -15,6 +15,7 @@ import deleteProjectCtrl from "./controllers/delete-project";
 import getProjectCtrl from "./controllers/get-project";
 import getProjectsCtrl from "./controllers/get-projects";
 import reorderProjectsCtrl from "./controllers/reorder-projects";
+import { requireProjectVisibilityPermission } from "./controllers/require-project-visibility-permission";
 import unarchiveProjectCtrl from "./controllers/unarchive-project";
 import updateProjectCtrl from "./controllers/update-project";
 import { projectListSchema, projectSchema } from "./response";
@@ -127,10 +128,11 @@ const updateProjectRoute = createRoute({
   tags: ["Projects"],
   summary: "Update project",
   description:
-    "Replace a project's name, icon, slug, description, and visibility.",
+    "Replace a project's name, icon, slug, description, and visibility. Changing visibility also requires project:share.",
   middleware: [
     workspaceAccess.fromProject(),
     requireWorkspacePermission({ project: ["update"] }),
+    requireProjectVisibilityPermission,
   ] as const,
   request: {
     params: projectParam,
@@ -143,7 +145,7 @@ const updateProjectRoute = createRoute({
     200: jsonResponse("The updated project", projectSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
-      "No workspace access, or missing project:update permission",
+      "No workspace access, missing project:update permission, or a visibility change without project:share",
     ),
   },
 });

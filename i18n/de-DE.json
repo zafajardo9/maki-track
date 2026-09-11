@@ -11,9 +11,7 @@
 			"remove": "Entfernen",
 			"reset": "Zurücksetzen",
 			"filter": "Filter",
-			"clearAllFilters": "Alle Filter löschen",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "Alle Filter löschen"
 		},
 		"a11y": {
 			"toggleSidebar": "Sidebar umschalten"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "Erfolgreich angemeldet",
 			"signingIn": "Wird angemeldet...",
 			"signIn": "Anmelden",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "Vollständiger Name",
@@ -1289,9 +1289,8 @@
 		},
 		"projectList": {
 			"viewProject": "Projekt ansehen",
-			"shareProject": "Projekt teilen",
+			"shareProject": "Share project",
 			"projectSettings": "Projekteinstellungen",
-			"linkCopied": "Projektlink in die Zwischenablage kopiert",
 			"addProject": "Projekt hinzufügen",
 			"deleteConfirmTitle": "Projekt löschen?",
 			"deleteConfirmDescription": "Dadurch wird das Projekt und alle zugehörigen Daten dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -1563,7 +1562,8 @@
 		"boardSearchPlaceholder": "Tickets suchen...",
 		"view": {
 			"board": "Board",
-			"list": "Liste"
+			"list": "Liste",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "Aufgabe auswählen",
@@ -1801,6 +1801,9 @@
 				"noDueDate": "Kein Fälligkeitsdatum"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "Sortieren",
 			"by": "Sortieren nach",
@@ -1969,6 +1972,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2074,6 +2111,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2138,6 +2179,11 @@
 	"publicProject": {
 		"pageTitle": "Öffentliche Ansicht",
 		"badge": "Öffentlich",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "Schreibgeschützt",
 		"error": {
 			"title": "Projekt nicht gefunden",
@@ -2171,5 +2217,15 @@
 		"branding": {
 			"poweredBy": "Bereitgestellt von"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

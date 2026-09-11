@@ -1080,4 +1080,98 @@ describe("API integration: workspace RBAC enforcement", () => {
       expect(response.status).toBe(403);
     });
   });
+
+  describe("project visibility is gated on project:share", () => {
+    async function putUpdateProject(
+      app: ReturnType<typeof createApp>["app"],
+      project: {
+        id: string;
+        name: string;
+        slug: string;
+        icon: string | null;
+        description: string | null;
+      },
+      overrides: Partial<{ name: string; isPublic: boolean }> = {},
+    ) {
+      return app.request(`/api/project/${project.id}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          name: project.name,
+          icon: project.icon ?? "Folder",
+          slug: project.slug,
+          description: project.description ?? "",
+          isPublic: false,
+          ...overrides,
+        }),
+      });
+    }
+
+    async function roleFor(role: string, project: string[]) {
+      const member = await createWorkspaceMember({ role });
+      const fixture = await createProjectFixture({
+        workspaceId: member.workspace.id,
+      });
+      await createWorkspaceRoleRow(member.workspace.id, role, {
+        project,
+        task: ["read"],
+      });
+      mockAuthenticatedSession(member.user);
+      return { member, ...fixture };
+    }
+
+    it("blocks promoting a project to public without project:share", async () => {
+      const { project } = await roleFor("editor", ["read", "update"]);
+      const { app } = createApp();
+
+      const response = await putUpdateProject(app, project, {
+        isPublic: true,
+      });
+      expect(response.status).toBe(403);
+
+      const [row] = await db
+        .select({ isPublic: schema.projectTable.isPublic })
+        .from(schema.projectTable)
+        .where(eq(schema.projectTable.id, project.id));
+      expect(row?.isPublic).toBe(false);
+    });
+
+    it("allows an edit that resends the unchanged visibility", async () => {
+      // The general settings form always posts the current isPublic, so a plain
+      // rename must not start demanding project:share.
+      const { project } = await roleFor("editor", ["read", "update"]);
+      const { app } = createApp();
+
+      const response = await putUpdateProject(app, project, {
+        name: "Renamed without share",
+      });
+      expect(response.status).toBe(200);
+    });
+
+    it("allows the visibility change when the role has project:share", async () => {
+      const { project } = await roleFor("sharer", ["read", "update", "share"]);
+      const { app } = createApp();
+
+      const response = await putUpdateProject(app, project, {
+        isPublic: true,
+      });
+      expect(response.status).toBe(200);
+
+      const [row] = await db
+        .select({ isPublic: schema.projectTable.isPublic })
+        .from(schema.projectTable)
+        .where(eq(schema.projectTable.id, project.id));
+      expect(row?.isPublic).toBe(true);
+    });
+
+    it("still requires project:update alongside project:share", async () => {
+      const { project } = await roleFor("sharer-only", ["read", "share"]);
+      const { app } = createApp();
+
+      const response = await putUpdateProject(app, project, {
+        isPublic: true,
+      });
+      expect(response.status).toBe(403);
+    });
+  });
 });

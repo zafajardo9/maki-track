@@ -1,5 +1,4 @@
 import type { Editor } from "@tiptap/core";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Table } from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
@@ -77,6 +76,7 @@ import { toast } from "@/lib/toast";
 import { uploadTaskImage } from "@/lib/upload-task-image";
 import { AttachmentCard } from "./extensions/attachment-card";
 import { EmbedBlock } from "./extensions/embed-block";
+import { MakiImage } from "./extensions/maki-image";
 import { MakiIssueLink } from "./extensions/maki-issue-link";
 import { MermaidBlock } from "./extensions/mermaid-block";
 import {
@@ -640,9 +640,8 @@ export default function TaskDescription({ taskId }: TaskDescriptionProps) {
         AttachmentCard,
         MakiIssueLink,
         TaskList,
-        Image.configure({
+        MakiImage.configure({
           HTMLAttributes: {
-            class: "maki-editor-image",
             loading: "lazy",
           },
         }),

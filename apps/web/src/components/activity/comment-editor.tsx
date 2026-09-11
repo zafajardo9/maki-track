@@ -1,5 +1,4 @@
 import type { Editor } from "@tiptap/core";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Table } from "@tiptap/extension-table";
 import TableCell from "@tiptap/extension-table-cell";
@@ -38,6 +37,7 @@ import { useTranslation } from "react-i18next";
 import { bundledLanguages, type Highlighter } from "shiki";
 import { AttachmentCard } from "@/components/task/extensions/attachment-card";
 import { EmbedBlock } from "@/components/task/extensions/embed-block";
+import { MakiImage } from "@/components/task/extensions/maki-image";
 import { MakiIssueLink } from "@/components/task/extensions/maki-issue-link";
 import { MakiMention } from "@/components/task/extensions/maki-mention";
 import type { MentionMember } from "@/components/task/extensions/mention-list";
@@ -637,9 +637,8 @@ export default function CommentEditor({
           getMembers: () => mentionMembersRef.current,
         }),
         TaskList,
-        Image.configure({
+        MakiImage.configure({
           HTMLAttributes: {
-            class: "maki-editor-image",
             loading: "lazy",
           },
         }),
@@ -1696,10 +1695,7 @@ export default function CommentEditor({
             type="button"
             variant="ghost"
             size="xs"
-            className={cn(
-              "maki-comment-editor-bubble-btn",
-              "text-destructive",
-            )}
+            className={cn("maki-comment-editor-bubble-btn", "text-destructive")}
             title={t("activity:comment.editor.table.deleteColumn", {
               defaultValue: "Delete column",
             })}
@@ -1736,10 +1732,7 @@ export default function CommentEditor({
             type="button"
             variant="ghost"
             size="xs"
-            className={cn(
-              "maki-comment-editor-bubble-btn",
-              "text-destructive",
-            )}
+            className={cn("maki-comment-editor-bubble-btn", "text-destructive")}
             title={t("activity:comment.editor.table.deleteRow", {
               defaultValue: "Delete row",
             })}
@@ -1752,10 +1745,7 @@ export default function CommentEditor({
             type="button"
             variant="ghost"
             size="xs"
-            className={cn(
-              "maki-comment-editor-bubble-btn",
-              "text-destructive",
-            )}
+            className={cn("maki-comment-editor-bubble-btn", "text-destructive")}
             title={t("activity:comment.editor.table.deleteTable", {
               defaultValue: "Delete table",
             })}

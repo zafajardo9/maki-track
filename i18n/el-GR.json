@@ -11,9 +11,7 @@
 			"remove": "Αφαίρεση",
 			"reset": "Επαναφορά",
 			"filter": "Φίλτρο",
-			"clearAllFilters": "Εκκαθάριση όλων των φίλτρων",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "Εκκαθάριση όλων των φίλτρων"
 		},
 		"a11y": {
 			"toggleSidebar": "Εναλλαγή πλαϊνής μπάρας"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "Η σύνδεση ολοκληρώθηκε με επιτυχία",
 			"signingIn": "Γίνεται σύνδεση...",
 			"signIn": "Σύνδεση",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "Ονοματεπώνυμο",
@@ -1289,9 +1289,8 @@
 		},
 		"projectList": {
 			"viewProject": "Προβολή έργου",
-			"shareProject": "Κοινοποίηση έργου",
+			"shareProject": "Share project",
 			"projectSettings": "Ρυθμίσεις έργου",
-			"linkCopied": "Ο σύνδεσμος του έργου αντιγράφηκε στο πρόχειρο",
 			"addProject": "Προσθήκη έργου",
 			"deleteConfirmTitle": "Διαγραφή έργου;",
 			"deleteConfirmDescription": "Αυτό θα αφαιρέσει οριστικά το έργο και όλα τα δεδομένα του. Δεν μπορείτε να αναιρέσετε αυτήν την ενέργεια.",
@@ -1563,7 +1562,8 @@
 		"boardSearchPlaceholder": "Αναζήτηση αιτημάτων...",
 		"view": {
 			"board": "Πίνακας",
-			"list": "Λίστα"
+			"list": "Λίστα",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "Επιλέξτε εργασία",
@@ -1801,6 +1801,9 @@
 				"noDueDate": "Χωρίς ημερομηνία λήξης"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "Ταξινόμηση",
 			"by": "Ταξινόμηση κατά",
@@ -1969,6 +1972,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2074,6 +2111,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2138,6 +2179,11 @@
 	"publicProject": {
 		"pageTitle": "Δημόσια προβολή",
 		"badge": "Δημόσιο",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "Μόνο για ανάγνωση",
 		"error": {
 			"title": "Το έργο δεν βρέθηκε",
@@ -2171,5 +2217,15 @@
 		"branding": {
 			"poweredBy": "Υποστηρίζεται από"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

@@ -11,9 +11,7 @@
 			"remove": "移除",
 			"reset": "重置",
 			"filter": "筛选",
-			"clearAllFilters": "清除全部筛选",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "清除全部筛选"
 		},
 		"a11y": {
 			"toggleSidebar": "切换侧边栏"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "登录成功",
 			"signingIn": "正在登录…",
 			"signIn": "登录",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "姓名",
@@ -1288,9 +1288,8 @@
 		},
 		"projectList": {
 			"viewProject": "查看项目",
-			"shareProject": "分享项目",
+			"shareProject": "Share project",
 			"projectSettings": "项目设置",
-			"linkCopied": "项目链接已复制到剪贴板",
 			"addProject": "添加项目",
 			"deleteConfirmTitle": "删除项目？",
 			"deleteConfirmDescription": "这将永久删除项目及其所有数据，此操作不可撤销。",
@@ -1558,7 +1557,8 @@
 		"boardSearchPlaceholder": "搜索工单…",
 		"view": {
 			"board": "看板",
-			"list": "列表"
+			"list": "列表",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "选择任务",
@@ -1796,6 +1796,9 @@
 				"noDueDate": "无截止日期"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "排序",
 			"by": "排序方式",
@@ -1963,6 +1966,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2067,6 +2104,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2131,6 +2172,11 @@
 	"publicProject": {
 		"pageTitle": "公开视图",
 		"badge": "公开",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "只读",
 		"error": {
 			"title": "未找到项目",
@@ -2164,5 +2210,15 @@
 		"branding": {
 			"poweredBy": "由以下技术提供支持"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

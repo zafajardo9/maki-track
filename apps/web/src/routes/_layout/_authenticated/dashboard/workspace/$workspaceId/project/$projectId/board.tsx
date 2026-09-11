@@ -3,7 +3,6 @@ import { Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BoardToolbar from "@/components/board/board-toolbar";
-import { ProjectStatusChart } from "@/components/charts/project-status-chart";
 import ProjectLayout from "@/components/common/project-layout";
 import KanbanBoard from "@/components/kanban-board";
 import ListView from "@/components/list-view";
@@ -104,6 +103,11 @@ function RouteComponent() {
 
   useRegisterShortcuts({
     sequentialShortcuts: {
+      // Documented in the shortcuts help dialog as "create task"; the modal it
+      // opens defaults to the project's first column.
+      [shortcuts.task.prefix]: {
+        [shortcuts.task.create]: () => setIsTaskModalOpen(true),
+      },
       [shortcuts.view.prefix]: {
         [shortcuts.view.board]: () => setViewMode("board"),
         [shortcuts.view.list]: () => setViewMode("list"),
@@ -223,16 +227,6 @@ function RouteComponent() {
         hideAppName
       />
       <div className="relative flex flex-col h-full min-h-0 overflow-hidden">
-        {data ? (
-          <div className="shrink-0 px-2 pt-3 md:px-3">
-            <ProjectStatusChart
-              columns={data.columns}
-              plannedCount={data.plannedTasks.length}
-              archivedCount={data.archivedTasks.length}
-            />
-          </div>
-        ) : null}
-
         <BoardToolbar
           project={project}
           filters={filters}
@@ -246,6 +240,7 @@ function RouteComponent() {
           setViewMode={setViewMode}
           sort={sort}
           onSortChange={setSort}
+          onCreateTask={() => setIsTaskModalOpen(true)}
         />
 
         <div className="flex h-full flex-1 overflow-hidden bg-background">

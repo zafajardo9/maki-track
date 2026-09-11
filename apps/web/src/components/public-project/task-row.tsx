@@ -1,4 +1,10 @@
-import { Calendar, CalendarClock, CalendarX } from "lucide-react";
+import {
+  Calendar,
+  CalendarClock,
+  CalendarX,
+  Circle,
+  CircleCheck,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -46,6 +52,20 @@ export function PublicTaskRow({
         title: task.title,
       })}
     >
+      {/* Status is also conveyed by the column heading this row sits under, so
+          the marker is decorative and stays out of the accessible name. */}
+      {taskIsCompleted ? (
+        <CircleCheck
+          className="size-4 shrink-0 text-success-foreground"
+          aria-hidden="true"
+        />
+      ) : (
+        <Circle
+          className="size-4 shrink-0 text-muted-foreground/40"
+          aria-hidden="true"
+        />
+      )}
+
       <div className="flex-1 min-w-0 flex items-center gap-3">
         <div className="text-xs font-mono text-muted-foreground shrink-0 font-medium">
           {projectSlug}-{task.number}

@@ -6,9 +6,10 @@ import PageTitle from "@/components/page-title";
 import { CopyUrlButton } from "@/components/public-project/copy-url-button";
 import { ErrorView } from "@/components/public-project/error-view";
 import { PublicKanbanView } from "@/components/public-project/kanban-view";
-import { MakiBranding } from "@/components/public-project/maki-branding";
 import { PublicListView } from "@/components/public-project/list-view";
 import { LoadingSkeleton } from "@/components/public-project/loading-skeleton";
+import { MakiBranding } from "@/components/public-project/maki-branding";
+import { PublicProgressSummary } from "@/components/public-project/progress-summary";
 import { PublicTaskDetailModal } from "@/components/public-project/task-detail-modal";
 import { ThemeToggle } from "@/components/public-project/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -32,9 +33,9 @@ function RouteComponent() {
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
-      return (saved as ViewMode) || "kanban";
+      return (saved as ViewMode) || "list";
     }
-    return "kanban";
+    return "list";
   });
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -125,6 +126,12 @@ function RouteComponent() {
         </header>
 
         <main className="flex-1 min-h-0 flex flex-col">
+          <div className="shrink-0 border-b border-border px-6 py-4">
+            <div className="max-w-5xl mx-auto">
+              <PublicProgressSummary columns={project.columns ?? []} />
+            </div>
+          </div>
+
           {viewMode === "kanban" ? (
             <PublicKanbanView project={project} onTaskClick={handleTaskClick} />
           ) : (

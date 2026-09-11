@@ -1,5 +1,5 @@
-import { createId } from "@paralleldrive/cuid2";
 import { createHmac, randomUUID } from "node:crypto";
+import { createId } from "@paralleldrive/cuid2";
 import { config } from "dotenv-mono";
 
 config();
@@ -107,8 +107,11 @@ export function isImageKitConfigured(): boolean {
   return getConfig() !== null;
 }
 
-function hmacSha1Base64(key: string, message: string): string {
-  return createHmac("sha1", key).update(message).digest("base64");
+// ImageKit digests everything it verifies as lowercase hex. The upload
+// signature and the signed-delivery signature both use this; a base64 digest is
+// rejected with a 400 on upload and a 403 on delivery.
+function hmacSha1Hex(key: string, message: string): string {
+  return createHmac("sha1", key).update(message).digest("hex");
 }
 
 export function sanitizePathSegment(value: string) {
@@ -119,6 +122,18 @@ export function sanitizePathSegment(value: string) {
       .replace(/-{2,}/g, "-")
       .replace(/^-+|-+$/g, "") || "file"
   );
+}
+
+/**
+ * Canonical form of a stored file path, with no leading slash.
+ *
+ * ImageKit always returns `filePath` with a leading slash (`/folder/file.png`),
+ * even when the upload folder was sent without one, so the raw value cannot be
+ * stored or compared directly. Everything here — the prefix check, the object
+ * key, and the signed-URL string — works from this form.
+ */
+export function normalizeImageKitFilePath(filePath: string) {
+  return filePath.trim().replace(/^\/+/, "");
 }
 
 export function getFileExtension(filename: string) {
@@ -183,7 +198,10 @@ export function createImageUploadAuth(
   const expire = String(
     Math.floor(Date.now() / 1000) + config.uploadTtlSeconds,
   );
-  const signature = hmacSha1Base64(config.privateKey, `${token}${expire}`);
+  // ImageKit's client-side upload signature is `HMAC-SHA1(privateKey,
+  // token + expire)` as a hex digest. Sending base64 here makes ImageKit reject
+  // every upload with "Your requests contains invalid signature parameter."
+  const signature = hmacSha1Hex(config.privateKey, `${token}${expire}`);
 
   return {
     uploadUrl: IMAGEKIT_UPLOAD_URL,
@@ -228,27 +246,30 @@ export function assertImageKitFilePathMatchesContext(
   context: Omit<TaskImageUploadContext, "filename" | "contentType">,
 ) {
   const fullPrefix = `${buildImagePathPrefix(context)}/`;
+  const normalized = normalizeImageKitFilePath(filePath);
 
-  if (!filePath.startsWith(fullPrefix)) {
+  if (!normalized.startsWith(fullPrefix)) {
     return false;
   }
 
-  const suffix = filePath.slice(fullPrefix.length);
+  const suffix = normalized.slice(fullPrefix.length);
   return /^[A-Za-z0-9._-]+$/.test(suffix) && !suffix.startsWith(".");
 }
 
 /**
  * A short-lived signed delivery URL. ImageKit private files are only readable
- * through these; the signature is HMAC-SHA1 of `<expire><filePath>` signed
- * with the private key, base64-encoded with URL-safe characters.
+ * through these.
+ *
+ * The string ImageKit expects to be signed is `<path><expire>` — the path
+ * without its leading slash, expiry appended — digested as HMAC-SHA1 hex. A
+ * leading slash, the reverse order, or a base64 digest each produce a 403.
  */
 function buildSignedDeliveryUrl(config: ImageKitConfig, filePath: string) {
   const expire = Math.floor(Date.now() / 1000) + DEFAULT_READ_TTL_SECONDS;
-  const signature = hmacSha1Base64(config.privateKey, `${expire}${filePath}`)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
+  const path = normalizeImageKitFilePath(filePath);
+  const signature = hmacSha1Hex(config.privateKey, `${path}${expire}`);
 
-  return `${config.urlEndpoint}/${filePath}?ik-t=${expire}&ik-s=${signature}`;
+  return `${config.urlEndpoint}/${path}?ik-t=${expire}&ik-s=${signature}`;
 }
 
 /**

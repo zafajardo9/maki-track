@@ -10,6 +10,7 @@ import {
   getPrivateObject,
   isImageContentType,
   isImageKitConfigured,
+  normalizeImageKitFilePath,
   parsePositiveInt,
   sanitizePathSegment,
   validateTaskAssetUploadInput,
@@ -125,18 +126,18 @@ describe("ImageKit helpers", () => {
     });
 
     expect(auth.uploadUrl).toBe("https://upload.imagekit.io/v1/files/upload");
-    expect(auth.folder).toBe(
-      "workspace/ws1/project/p1/task/t1/descriptions",
-    );
+    expect(auth.folder).toBe("workspace/ws1/project/p1/task/t1/descriptions");
     expect(auth.filePath).toBe(`${auth.folder}/${auth.fileName}`);
     expect(auth.publicKey).toBe("public_test");
     expect(auth.token).toMatch(/^[0-9a-f-]{36}$/);
     expect(auth.expire).toBe(String(1_717_171_717 + 120));
-    // Signature is HMAC-SHA1(privateKey, `${token}${expire}`), base64.
+    // Signature is HMAC-SHA1(privateKey, `${token}${expire}`) as hex. ImageKit
+    // answers 400 "invalid signature parameter" for a base64 digest.
     const expected = createHmac("sha1", "private_test")
       .update(`${auth.token}${auth.expire}`)
-      .digest("base64");
+      .digest("hex");
     expect(auth.signature).toBe(expected);
+    expect(auth.signature).toMatch(/^[0-9a-f]{40}$/);
   });
 
   it("throws when ImageKit is not configured", () => {
@@ -172,6 +173,12 @@ describe("ImageKit helpers", () => {
       assertImageKitFilePathMatchesContext(`${prefix}/image-1-abc.png`, ctx),
     ).toBe(true);
 
+    // ImageKit returns the path with a leading slash, and that is what the
+    // finalize route hands to this check.
+    expect(
+      assertImageKitFilePathMatchesContext(`/${prefix}/image-1-abc.png`, ctx),
+    ).toBe(true);
+
     for (const suffix of [
       "../../../../../../workspace/victim/secret.png",
       "nested/deeper.png",
@@ -181,6 +188,10 @@ describe("ImageKit helpers", () => {
     ]) {
       expect(
         assertImageKitFilePathMatchesContext(`${prefix}/${suffix}`, ctx),
+      ).toBe(false);
+      // A leading slash must not become a way through the traversal checks.
+      expect(
+        assertImageKitFilePathMatchesContext(`/${prefix}/${suffix}`, ctx),
       ).toBe(false);
     }
 
@@ -204,9 +215,7 @@ describe("ImageKit helpers", () => {
     expect(() =>
       validateTaskAssetUploadInput("image/png", 2 * 1024 * 1024),
     ).toThrow("Upload exceeds the maximum upload size of 1MB.");
-    expect(() =>
-      validateTaskAssetUploadInput("image/png", 512),
-    ).not.toThrow();
+    expect(() => validateTaskAssetUploadInput("image/png", 512)).not.toThrow();
   });
 
   it("fetches private objects through a signed delivery URL", async () => {
@@ -235,8 +244,52 @@ describe("ImageKit helpers", () => {
     expect(parsed.searchParams.has("ik-t")).toBe(true);
     expect(parsed.searchParams.has("ik-s")).toBe(true);
 
+    // ImageKit signs `<path><expire>` (no leading slash, expiry appended) and
+    // expects the hex digest. Every other combination answers 403.
+    const expire = parsed.searchParams.get("ik-t") ?? "";
+    const expectedSignature = createHmac("sha1", "private_test")
+      .update(
+        `workspace/ws1/project/p1/task/t1/descriptions/image.png${expire}`,
+      )
+      .digest("hex");
+    expect(parsed.searchParams.get("ik-s")).toBe(expectedSignature);
+
     expect(object.contentType).toBe("image/png");
     expect(object.contentLength).toBe("12345");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("signs a stored path that carries ImageKit's leading slash", async () => {
+    setImageKitEnv();
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      body: new ReadableStream(),
+      headers: new Headers({ "content-type": "image/png" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    // ImageKit returns `filePath` with a leading slash, so this is the form
+    // that actually reaches the reader.
+    await getPrivateObject(
+      "/workspace/ws1/project/p1/task/t1/descriptions/image.png",
+    );
+
+    const [url] = fetchMock.mock.calls[0] as [string];
+    const parsed = new URL(url);
+    // No doubled slash in the delivery URL.
+    expect(parsed.pathname).toBe(
+      "/test-id/workspace/ws1/project/p1/task/t1/descriptions/image.png",
+    );
+
+    const expire = parsed.searchParams.get("ik-t") ?? "";
+    const expectedSignature = createHmac("sha1", "private_test")
+      .update(
+        `workspace/ws1/project/p1/task/t1/descriptions/image.png${expire}`,
+      )
+      .digest("hex");
+    expect(parsed.searchParams.get("ik-s")).toBe(expectedSignature);
 
     vi.unstubAllGlobals();
   });
@@ -278,7 +331,10 @@ describe("ImageKit helpers", () => {
   it("treats a 404 on delete as success", async () => {
     setImageKitEnv();
 
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 404 }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 404 }),
+    );
 
     await expect(deleteImageKitFile("file_missing")).resolves.toBeUndefined();
 
@@ -291,6 +347,26 @@ vi.mock("../../../apps/api/src/database", () => ({ default: {} }));
 const { contentReferencesAsset, extractAssetIds } = await import(
   "../../../apps/api/src/storage/cleanup-assets"
 );
+
+describe("normalizeImageKitFilePath", () => {
+  it("strips the leading slash ImageKit always adds", () => {
+    expect(normalizeImageKitFilePath("/workspace/ws1/file.png")).toBe(
+      "workspace/ws1/file.png",
+    );
+  });
+
+  it("leaves an already-canonical path untouched", () => {
+    expect(normalizeImageKitFilePath("workspace/ws1/file.png")).toBe(
+      "workspace/ws1/file.png",
+    );
+  });
+
+  it("trims whitespace and collapses repeated leading slashes", () => {
+    expect(normalizeImageKitFilePath("  //workspace/ws1/file.png  ")).toBe(
+      "workspace/ws1/file.png",
+    );
+  });
+});
 
 describe("extractAssetIds", () => {
   it("extracts asset IDs from content with /api/asset/ URLs", () => {

@@ -52,6 +52,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsPanel, TabsTrigger } from "@/components/ui/tabs";
 import icons from "@/constants/project-icons";
 import { shortcuts } from "@/constants/shortcuts";
 import useReorderProjects from "@/hooks/mutations/project/use-reorder-projects";
@@ -119,6 +120,32 @@ function SortableProjectRow({
     >
       {children}
     </TableRow>
+  );
+}
+
+// The workspace home shows either the analytics overview or the project list.
+// The tab bar is shared with the loading state so the chrome does not shift
+// once the projects arrive.
+function WorkspaceViewTabs({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
+
+  return (
+    <Tabs defaultValue="dashboard" className="gap-0">
+      <div className="px-6 pt-6 pb-4">
+        {/* The list is `w-fit`, so it needs an explicit auto margin to sit in
+            the middle of the content area. */}
+        <TabsList className="mx-auto">
+          <TabsTrigger value="dashboard">
+            {t("workspace:overview.tabs.dashboard")}
+          </TabsTrigger>
+          <TabsTrigger value="projects">
+            {t("workspace:overview.tabs.projects")}
+          </TabsTrigger>
+        </TabsList>
+      </div>
+
+      {children}
+    </Tabs>
   );
 }
 
@@ -246,45 +273,57 @@ function RouteComponent() {
             ) : null
           }
         >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.title")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.progress")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.targetDate")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.status")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[1, 2, 3].map((i) => (
-                <TableRow key={i}>
-                  <TableCell className="py-3">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-5 w-5" />
-                      <Skeleton className="h-4 w-24" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-3">
-                    <Skeleton className="h-2 w-20" />
-                  </TableCell>
-                  <TableCell className="py-3">
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell className="py-3">
-                    <Skeleton className="h-5 w-16" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <WorkspaceViewTabs>
+            <TabsPanel value="dashboard" className="px-6 pb-8">
+              <div className="grid gap-6 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-52 rounded-2xl" />
+                ))}
+              </div>
+            </TabsPanel>
+
+            <TabsPanel value="projects">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.title")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.progress")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.targetDate")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.status")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[1, 2, 3].map((i) => (
+                    <TableRow key={i}>
+                      <TableCell className="py-3">
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="h-5 w-5" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-2 w-20" />
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4 w-20" />
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-5 w-16" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TabsPanel>
+          </WorkspaceViewTabs>
         </WorkspaceLayout>
       </>
     );
@@ -360,104 +399,116 @@ function RouteComponent() {
           ) : null
         }
       >
-        <div className="px-6 pt-6 pb-8">
-          <WorkspaceOverviewCharts projects={orderedProjects ?? []} />
-        </div>
+        <WorkspaceViewTabs>
+          <TabsPanel value="dashboard" className="px-6 pb-8">
+            <WorkspaceOverviewCharts projects={orderedProjects ?? []} />
+          </TabsPanel>
 
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragCancel={() => document.body.classList.remove("maki-dragging")}
-        >
-          <Table>
-            <TableHeader className="p-4">
-              <TableRow>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.title")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.progress")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.dueDate")}
-                </TableHead>
-                <TableHead className="text-foreground font-medium">
-                  {t("workspace:projects.status")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <SortableContext
-                items={orderedProjects?.map((project) => project.id) ?? []}
-                strategy={verticalListSortingStrategy}
-              >
-                {orderedProjects?.map((project) => {
-                  if (!project?.id || !project.statistics) return null;
+          <TabsPanel value="projects">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={() =>
+                document.body.classList.remove("maki-dragging")
+              }
+            >
+              <Table>
+                <TableHeader className="p-4">
+                  <TableRow>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.title")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.progress")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.dueDate")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.status")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <SortableContext
+                    items={orderedProjects?.map((project) => project.id) ?? []}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {orderedProjects?.map((project) => {
+                      if (!project?.id || !project.statistics) return null;
 
-                  const IconComponent =
-                    icons[project.icon as keyof typeof icons] || icons.Layout;
+                      const IconComponent =
+                        icons[project.icon as keyof typeof icons] ||
+                        icons.Layout;
 
-                  const getStatusText = () => {
-                    if (project.statistics.totalTasks === 0)
-                      return t("workspace:projects.projectStatus.notStarted");
-                    if (project.statistics.completionPercentage === 100)
-                      return t("workspace:projects.projectStatus.complete");
-                    return t("workspace:projects.projectStatus.inProgress");
-                  };
+                      const getStatusText = () => {
+                        if (project.statistics.totalTasks === 0)
+                          return t(
+                            "workspace:projects.projectStatus.notStarted",
+                          );
+                        if (project.statistics.completionPercentage === 100)
+                          return t("workspace:projects.projectStatus.complete");
+                        return t("workspace:projects.projectStatus.inProgress");
+                      };
 
-                  const getStatusVariant = () => {
-                    if (project.statistics.totalTasks === 0) return "secondary";
-                    if (project.statistics.completionPercentage === 100)
-                      return "default";
-                    return "outline";
-                  };
+                      const getStatusVariant = () => {
+                        if (project.statistics.totalTasks === 0)
+                          return "secondary";
+                        if (project.statistics.completionPercentage === 100)
+                          return "default";
+                        return "outline";
+                      };
 
-                  return (
-                    <SortableProjectRow
-                      key={project.id}
-                      id={project.id}
-                      canReorder={canReorder}
-                      onClick={() => handleProjectClick(project.id)}
-                    >
-                      <TableCell className="py-3">
-                        <div className="flex items-center gap-3">
-                          <IconComponent className="w-5 h-5 text-muted-foreground" />
-                          <span className="font-medium">{project.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <div className="flex items-center gap-2">
-                          <Progress
-                            value={project.statistics.completionPercentage}
-                            className="w-16 h-2"
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            {project.statistics.completionPercentage}%
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <span className="text-sm text-muted-foreground">
-                          {project.statistics.dueDate
-                            ? formatDateMedium(project.statistics.dueDate)
-                            : t("workspace:projects.noDueDate")}
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-3">
-                        <Badge variant={getStatusVariant()}>
-                          {getStatusText()}
-                        </Badge>
-                      </TableCell>
-                    </SortableProjectRow>
-                  );
-                })}
-              </SortableContext>
-            </TableBody>
-          </Table>
-        </DndContext>
+                      return (
+                        <SortableProjectRow
+                          key={project.id}
+                          id={project.id}
+                          canReorder={canReorder}
+                          onClick={() => handleProjectClick(project.id)}
+                        >
+                          <TableCell className="py-3">
+                            <div className="flex items-center gap-3">
+                              <IconComponent className="w-5 h-5 text-muted-foreground" />
+                              <span className="font-medium">
+                                {project.name}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <div className="flex items-center gap-2">
+                              <Progress
+                                value={project.statistics.completionPercentage}
+                                className="w-16 h-2"
+                              />
+                              <span className="text-sm text-muted-foreground">
+                                {project.statistics.completionPercentage}%
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <span className="text-sm text-muted-foreground">
+                              {project.statistics.dueDate
+                                ? formatDateMedium(project.statistics.dueDate)
+                                : t("workspace:projects.noDueDate")}
+                            </span>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <Badge variant={getStatusVariant()}>
+                              {getStatusText()}
+                            </Badge>
+                          </TableCell>
+                        </SortableProjectRow>
+                      );
+                    })}
+                  </SortableContext>
+                </TableBody>
+              </Table>
+            </DndContext>
+          </TabsPanel>
+        </WorkspaceViewTabs>
       </WorkspaceLayout>
 
       <CreateProjectModal

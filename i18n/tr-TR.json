@@ -11,9 +11,7 @@
 			"remove": "Kaldır",
 			"reset": "Sıfırla",
 			"filter": "Filtrele",
-			"clearAllFilters": "Tüm filtreleri temizle",
-			"collapse": "Collapse",
-			"expand": "Expand"
+			"clearAllFilters": "Tüm filtreleri temizle"
 		},
 		"a11y": {
 			"toggleSidebar": "Kenar çubuğunu aç/kapat"
@@ -195,7 +193,9 @@
 			"signedInSuccess": "Başarıyla giriş yapıldı",
 			"signingIn": "Giriş Yapılıyor...",
 			"signIn": "Giriş Yap",
-			"forgotPassword": "Forgot password?"
+			"forgotPassword": "Forgot password?",
+			"rememberMe": "Remember me",
+			"rememberMeHint": "Stay signed in on this device. Leave this off on a shared computer."
 		},
 		"signUpForm": {
 			"fullName": "Ad Soyad",
@@ -1289,9 +1289,8 @@
 		},
 		"projectList": {
 			"viewProject": "Projeyi Görüntüle",
-			"shareProject": "Projeyi Paylaş",
+			"shareProject": "Share project",
 			"projectSettings": "Proje ayarları",
-			"linkCopied": "Proje bağlantısı panoya kopyalandı",
 			"addProject": "Proje ekle",
 			"deleteConfirmTitle": "Proje Silinsin mi?",
 			"deleteConfirmDescription": "Bu, projeyi ve tüm verilerini kalıcı olarak kaldıracak. Bu işlemi geri alamazsınız.",
@@ -1563,7 +1562,8 @@
 		"boardSearchPlaceholder": "Talep ara...",
 		"view": {
 			"board": "Pano",
-			"list": "Liste"
+			"list": "Liste",
+			"overview": "Overview"
 		},
 		"common": {
 			"selectTask": "Talep seç",
@@ -1801,6 +1801,9 @@
 				"noDueDate": "Bitiş tarihi yok"
 			}
 		},
+		"board": {
+			"createTask": "Create task"
+		},
 		"sort": {
 			"label": "Sırala",
 			"by": "Sıralama Ölçütü",
@@ -1969,6 +1972,40 @@
 			"empty": "No tasks in this project yet.",
 			"parked": "{{planned}} planned, {{archived}} archived",
 			"title": "Tasks by status"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a column this project marks final.",
+				"empty": "No tasks in this project yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"deadlines": {
+				"description": "The soonest due dates on open tasks.",
+				"empty": "No open tasks have a due date.",
+				"title": "Upcoming deadlines"
+			},
+			"priority": {
+				"description": "Every task in this project, backlog included.",
+				"empty": "No tasks in this project yet.",
+				"title": "Tasks by priority"
+			},
+			"stats": {
+				"completed": "Completed",
+				"dueSoon": "Due soon",
+				"dueSoonHint": "Next 3 days",
+				"open": "Open",
+				"overdue": "Overdue",
+				"total": "Tasks on the board",
+				"unassigned": "Unassigned"
+			},
+			"workload": {
+				"description": "Who still has work in flight.",
+				"empty": "No open tasks are assigned yet.",
+				"title": "Open tasks per assignee"
+			}
 		}
 	},
 	"invitations": {
@@ -2074,6 +2111,10 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"title": "Project progress"
+			},
+			"tabs": {
+				"dashboard": "Dashboard",
+				"projects": "Projects"
 			}
 		}
 	},
@@ -2138,6 +2179,11 @@
 	"publicProject": {
 		"pageTitle": "Herkese Açık Görünüm",
 		"badge": "Herkese Açık",
+		"progress": {
+			"title": "Progress",
+			"counts": "{{completed}} of {{total}} done",
+			"percent": "{{percent}}%"
+		},
 		"readOnly": "Salt okunur",
 		"error": {
 			"title": "Proje Bulunamadı",
@@ -2171,5 +2217,15 @@
 		"branding": {
 			"poweredBy": "Tarafından desteklenmektedir"
 		}
+	},
+	"shareProject": {
+		"title": "Share project",
+		"description": "Links for {{project}}. Which one works depends on the project's visibility.",
+		"publicUrlPrivateHint": "Only opens once this project is public",
+		"internalUrl": "Internal link",
+		"internalUrlHint": "Only members of this workspace can open this",
+		"copyFailed": "Failed to copy link",
+		"copyPublicUrlAria": "Copy public link",
+		"copyInternalUrlAria": "Copy internal link"
 	}
 }

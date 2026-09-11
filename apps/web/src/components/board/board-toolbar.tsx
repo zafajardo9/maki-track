@@ -1,8 +1,9 @@
-import { Filter, PanelsTopLeft, Rows3, X } from "lucide-react";
+import { Filter, PanelsTopLeft, Plus, Rows3, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import SortControl from "@/components/common/sort-control";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ import {
   type BoardFilters,
   DUE_DATE_FILTER_VALUES,
 } from "@/hooks/use-task-filters";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { getInitials } from "@/lib/get-initials";
 import { getPriorityLabel } from "@/lib/i18n/domain";
@@ -59,6 +61,8 @@ type BoardToolbarProps = {
   setViewMode: (mode: "board" | "list") => void;
   sort: SortConfig;
   onSortChange: (sort: SortConfig) => void;
+  /** Opens the create-task modal; the caller owns the modal itself. */
+  onCreateTask?: () => void;
 };
 
 function CheckSlot({ checked }: { checked: boolean }) {
@@ -143,8 +147,11 @@ export default function BoardToolbar({
   setViewMode,
   sort,
   onSortChange,
+  onCreateTask,
 }: BoardToolbarProps) {
   const { t } = useTranslation();
+  const { canCreateTasks } = useWorkspacePermission();
+  const canCreateTask = canCreateTasks();
   const selectedStatusIds = filters.status ?? [];
   const selectedPriorityIds = filters.priority ?? [];
   const selectedAssigneeIds = filters.assignee ?? [];
@@ -668,6 +675,20 @@ export default function BoardToolbar({
               <Rows3 className="h-3 w-3" />
               {t("tasks:view.list")}
             </button>
+
+            {/* Creating work is the most common first action on a board, so it
+                gets a labelled button here rather than only the small "+" in a
+                column header. */}
+            {canCreateTask && onCreateTask && (
+              <Button
+                size="xs"
+                className="ml-1 h-6 gap-1 px-2 text-xs"
+                onClick={onCreateTask}
+              >
+                <Plus className="h-3 w-3" />
+                {t("tasks:board.createTask")}
+              </Button>
+            )}
           </div>
         </div>
       </div>

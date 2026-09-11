@@ -2,6 +2,7 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import type { NodeViewProps } from "@tiptap/react";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { FileText } from "lucide-react";
+import { FileNodeDeleteButton } from "./file-node-delete-button";
 import { escapeHtml, isValidUrl } from "./url-safety";
 
 function formatBytes(size: number) {
@@ -13,7 +14,7 @@ function formatBytes(size: number) {
   return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function AttachmentCardView({ node }: NodeViewProps) {
+function AttachmentCardView({ node, selected, deleteNode }: NodeViewProps) {
   const rawUrl = String(node.attrs.url || "");
   const url = isValidUrl(rawUrl) ? rawUrl : "";
   const filename = String(node.attrs.filename || "Attachment");
@@ -21,7 +22,11 @@ function AttachmentCardView({ node }: NodeViewProps) {
   const size = Number(node.attrs.size || 0);
 
   return (
-    <NodeViewWrapper as="span" className="maki-attachment-node">
+    <NodeViewWrapper
+      as="span"
+      className="maki-attachment-node"
+      data-selected={selected ? "true" : undefined}
+    >
       <a
         href={url || undefined}
         target="_blank"
@@ -40,6 +45,7 @@ function AttachmentCardView({ node }: NodeViewProps) {
           </span>
         </span>
       </a>
+      <FileNodeDeleteButton onDelete={() => deleteNode?.()} />
     </NodeViewWrapper>
   );
 }
@@ -49,7 +55,9 @@ export const AttachmentCard = Node.create({
   group: "inline",
   inline: true,
   atom: true,
-  selectable: false,
+  // Selectable so the node can be focused, removed with Backspace, and marked
+  // as selected while its remove control is showing.
+  selectable: true,
 
   addAttributes() {
     return {
