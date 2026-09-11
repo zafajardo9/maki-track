@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import db, { schema } from "../../apps/api/src/database";
 import { createApp } from "../../apps/api/src/index";
@@ -12,6 +13,10 @@ type ProjectListEntry = typeof schema.projectTable.$inferSelect & {
   statistics: {
     completionPercentage: number;
     totalTasks: number;
+    completedTasks: number;
+    openTasks: number;
+    overdueTasks: number;
+    byPriority: Record<string, number>;
     dueDate: string | null;
   };
   tasks?: unknown;
@@ -19,7 +24,13 @@ type ProjectListEntry = typeof schema.projectTable.$inferSelect & {
 
 async function seedTasks(
   projectId: string,
-  tasks: { title: string; status: string; dueDate?: Date; number: number }[],
+  tasks: {
+    title: string;
+    status: string;
+    dueDate?: Date;
+    number: number;
+    priority?: string;
+  }[],
 ) {
   for (const task of tasks) {
     await db.insert(schema.taskTable).values({
@@ -28,6 +39,7 @@ async function seedTasks(
       status: task.status,
       dueDate: task.dueDate ?? null,
       number: task.number,
+      ...(task.priority ? { priority: task.priority } : {}),
     });
   }
 }
@@ -89,12 +101,119 @@ describe("API integration: project list payload", () => {
     );
     const payload = (await response.json()) as ProjectListEntry[];
 
-    // done + archived count as completed: 2 of 4 => 50%
+    // `done` is the only final column, so one of the three tasks that sit in a
+    // column is complete. `archived` is a virtual bucket rather than a column,
+    // so it stays out of the completion population entirely while still being
+    // counted in totalTasks.
     expect(payload[0].statistics).toMatchObject({
       totalTasks: 4,
-      completionPercentage: 50,
+      completedTasks: 1,
+      openTasks: 2,
+      completionPercentage: 33,
     });
-    expect(new Date(payload[0].statistics.dueDate as string)).toEqual(earliest);
+    // Only open tasks count, and "Closed" is done and carries the earliest
+    // date, so the soonest open due date is the later one.
+    expect(new Date(payload[0].statistics.dueDate as string)).toEqual(later);
+  });
+
+  it("follows column.isFinal instead of a hardcoded done slug", async () => {
+    const member = await createWorkspaceMember();
+    const { project, columns } = await createProjectFixture({
+      workspaceId: member.workspace.id,
+    });
+
+    // The default "Done" column stops being final and "In Review" becomes
+    // final. Both are ordinary edits a user can make through the column
+    // editor, and the board immediately reflects them.
+    await db
+      .update(schema.columnTable)
+      .set({ isFinal: false })
+      .where(eq(schema.columnTable.id, columns.done.id));
+    await db
+      .update(schema.columnTable)
+      .set({ isFinal: true })
+      .where(eq(schema.columnTable.id, columns.inReview.id));
+
+    await seedTasks(project.id, [
+      { title: "Reviewed", status: "in-review", number: 1 },
+      { title: "Done but no longer final", status: "done", number: 2 },
+      { title: "Still open", status: "to-do", number: 3 },
+    ]);
+
+    mockAuthenticatedSession(member.user);
+    const { app } = createApp();
+
+    const response = await app.request(
+      `/api/project?workspaceId=${member.workspace.id}`,
+    );
+    const payload = (await response.json()) as ProjectListEntry[];
+
+    expect(payload[0].statistics).toMatchObject({
+      totalTasks: 3,
+      completedTasks: 1,
+      openTasks: 2,
+      completionPercentage: 33,
+    });
+  });
+
+  it("counts only open tasks as overdue", async () => {
+    const member = await createWorkspaceMember();
+    const { project } = await createProjectFixture({
+      workspaceId: member.workspace.id,
+    });
+
+    const past = new Date("2020-01-01T00:00:00.000Z");
+
+    await seedTasks(project.id, [
+      { title: "Late and open", status: "to-do", dueDate: past, number: 1 },
+      { title: "Late but complete", status: "done", dueDate: past, number: 2 },
+      { title: "Late but filed", status: "archived", dueDate: past, number: 3 },
+    ]);
+
+    mockAuthenticatedSession(member.user);
+    const { app } = createApp();
+
+    const response = await app.request(
+      `/api/project?workspaceId=${member.workspace.id}`,
+    );
+    const payload = (await response.json()) as ProjectListEntry[];
+
+    // A completed or filed task with a past due date is not outstanding work.
+    expect(payload[0].statistics).toMatchObject({ overdueTasks: 1 });
+  });
+
+  it("breaks tasks down by priority across the whole project", async () => {
+    const member = await createWorkspaceMember();
+    const { project } = await createProjectFixture({
+      workspaceId: member.workspace.id,
+    });
+
+    await seedTasks(project.id, [
+      { title: "Urgent one", status: "to-do", number: 1, priority: "urgent" },
+      {
+        title: "Urgent two",
+        status: "in-progress",
+        number: 2,
+        priority: "urgent",
+      },
+      { title: "Low one", status: "to-do", number: 3, priority: "low" },
+      // Parked work still belongs to the priority breakdown.
+      { title: "Planned high", status: "planned", number: 4, priority: "high" },
+    ]);
+
+    mockAuthenticatedSession(member.user);
+    const { app } = createApp();
+
+    const response = await app.request(
+      `/api/project?workspaceId=${member.workspace.id}`,
+    );
+    const payload = (await response.json()) as ProjectListEntry[];
+
+    expect(payload[0].statistics.byPriority).toEqual({
+      urgent: 2,
+      low: 1,
+      high: 1,
+    });
   });
 
   it("reports zeroed statistics for a project with no tasks", async () => {

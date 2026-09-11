@@ -30,8 +30,30 @@ export const projectSchema = z
 
 export const projectStatisticsSchema = z
   .object({
-    completionPercentage: z.number(),
-    totalTasks: z.number(),
+    totalTasks: z.number().openapi({
+      description:
+        "Every task in the project, including the ones parked in the planned and archived buckets.",
+    }),
+    completedTasks: z.number().openapi({
+      description:
+        "Tasks sitting in a column marked final. Completion is a property of the column, not of a hardcoded status slug.",
+    }),
+    openTasks: z.number().openapi({
+      description:
+        "Tasks sitting in a column that is not marked final. Excludes planned and archived tasks, which belong to no column.",
+    }),
+    overdueTasks: z.number().openapi({
+      description:
+        "Open tasks whose due date has already passed. Completed, planned, and archived tasks are never counted.",
+    }),
+    completionPercentage: z.number().openapi({
+      description:
+        "completedTasks / (completedTasks + openTasks), rounded. Planned and archived tasks are outside this population, so parking work neither raises nor lowers it.",
+    }),
+    byPriority: z.record(z.string(), z.number()).openapi({
+      description:
+        "Task counts keyed by priority (no-priority, low, medium, high, urgent) across all of the project's tasks, backlog included.",
+    }),
     dueDate: nullableResponseTimestamp.openapi({
       description: "The soonest due date among the project's open tasks.",
     }),

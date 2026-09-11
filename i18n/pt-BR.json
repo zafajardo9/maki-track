@@ -11,7 +11,9 @@
 			"remove": "Remover",
 			"reset": "Redefinir",
 			"filter": "Filtrar",
-			"clearAllFilters": "Limpar todos os filtros"
+			"clearAllFilters": "Limpar todos os filtros",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "Alternar barra lateral"
@@ -1966,6 +1968,13 @@
 			"title": "Calendar",
 			"today": "Today",
 			"loadError": "Failed to load tasks."
+		},
+		"statusChart": {
+			"centerCaption": "tasks",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"title": "Tasks by status"
 		}
 	},
 	"invitations": {
@@ -2052,6 +2061,27 @@
 			"submit": "Criar espaço de trabalho",
 			"success": "Espaço de trabalho criado com sucesso",
 			"error": "Falha ao criar espaço de trabalho"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"empty": "No tasks in this workspace yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"priority": {
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet.",
+				"title": "Tasks by priority"
+			},
+			"projects": {
+				"caption": "{{completed}} of {{total}} tasks",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"title": "Project progress"
+			}
 		}
 	},
 	"team": {

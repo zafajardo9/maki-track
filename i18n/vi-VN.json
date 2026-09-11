@@ -11,7 +11,9 @@
 			"remove": "Gỡ bỏ",
 			"reset": "Đặt lại",
 			"filter": "Lọc",
-			"clearAllFilters": "Xóa tất cả bộ lọc"
+			"clearAllFilters": "Xóa tất cả bộ lọc",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "Bật/tắt thanh bên"
@@ -1954,6 +1956,13 @@
 			"title": "Calendar",
 			"today": "Today",
 			"loadError": "Failed to load tasks."
+		},
+		"statusChart": {
+			"centerCaption": "tasks",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"title": "Tasks by status"
 		}
 	},
 	"invitations": {
@@ -2038,6 +2047,27 @@
 			"submit": "Tạo không gian làm việc",
 			"success": "Tạo không gian làm việc thành công",
 			"error": "Không thể tạo không gian làm việc"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"empty": "No tasks in this workspace yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"priority": {
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet.",
+				"title": "Tasks by priority"
+			},
+			"projects": {
+				"caption": "{{completed}} of {{total}} tasks",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"title": "Project progress"
+			}
 		}
 	},
 	"team": {

@@ -11,7 +11,9 @@
 			"remove": "移除",
 			"reset": "重置",
 			"filter": "筛选",
-			"clearAllFilters": "清除全部筛选"
+			"clearAllFilters": "清除全部筛选",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "切换侧边栏"
@@ -1954,6 +1956,13 @@
 			"title": "Calendar",
 			"today": "Today",
 			"loadError": "Failed to load tasks."
+		},
+		"statusChart": {
+			"centerCaption": "tasks",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"title": "Tasks by status"
 		}
 	},
 	"invitations": {
@@ -2038,6 +2047,27 @@
 			"submit": "创建工作区",
 			"success": "工作区创建成功",
 			"error": "工作区创建失败"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"empty": "No tasks in this workspace yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"priority": {
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet.",
+				"title": "Tasks by priority"
+			},
+			"projects": {
+				"caption": "{{completed}} of {{total}} tasks",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"title": "Project progress"
+			}
 		}
 	},
 	"team": {

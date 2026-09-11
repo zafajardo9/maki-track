@@ -28,6 +28,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { WorkspaceOverviewCharts } from "@/components/charts/workspace-overview-charts";
 import WorkspaceLayout from "@/components/common/workspace-layout";
 import PageTitle from "@/components/page-title";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
@@ -359,6 +360,10 @@ function RouteComponent() {
           ) : null
         }
       >
+        <div className="px-6 pt-6 pb-8">
+          <WorkspaceOverviewCharts projects={orderedProjects ?? []} />
+        </div>
+
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

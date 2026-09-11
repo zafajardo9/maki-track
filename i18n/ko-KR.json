@@ -11,7 +11,9 @@
 			"remove": "제거",
 			"reset": "재설정",
 			"filter": "필터",
-			"clearAllFilters": "모든 필터 지우기"
+			"clearAllFilters": "모든 필터 지우기",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "사이드바 토글"
@@ -1954,6 +1956,13 @@
 				"deleteRow": "행 삭제",
 				"deleteTable": "표 삭제"
 			}
+		},
+		"statusChart": {
+			"centerCaption": "tasks",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"title": "Tasks by status"
 		}
 	},
 	"invitations": {
@@ -2038,6 +2047,27 @@
 			"submit": "워크스페이스 만들기",
 			"success": "워크스페이스가 생성되었습니다",
 			"error": "워크스페이스 생성에 실패했습니다"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"empty": "No tasks in this workspace yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"priority": {
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet.",
+				"title": "Tasks by priority"
+			},
+			"projects": {
+				"caption": "{{completed}} of {{total}} tasks",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"title": "Project progress"
+			}
 		}
 	},
 	"team": {

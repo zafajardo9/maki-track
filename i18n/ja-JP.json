@@ -11,7 +11,9 @@
 			"remove": "削除",
 			"reset": "リセット",
 			"filter": "フィルター",
-			"clearAllFilters": "すべてのフィルターをクリア"
+			"clearAllFilters": "すべてのフィルターをクリア",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "サイドバーを切り替え"
@@ -1954,6 +1956,13 @@
 				"deleteRow": "行を削除",
 				"deleteTable": "表を削除"
 			}
+		},
+		"statusChart": {
+			"centerCaption": "tasks",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"title": "Tasks by status"
 		}
 	},
 	"invitations": {
@@ -2038,6 +2047,27 @@
 			"submit": "ワークスペースを作成",
 			"success": "ワークスペースを作成しました",
 			"error": "ワークスペースの作成に失敗しました"
+		},
+		"overview": {
+			"completion": {
+				"centerCaption": "done",
+				"completed": "Completed",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"empty": "No tasks in this workspace yet.",
+				"open": "Open",
+				"title": "Completion"
+			},
+			"priority": {
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet.",
+				"title": "Tasks by priority"
+			},
+			"projects": {
+				"caption": "{{completed}} of {{total}} tasks",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"title": "Project progress"
+			}
 		}
 	},
 	"team": {

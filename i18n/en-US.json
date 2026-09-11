@@ -11,7 +11,9 @@
 			"remove": "Remove",
 			"reset": "Reset",
 			"filter": "Filter",
-			"clearAllFilters": "Clear all filters"
+			"clearAllFilters": "Clear all filters",
+			"collapse": "Collapse",
+			"expand": "Expand"
 		},
 		"a11y": {
 			"toggleSidebar": "Toggle sidebar"
@@ -1558,6 +1560,13 @@
 			"high": "High",
 			"urgent": "Urgent"
 		},
+		"statusChart": {
+			"title": "Tasks by status",
+			"description": "Where this project's tasks sit right now.",
+			"empty": "No tasks in this project yet.",
+			"parked": "{{planned}} planned, {{archived}} archived",
+			"centerCaption": "tasks"
+		},
 		"boardSearchPlaceholder": "Search tickets...",
 		"view": {
 			"board": "Board",
@@ -2012,6 +2021,27 @@
 			"noDueDate": "No due date",
 			"reorderHandle": "Reorder project",
 			"reorderError": "Failed to reorder projects"
+		},
+		"overview": {
+			"completion": {
+				"title": "Completion",
+				"description": "Tasks sitting in a final column across this workspace.",
+				"completed": "Completed",
+				"open": "Open",
+				"centerCaption": "done",
+				"empty": "No tasks in this workspace yet."
+			},
+			"priority": {
+				"title": "Tasks by priority",
+				"description": "Every task in the workspace, backlog included.",
+				"empty": "No tasks in this workspace yet."
+			},
+			"projects": {
+				"title": "Project progress",
+				"description": "How far along each project is.",
+				"empty": "No projects to chart yet.",
+				"caption": "{{completed}} of {{total}} tasks"
+			}
 		},
 		"search": {
 			"pageTitle": "Search",
