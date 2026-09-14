@@ -12,7 +12,8 @@
 			"reset": "Sıfırla",
 			"filter": "Filtrele",
 			"clearAllFilters": "Tüm filtreleri temizle",
-			"share": "Share"
+			"share": "Share",
+			"open": "Open"
 		},
 		"a11y": {
 			"toggleSidebar": "Kenar çubuğunu aç/kapat"
@@ -2230,6 +2231,8 @@
 		"internalUrlHint": "Only members of this workspace can open this",
 		"copyFailed": "Failed to copy link",
 		"copyPublicUrlAria": "Copy public link",
-		"copyInternalUrlAria": "Copy internal link"
+		"copyInternalUrlAria": "Copy internal link",
+		"openInternalUrlAria": "Open internal link in a new tab",
+		"openPublicUrlAria": "Open public link in a new tab"
 	}
 }

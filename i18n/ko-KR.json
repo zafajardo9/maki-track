@@ -12,7 +12,8 @@
 			"reset": "재설정",
 			"filter": "필터",
 			"clearAllFilters": "모든 필터 지우기",
-			"share": "Share"
+			"share": "Share",
+			"open": "Open"
 		},
 		"a11y": {
 			"toggleSidebar": "사이드바 토글"
@@ -2223,6 +2224,8 @@
 		"internalUrlHint": "Only members of this workspace can open this",
 		"copyFailed": "Failed to copy link",
 		"copyPublicUrlAria": "Copy public link",
-		"copyInternalUrlAria": "Copy internal link"
+		"copyInternalUrlAria": "Copy internal link",
+		"openInternalUrlAria": "Open internal link in a new tab",
+		"openPublicUrlAria": "Open public link in a new tab"
 	}
 }

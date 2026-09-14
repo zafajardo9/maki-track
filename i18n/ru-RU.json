@@ -12,7 +12,8 @@
 			"reset": "Сбросить",
 			"filter": "Фильтр",
 			"clearAllFilters": "Сбросить все фильтры",
-			"share": "Share"
+			"share": "Share",
+			"open": "Open"
 		},
 		"a11y": {
 			"toggleSidebar": "Переключить боковую панель"
@@ -2300,6 +2301,8 @@
 		"internalUrlHint": "Only members of this workspace can open this",
 		"copyFailed": "Failed to copy link",
 		"copyPublicUrlAria": "Copy public link",
-		"copyInternalUrlAria": "Copy internal link"
+		"copyInternalUrlAria": "Copy internal link",
+		"openInternalUrlAria": "Open internal link in a new tab",
+		"openPublicUrlAria": "Open public link in a new tab"
 	}
 }

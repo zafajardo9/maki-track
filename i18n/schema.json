@@ -48,6 +48,9 @@
 						},
 						"share": {
 							"type": "string"
+						},
+						"open": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -61,7 +64,8 @@
 						"reset",
 						"filter",
 						"clearAllFilters",
-						"share"
+						"share",
+						"open"
 					]
 				},
 				"a11y": {

@@ -12,7 +12,8 @@
 			"reset": "Reset",
 			"filter": "Filter",
 			"clearAllFilters": "Clear all filters",
-			"share": "Share"
+			"share": "Share",
+			"open": "Open"
 		},
 		"a11y": {
 			"toggleSidebar": "Toggle sidebar"
@@ -2230,6 +2231,8 @@
 		"internalUrlHint": "Only members of this workspace can open this",
 		"copyFailed": "Failed to copy link",
 		"copyPublicUrlAria": "Copy public link",
-		"copyInternalUrlAria": "Copy internal link"
+		"copyInternalUrlAria": "Copy internal link",
+		"openPublicUrlAria": "Open public link in a new tab",
+		"openInternalUrlAria": "Open internal link in a new tab"
 	}
 }

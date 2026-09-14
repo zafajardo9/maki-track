@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { i18n, preloadNamespaces } from "@/lib/i18n";
@@ -5,6 +6,22 @@ import { ShareProjectDialog } from "./share-project-dialog";
 
 vi.mock("@/lib/toast", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
+}));
+
+vi.mock("@/hooks/queries/project/use-get-project", () => ({
+  default: () => ({ data: { id: "p1", name: "Transmittal", isPublic: true } }),
+}));
+
+// `project:share` decides whether the visibility toggle shows at all; this test
+// is about the copy, so it stays out of the way.
+vi.mock("@/hooks/use-workspace-permission", () => ({
+  useWorkspacePermission: () => ({
+    hasPermission: () => Promise.resolve(false),
+  }),
+}));
+
+vi.mock("@/hooks/mutations/project/use-update-project", () => ({
+  default: () => ({ mutateAsync: vi.fn() }),
 }));
 
 /**
@@ -25,14 +42,16 @@ describe("ShareProjectDialog copy", () => {
 
   it("renders the English copy instead of the raw keys", () => {
     render(
-      <ShareProjectDialog
-        open
-        onClose={vi.fn()}
-        projectId="p1"
-        projectName="Transmittal"
-        workspaceId="w1"
-        isPublic
-      />,
+      <QueryClientProvider client={new QueryClient()}>
+        <ShareProjectDialog
+          open
+          onClose={vi.fn()}
+          projectId="p1"
+          projectName="Transmittal"
+          workspaceId="w1"
+          isPublic
+        />
+      </QueryClientProvider>,
     );
 
     expect(screen.getByText("Share project")).toBeInTheDocument();
@@ -40,6 +59,9 @@ describe("ShareProjectDialog copy", () => {
     expect(
       screen.getByText("Only members of this workspace can open this"),
     ).toBeInTheDocument();
+    // One per row: the copy action and the open-in-a-new-tab action.
+    expect(screen.getAllByText("Open")).toHaveLength(2);
+    expect(screen.getAllByText("Copy")).toHaveLength(2);
 
     // No namespace-prefixed key survived to the DOM.
     expect(screen.queryByText(/^[a-zA-Z]+:[a-zA-Z]/)).toBeNull();

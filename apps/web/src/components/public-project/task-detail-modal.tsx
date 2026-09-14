@@ -11,6 +11,7 @@ import {
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogPopup } from "@/components/ui/dialog";
 import {
   dueDateStatusColors,
@@ -96,7 +97,10 @@ export function PublicTaskDetailModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogPopup className="w-full max-w-4xl max-h-[85vh] p-0">
+      <DialogPopup
+        className="w-full max-w-4xl max-h-[85vh] p-0"
+        showCloseButton={false}
+      >
         <div className="bg-background border border-border rounded-xl flex flex-col max-h-[85vh] shadow-lg">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/70 shrink-0">
             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -110,10 +114,10 @@ export function PublicTaskDetailModal({
               ) : null}
             </div>
             <DialogClose
-              className="shrink-0 p-1.5 hover:bg-muted rounded transition-colors"
-              render={<button type="button" />}
+              aria-label={t("common:actions.close")}
+              render={<Button variant="ghost" size="icon-sm" />}
             >
-              <X className="w-4 h-4 text-muted-foreground" />
+              <X className="size-4" />
             </DialogClose>
           </div>
 
