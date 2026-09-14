@@ -11,7 +11,8 @@
 			"remove": "Отстрани",
 			"reset": "Ресетирај",
 			"filter": "Филтрирај",
-			"clearAllFilters": "Исчисти ги сите филтри"
+			"clearAllFilters": "Исчисти ги сите филтри",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Вклучи/исклучи странична лента"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid дијаграмот не можеше да се прикаже"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Задача"

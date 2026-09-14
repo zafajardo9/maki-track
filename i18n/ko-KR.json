@@ -11,7 +11,8 @@
 			"remove": "제거",
 			"reset": "재설정",
 			"filter": "필터",
-			"clearAllFilters": "모든 필터 지우기"
+			"clearAllFilters": "모든 필터 지우기",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "사이드바 토글"
@@ -1670,7 +1671,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid 다이어그램을 렌더링할 수 없습니다"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "작업"

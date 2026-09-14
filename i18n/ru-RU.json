@@ -11,7 +11,8 @@
 			"remove": "Убрать",
 			"reset": "Сбросить",
 			"filter": "Фильтр",
-			"clearAllFilters": "Сбросить все фильтры"
+			"clearAllFilters": "Сбросить все фильтры",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Переключить боковую панель"
@@ -1693,7 +1694,10 @@
 				"mermaid": {
 					"renderFailed": "Не удалось отобразить диаграмму Mermaid"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Задача"

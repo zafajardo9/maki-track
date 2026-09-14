@@ -11,7 +11,8 @@
 			"remove": "Αφαίρεση",
 			"reset": "Επαναφορά",
 			"filter": "Φίλτρο",
-			"clearAllFilters": "Εκκαθάριση όλων των φίλτρων"
+			"clearAllFilters": "Εκκαθάριση όλων των φίλτρων",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Εναλλαγή πλαϊνής μπάρας"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Δεν ήταν δυνατή η απόδοση του διαγράμματος Mermaid"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Εργασία"

@@ -11,7 +11,8 @@
 			"remove": "Kaldır",
 			"reset": "Sıfırla",
 			"filter": "Filtrele",
-			"clearAllFilters": "Tüm filtreleri temizle"
+			"clearAllFilters": "Tüm filtreleri temizle",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Kenar çubuğunu aç/kapat"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid diyagramı oluşturulamadı"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Talep"

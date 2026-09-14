@@ -39,7 +39,7 @@ export function ProjectStatusChart({
       };
     }
 
-    const color = chartColor(paletteIndex);
+    const color = chartColor(1 + (paletteIndex % 4));
     paletteIndex += 1;
     return { key: entry.slug, label: entry.name, value: entry.value, color };
   });

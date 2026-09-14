@@ -1,6 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/landing/logo";
+import { NavbarAuth } from "@/components/landing/navbar-auth";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -15,7 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { MAKI_SIGN_IN_URL, MAKI_SIGN_UP_URL } from "@/lib/maki-app-url";
 import { cn } from "@/lib/utils";
 
 type LinkItem = {
@@ -194,21 +194,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            className="text-sm"
-            render={<a href={MAKI_SIGN_IN_URL} />}
-            size="sm"
-            variant="ghost"
-          >
-            Sign In
-          </Button>
-          <Button
-            className="text-sm"
-            render={<a href={MAKI_SIGN_UP_URL} />}
-            size="sm"
-          >
-            Get Started
-          </Button>
+          <NavbarAuth />
         </div>
       </div>
     </header>

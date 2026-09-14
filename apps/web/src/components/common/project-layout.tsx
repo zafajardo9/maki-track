@@ -3,6 +3,7 @@ import {
   CalendarDays,
   CalendarRange,
   ChartPie,
+  Share2,
   SquareKanban,
   SquircleDashed,
 } from "lucide-react";
@@ -12,6 +13,7 @@ import MobileProjectNav from "@/components/common/header/mobile-project-nav";
 import ProjectCrumbSelect from "@/components/common/header/project-crumb-select";
 import WorkspaceCrumbSelect from "@/components/common/header/workspace-crumb-select";
 import Layout from "@/components/common/layout";
+import { ShareProjectDialog } from "@/components/project/share-project-dialog";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
 import { Button } from "@/components/ui/button";
 import { KbdSequence } from "@/components/ui/kbd";
@@ -50,6 +52,7 @@ export default function ProjectLayout({
   const { data: project } = useGetProject({ id: projectId, workspaceId });
   const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] =
     useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   useProjectWebSocket(projectId);
 
@@ -184,7 +187,7 @@ export default function ProjectLayout({
                   )}
                 >
                   <SquircleDashed className="size-3.5" />
-                  Backlog
+                  <span className="sr-only lg:not-sr-only">Backlog</span>
                 </Button>
                 <Button
                   variant={resolvedView === "board" ? "secondary" : "ghost"}
@@ -196,7 +199,7 @@ export default function ProjectLayout({
                   )}
                 >
                   <SquareKanban className="size-3.5" />
-                  Tasks
+                  <span className="sr-only lg:not-sr-only">Tasks</span>
                 </Button>
                 <Button
                   variant={resolvedView === "calendar" ? "secondary" : "ghost"}
@@ -208,7 +211,9 @@ export default function ProjectLayout({
                   )}
                 >
                   <CalendarRange className="size-3.5" />
-                  {t("tasks:calendar.title")}
+                  <span className="sr-only lg:not-sr-only">
+                    {t("tasks:calendar.title")}
+                  </span>
                 </Button>
                 <Button
                   variant={resolvedView === "gantt" ? "secondary" : "ghost"}
@@ -220,7 +225,7 @@ export default function ProjectLayout({
                   )}
                 >
                   <CalendarDays className="size-3.5" />
-                  Gantt
+                  <span className="sr-only lg:not-sr-only">Gantt</span>
                 </Button>
                 <Button
                   variant={resolvedView === "overview" ? "secondary" : "ghost"}
@@ -232,7 +237,9 @@ export default function ProjectLayout({
                   )}
                 >
                   <ChartPie className="size-3.5" />
-                  {t("tasks:view.overview")}
+                  <span className="sr-only lg:not-sr-only">
+                    {t("tasks:view.overview")}
+                  </span>
                 </Button>
               </div>
             )}
@@ -240,6 +247,29 @@ export default function ProjectLayout({
 
           <div className="flex shrink-0 items-center gap-1.5">
             {headerActions}
+
+            {/* The word carries the meaning the glyph cannot; the header still
+                fits because the view switcher drops its labels below `lg`. */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="-mr-1 gap-1.5 text-muted-foreground hover:text-foreground"
+                    onClick={() => setIsShareDialogOpen(true)}
+                  >
+                    <Share2 className="size-3.5" />
+                    <span>{t("common:actions.share")}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-[10px]">
+                    {t("navigation:projectList.shareProject")}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </Layout.Header>
@@ -249,6 +279,15 @@ export default function ProjectLayout({
       <CreateProjectModal
         open={isCreateProjectModalOpen}
         onClose={() => setIsCreateProjectModalOpen(false)}
+      />
+
+      <ShareProjectDialog
+        open={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        projectId={projectId}
+        projectName={project?.name ?? ""}
+        workspaceId={workspaceId}
+        isPublic={project?.isPublic}
       />
     </Layout>
   );

@@ -11,7 +11,8 @@
 			"remove": "Remover",
 			"reset": "Redefinir",
 			"filter": "Filtrar",
-			"clearAllFilters": "Limpar todos os filtros"
+			"clearAllFilters": "Limpar todos os filtros",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Alternar barra lateral"
@@ -1680,7 +1681,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid diagram couldn't be rendered"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Tarefa"

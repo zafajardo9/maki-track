@@ -29,7 +29,7 @@ export function ChartCard({
   children,
 }: ChartCardProps) {
   return (
-    <Card className={cn("h-full", className)}>
+    <Card className={cn("h-full min-w-0", className)}>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">{title}</CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}

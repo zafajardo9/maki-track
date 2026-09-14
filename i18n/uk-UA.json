@@ -11,7 +11,8 @@
 			"remove": "Прибрати",
 			"reset": "Скинути",
 			"filter": "Фільтр",
-			"clearAllFilters": "Очистити всі фільтри"
+			"clearAllFilters": "Очистити всі фільтри",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Перемикач бічної панелі"
@@ -1685,7 +1686,10 @@
 				"mermaid": {
 					"renderFailed": "Не вдалося відобразити діаграму Mermaid"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Завдання"

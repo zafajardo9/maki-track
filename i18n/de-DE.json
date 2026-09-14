@@ -11,7 +11,8 @@
 			"remove": "Entfernen",
 			"reset": "Zurücksetzen",
 			"filter": "Filter",
-			"clearAllFilters": "Alle Filter löschen"
+			"clearAllFilters": "Alle Filter löschen",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Sidebar umschalten"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid-Diagramm konnte nicht gerendert werden"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Aufgabe"

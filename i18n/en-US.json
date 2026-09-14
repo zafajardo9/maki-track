@@ -11,7 +11,8 @@
 			"remove": "Remove",
 			"reset": "Reset",
 			"filter": "Filter",
-			"clearAllFilters": "Clear all filters"
+			"clearAllFilters": "Clear all filters",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Toggle sidebar"
@@ -1583,6 +1584,9 @@
 			"activity": "Activity",
 			"noActivity": "No activity found",
 			"openInFullPage": "Open in full page",
+			"copyTitle": "Copy task title",
+			"copyTitleSuccess": "Task title copied",
+			"copyTitleError": "Could not copy the task title",
 			"titlePlaceholder": "Click to add a title",
 			"addDescription": "Add a description...",
 			"editor": {

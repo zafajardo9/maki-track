@@ -52,11 +52,11 @@ export function BarChart({ bars, max, className }: BarChartProps) {
             </div>
             {/* The label and figure above already state the value as text. */}
             <div
-              className="h-1.5 w-full overflow-hidden rounded-full bg-input"
+              className="bar-chart-track h-2 w-full rounded-full bg-muted"
               aria-hidden="true"
             >
               <div
-                className="h-full rounded-full"
+                className="bar-chart-fill pointer-events-none h-full rounded-full"
                 style={{ width: `${fill}%`, backgroundColor: bar.color }}
               />
             </div>

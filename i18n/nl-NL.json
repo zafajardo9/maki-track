@@ -11,7 +11,8 @@
 			"remove": "Verwijderen",
 			"reset": "Herstellen",
 			"filter": "Filteren",
-			"clearAllFilters": "Alle filters wissen"
+			"clearAllFilters": "Alle filters wissen",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Zijbalk in-/uitschakelen"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid-diagram kon niet worden weergegeven"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Taak"

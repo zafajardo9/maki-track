@@ -11,7 +11,8 @@
 			"remove": "Rimuovi",
 			"reset": "Reimposta",
 			"filter": "Filtra",
-			"clearAllFilters": "Cancella tutti i filtri"
+			"clearAllFilters": "Cancella tutti i filtri",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Attiva/disattiva barra laterale"
@@ -1680,7 +1681,10 @@
 				"mermaid": {
 					"renderFailed": "Impossibile eseguire il rendering del diagramma Mermaid"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Attività"

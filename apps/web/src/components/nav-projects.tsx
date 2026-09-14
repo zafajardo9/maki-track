@@ -25,10 +25,10 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import {
   ChevronRight,
   Folder,
-  Forward,
   MoreHorizontal,
   Plus,
   Settings,
+  Share2,
   Trash2,
 } from "lucide-react";
 import { type CSSProperties, type ReactNode, useState } from "react";
@@ -56,6 +56,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import icons from "@/constants/project-icons";
 import useDeleteProject from "@/hooks/mutations/project/use-delete-project";
 import useReorderProjects from "@/hooks/mutations/project/use-reorder-projects";
 import useGetProjects from "@/hooks/queries/project/use-get-projects";
@@ -115,6 +116,14 @@ function SortableProjectItem({
   );
 }
 
+/**
+ * The icon picked for a project in its settings, falling back to the same
+ * default the project table applies when nothing was picked.
+ */
+function getProjectIcon(icon: string | null | undefined) {
+  return icons[icon as keyof typeof icons] || icons.Layout;
+}
+
 export function NavProjects() {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
@@ -159,6 +168,9 @@ export function NavProjects() {
   const draggingProject = projects?.find(
     (project) => project.id === draggingProjectId,
   );
+  const DraggingProjectIcon = draggingProject
+    ? getProjectIcon(draggingProject.icon)
+    : null;
 
   const isCurrentProject = (projectId: string) => {
     return (
@@ -252,6 +264,8 @@ export function NavProjects() {
                     strategy={verticalListSortingStrategy}
                   >
                     {projects?.map((project) => {
+                      const ProjectIcon = getProjectIcon(project.icon);
+
                       return (
                         <SortableProjectItem
                           key={project.id}
@@ -261,9 +275,10 @@ export function NavProjects() {
                           <SidebarMenuButton
                             isActive={isCurrentProject(project.id)}
                             size="default"
-                            className="h-8 gap-0 ps-3.5 text-sm hover:bg-transparent hover:text-sidebar-accent-foreground active:bg-transparent"
+                            className="h-8 gap-2 ps-3.5 text-sm hover:bg-transparent hover:text-sidebar-accent-foreground active:bg-transparent"
                             onClick={() => handleProjectClick(project)}
                           >
+                            <ProjectIcon className="size-3.5" />
                             <span>{project.name}</span>
                           </SidebarMenuButton>
 
@@ -277,7 +292,7 @@ export function NavProjects() {
                                   onPointerDown={(event) =>
                                     event.stopPropagation()
                                   }
-                                  className="absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-lg p-0 text-sidebar-foreground outline-hidden ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground after:-inset-2 after:absolute md:after:hidden peer-data-[size=sm]/menu-button:top-1 peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 group-data-[collapsible=icon]:hidden group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0"
+                                  className="absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-lg p-0 text-sidebar-foreground outline-hidden ring-sidebar-ring transition-transform hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground after:-inset-2 after:absolute md:after:hidden peer-data-[size=sm]/menu-button:top-1 peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 group-data-[collapsible=icon]:hidden group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0"
                                 />
                               }
                             >
@@ -304,7 +319,7 @@ export function NavProjects() {
                                 className="h-7 items-start cursor-pointer text-sm"
                                 onClick={() => setShareProject(project)}
                               >
-                                <Forward className="text-muted-foreground" />
+                                <Share2 className="text-muted-foreground" />
                                 <span>
                                   {t("navigation:projectList.shareProject")}
                                 </span>
@@ -367,7 +382,10 @@ export function NavProjects() {
                 {createPortal(
                   <DragOverlay dropAnimation={null}>
                     {draggingProject ? (
-                      <div className="flex h-8 w-(--sidebar-width) max-w-64 items-center rounded-lg border bg-sidebar not-dark:bg-clip-padding ps-3.5 pe-2 text-sm text-sidebar-accent-foreground shadow-lg/5">
+                      <div className="flex h-8 w-(--sidebar-width) max-w-64 items-center gap-2 rounded-lg border bg-sidebar not-dark:bg-clip-padding ps-3.5 pe-2 text-sm text-sidebar-accent-foreground shadow-lg/5">
+                        {DraggingProjectIcon && (
+                          <DraggingProjectIcon className="size-3.5" />
+                        )}
                         <span className="truncate">{draggingProject.name}</span>
                       </div>
                     ) : null}

@@ -11,7 +11,8 @@
 			"remove": "削除",
 			"reset": "リセット",
 			"filter": "フィルター",
-			"clearAllFilters": "すべてのフィルターをクリア"
+			"clearAllFilters": "すべてのフィルターをクリア",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "サイドバーを切り替え"
@@ -1670,7 +1671,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid ダイアグラムを描画できませんでした"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "タスク"

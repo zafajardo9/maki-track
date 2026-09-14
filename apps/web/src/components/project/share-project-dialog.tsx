@@ -99,7 +99,7 @@ export function ShareProjectDialog({
   const copy = (value: string) => {
     navigator.clipboard.writeText(value).then(
       () => toast.success(t("settings:projectVisibility.copiedToast")),
-      () => toast.error(t("shareProject.copyFailed")),
+      () => toast.error(t("shareProject:copyFailed")),
     );
   };
 
@@ -112,9 +112,9 @@ export function ShareProjectDialog({
     >
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{t("shareProject.title")}</DialogTitle>
+          <DialogTitle>{t("shareProject:title")}</DialogTitle>
           <DialogDescription>
-            {t("shareProject.description", { project: projectName })}
+            {t("shareProject:description", { project: projectName })}
           </DialogDescription>
         </DialogHeader>
 
@@ -125,11 +125,11 @@ export function ShareProjectDialog({
             hint={
               isPublic
                 ? t("settings:projectVisibility.publicUrlHint")
-                : t("shareProject.publicUrlPrivateHint")
+                : t("shareProject:publicUrlPrivateHint")
             }
             value={publicLink}
             copyLabel={t("settings:projectVisibility.copy")}
-            copyAriaLabel={t("shareProject.copyPublicUrlAria")}
+            copyAriaLabel={t("shareProject:copyPublicUrlAria")}
             onCopy={() => copy(publicLink)}
           />
 
@@ -137,11 +137,11 @@ export function ShareProjectDialog({
 
           <ShareRow
             inputId="share-project-internal-url"
-            label={t("shareProject.internalUrl")}
-            hint={t("shareProject.internalUrlHint")}
+            label={t("shareProject:internalUrl")}
+            hint={t("shareProject:internalUrlHint")}
             value={internalLink}
             copyLabel={t("settings:projectVisibility.copy")}
-            copyAriaLabel={t("shareProject.copyInternalUrlAria")}
+            copyAriaLabel={t("shareProject:copyInternalUrlAria")}
             onCopy={() => copy(internalLink)}
           />
         </div>

@@ -11,7 +11,8 @@
 			"remove": "Hapus",
 			"reset": "Atur ulang",
 			"filter": "Filter",
-			"clearAllFilters": "Hapus semua filter"
+			"clearAllFilters": "Hapus semua filter",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Tampilkan/sembunyikan panel samping"
@@ -1670,7 +1671,10 @@
 				"mermaid": {
 					"renderFailed": "Diagram Mermaid tidak dapat dirender"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Tugas"

@@ -11,7 +11,8 @@
 			"remove": "Gỡ bỏ",
 			"reset": "Đặt lại",
 			"filter": "Lọc",
-			"clearAllFilters": "Xóa tất cả bộ lọc"
+			"clearAllFilters": "Xóa tất cả bộ lọc",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "Bật/tắt thanh bên"
@@ -1670,7 +1671,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid diagram couldn't be rendered"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "Công việc"

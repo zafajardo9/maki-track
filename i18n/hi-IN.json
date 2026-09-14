@@ -11,7 +11,8 @@
 			"remove": "निकालें",
 			"reset": "रीसेट करें",
 			"filter": "फ़िल्टर",
-			"clearAllFilters": "सभी फ़िल्टर साफ़ करें"
+			"clearAllFilters": "सभी फ़िल्टर साफ़ करें",
+			"share": "Share"
 		},
 		"a11y": {
 			"toggleSidebar": "साइडबार टॉगल करें"
@@ -1675,7 +1676,10 @@
 				"mermaid": {
 					"renderFailed": "Mermaid डायग्राम प्रस्तुत नहीं किया जा सका"
 				}
-			}
+			},
+			"copyTitle": "Copy task title",
+			"copyTitleError": "Could not copy the task title",
+			"copyTitleSuccess": "Task title copied"
 		},
 		"entity": {
 			"task": "कार्य"

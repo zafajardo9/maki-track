@@ -19,8 +19,8 @@ vi.mock("@/lib/toast", () => ({
   toast: { success: mocks.toastSuccess, error: mocks.toastError },
 }));
 
-const COPY_PUBLIC = "shareProject.copyPublicUrlAria";
-const COPY_INTERNAL = "shareProject.copyInternalUrlAria";
+const COPY_PUBLIC = "shareProject:copyPublicUrlAria";
+const COPY_INTERNAL = "shareProject:copyInternalUrlAria";
 
 function renderDialog(isPublic: boolean) {
   render(
@@ -89,7 +89,7 @@ describe("ShareProjectDialog", () => {
       ).value,
     ).toBe(`${window.location.origin}/public-project/p1`);
     expect(
-      (screen.getByLabelText("shareProject.internalUrl") as HTMLInputElement)
+      (screen.getByLabelText("shareProject:internalUrl") as HTMLInputElement)
         .value,
     ).toBe(`${window.location.origin}/dashboard/workspace/w1/project/p1`);
   });
@@ -98,7 +98,7 @@ describe("ShareProjectDialog", () => {
     renderDialog(false);
 
     expect(
-      screen.getByText("shareProject.publicUrlPrivateHint"),
+      screen.getByText("shareProject:publicUrlPrivateHint"),
     ).toBeInTheDocument();
   });
 

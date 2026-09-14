@@ -45,6 +45,9 @@
 						},
 						"clearAllFilters": {
 							"type": "string"
+						},
+						"share": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -57,7 +60,8 @@
 						"remove",
 						"reset",
 						"filter",
-						"clearAllFilters"
+						"clearAllFilters",
+						"share"
 					]
 				},
 				"a11y": {
@@ -6369,6 +6373,15 @@
 						"openInFullPage": {
 							"type": "string"
 						},
+						"copyTitle": {
+							"type": "string"
+						},
+						"copyTitleSuccess": {
+							"type": "string"
+						},
+						"copyTitleError": {
+							"type": "string"
+						},
 						"titlePlaceholder": {
 							"type": "string"
 						},
@@ -6764,6 +6777,9 @@
 						"activity",
 						"noActivity",
 						"openInFullPage",
+						"copyTitle",
+						"copyTitleSuccess",
+						"copyTitleError",
 						"titlePlaceholder",
 						"addDescription",
 						"editor"

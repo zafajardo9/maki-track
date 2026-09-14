@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Maximize2, X } from "lucide-react";
+import { Check, Copy, Maximize2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/tooltip";
 import useGetProject from "@/hooks/queries/project/use-get-project";
 import useGetTask from "@/hooks/queries/task/use-get-task";
+import { copyToClipboard } from "@/lib/copy-to-clipboard";
+import { toast } from "@/lib/toast";
 import TaskDetailsContent from "./task-details-content";
 import TaskPropertiesSidebar from "./task-properties-sidebar";
 
@@ -62,6 +64,30 @@ export default function TaskDetailsSheet({
     });
   }, [navigate, workspaceId, projectId, currentTaskId]);
 
+  const [hasCopiedTitle, setHasCopiedTitle] = useState(false);
+
+  // The header copies the title on its own for now. Prefixing it with the
+  // project key is a separate decision, so the value is built in one place.
+  const copyValue = task?.title ?? "";
+
+  const handleCopyTitle = useCallback(async () => {
+    if (!copyValue) return;
+
+    if (!(await copyToClipboard(copyValue))) {
+      toast.error(t("tasks:detail.copyTitleError"));
+      return;
+    }
+
+    setHasCopiedTitle(true);
+    toast.success(t("tasks:detail.copyTitleSuccess"));
+  }, [copyValue, t]);
+
+  useEffect(() => {
+    if (!hasCopiedTitle) return;
+    const timer = setTimeout(() => setHasCopiedTitle(false), 1500);
+    return () => clearTimeout(timer);
+  }, [hasCopiedTitle]);
+
   return (
     <Sheet open={!!taskId} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
@@ -76,6 +102,25 @@ export default function TaskDetailsSheet({
           </div>
           <div className="flex items-center gap-1">
             <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={t("tasks:detail.copyTitle")}
+                    className="text-foreground"
+                    disabled={!copyValue}
+                    onClick={handleCopyTitle}
+                  >
+                    {hasCopiedTitle ? (
+                      <Check className="size-4" />
+                    ) : (
+                      <Copy className="size-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("tasks:detail.copyTitle")}</TooltipContent>
+              </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
