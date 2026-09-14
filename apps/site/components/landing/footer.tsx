@@ -11,7 +11,8 @@ export function Footer() {
               <Logo />
             </a>
             <p className="max-w-sm text-balance text-muted-foreground text-sm">
-              Focused project management, owned by your team.
+              A shared place to plan projects, bring people together, and move
+              work forward.
             </p>
           </div>
 
@@ -26,7 +27,7 @@ export function Footer() {
               </a>
               <a
                 className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="#features"
+                href="/#features"
               >
                 Features
               </a>
@@ -38,7 +39,7 @@ export function Footer() {
               </a>
               <a
                 className="block text-muted-foreground transition-colors hover:text-foreground"
-                href="#why"
+                href="/#why"
               >
                 Why MAKI
               </a>

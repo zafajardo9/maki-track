@@ -38,8 +38,8 @@ type NavigationLink =
     };
 
 const navigationLinks: NavigationLink[] = [
-  { href: "#features", label: "Features" },
-  { href: "#why", label: "Why MAKI" },
+  { href: "/#features", label: "Features" },
+  { href: "/#why", label: "Why MAKI" },
   { href: "/guides", label: "Guides" },
 ];
 

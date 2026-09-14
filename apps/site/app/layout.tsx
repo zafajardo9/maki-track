@@ -12,18 +12,18 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.MAKI_SITE_URL ?? "http://localhost:3001"),
   title: {
-    default: "MAKI - Focused project management",
+    default: "MAKI - Project management for teams",
     template: "%s | MAKI",
   },
   description:
-    "All you need. Nothing you don't. Open source project management that works for you, not against you.",
+    "Bring projects, tasks, and conversations together. MAKI helps teams plan work, stay aligned, and deliver with confidence.",
   keywords: [
     "maki",
     "project management",
-    "open source",
+    "project planning",
     "kanban",
     "task management",
-    "self-hosted",
+    "team productivity",
     "team collaboration",
   ],
   applicationName: "MAKI",
@@ -33,15 +33,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "MAKI",
-    title: "MAKI - Focused project management",
+    title: "MAKI - Project management for teams",
     description:
-      "Open source project management that works for you, not against you. Self-hosted, simple, and powerful.",
+      "Bring projects, tasks, and conversations together. MAKI helps teams plan work, stay aligned, and deliver with confidence.",
   },
   twitter: {
     card: "summary",
-    title: "MAKI - Focused project management",
+    title: "MAKI - Project management for teams",
     description:
-      "Open source project management that works for you, not against you. Self-hosted, simple, and powerful.",
+      "Bring projects, tasks, and conversations together. MAKI helps teams plan work, stay aligned, and deliver with confidence.",
   },
   robots: {
     index: true,
@@ -79,7 +79,7 @@ const jsonLd = [
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web, Linux, macOS, Windows",
     description:
-      "Open source project management that works for you, not against you. Self-hosted, simple, and powerful.",
+      "Bring projects, tasks, and conversations together. MAKI helps teams plan work, stay aligned, and deliver with confidence.",
     url: siteUrl,
   },
 ];

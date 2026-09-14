@@ -13,16 +13,17 @@ export function Hero() {
         <div className="mb-10 max-w-2xl">
           <FadeIn delay={0}>
             <p className="mb-5 font-mono font-medium text-muted-foreground text-xs uppercase tracking-[0.2em]">
-              Self-hosted project management
+              Project management for teams
             </p>
             <h1 className="text-balance text-4xl font-medium leading-[1.06] md:text-5xl lg:text-6xl">
-              Make work visible. Keep it moving.
+              Great teamwork starts with a clear plan.
             </h1>
           </FadeIn>
           <FadeIn delay={80}>
             <p className="mt-5 text-balance text-lg text-muted-foreground leading-relaxed md:text-xl">
-              MAKI gives your team one focused place to plan projects, move
-              tasks forward, and keep ownership clear—from backlog to release.
+              Bring projects, tasks, and conversations together. Give everyone a
+              clear next step and keep your team moving from the first idea to
+              the final delivery.
             </p>
           </FadeIn>
 
@@ -45,9 +46,9 @@ export function Hero() {
               </Button>
             </div>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-muted-foreground text-xs uppercase tracking-[0.12em]">
-              <span>Email + password</span>
-              <span>Your PostgreSQL</span>
-              <span>Docker-ready</span>
+              <span>Shared priorities</span>
+              <span>Clear ownership</span>
+              <span>Live updates</span>
             </div>
           </FadeIn>
         </div>

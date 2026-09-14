@@ -42,7 +42,7 @@ ${faq}`;
 export function GET() {
   const body = `# Maki, full content
 
-> Maki is an open-source, self-hostable project management platform under the MIT license. This file contains the full text of Maki's guides. Written by the Maki team.
+> Maki is a project management platform built for teams to plan, collaborate, and track delivery. This file contains the full text of Maki's guides. Written by the Maki team.
 
 # Guides
 

@@ -14,8 +14,8 @@ export type TaskWithExtras = Task & {
 // ------------------------------------------------------------------
 export const MOCK_WORKSPACE = {
   id: "ws-preview",
-  name: "Dunder Mifflin",
-  slug: "dunder",
+  name: "Acme Studio",
+  slug: "acme-studio",
 };
 
 // ------------------------------------------------------------------
@@ -23,10 +23,10 @@ export const MOCK_WORKSPACE = {
 // ------------------------------------------------------------------
 export const MOCK_WORKSPACE_LABELS = [
   { id: "lbl-1", name: "urgent", color: "#ef4444" },
-  { id: "lbl-2", name: "sales", color: "#6366f1" },
-  { id: "lbl-3", name: "hr", color: "#10b981" },
-  { id: "lbl-4", name: "bears", color: "#f59e0b" },
-  { id: "lbl-5", name: "cinema", color: "#8b5cf6" },
+  { id: "lbl-2", name: "product", color: "#6366f1" },
+  { id: "lbl-3", name: "design", color: "#10b981" },
+  { id: "lbl-4", name: "review", color: "#f59e0b" },
+  { id: "lbl-5", name: "content", color: "#8b5cf6" },
 ];
 
 // ------------------------------------------------------------------
@@ -34,10 +34,10 @@ export const MOCK_WORKSPACE_LABELS = [
 // ------------------------------------------------------------------
 export const MOCK_USERS = {
   members: [
-    { userId: "u-1", user: { name: "Michael Scott", image: null } },
-    { userId: "u-2", user: { name: "Dwight Schrute", image: null } },
-    { userId: "u-3", user: { name: "Jim Halpert", image: null } },
-    { userId: "u-4", user: { name: "Pam Beesly", image: null } },
+    { userId: "u-1", user: { name: "Alex Morgan", image: null } },
+    { userId: "u-2", user: { name: "Sam Rivera", image: null } },
+    { userId: "u-3", user: { name: "Jordan Lee", image: null } },
+    { userId: "u-4", user: { name: "Taylor Chen", image: null } },
   ],
 };
 
@@ -54,7 +54,7 @@ const d = (offset: number): string => {
 };
 
 // ------------------------------------------------------------------
-// Project 1: Scranton Branch
+// Project 1: Website launch
 // ------------------------------------------------------------------
 const SCR_ID = "p-1";
 const WS_ID = "ws-preview";
@@ -63,9 +63,9 @@ const scrTasks: TaskWithExtras[] = [
   {
     id: "t-101",
     number: 1,
-    title: "Plan Dundie Awards ceremony",
+    title: "Design the new homepage",
     description:
-      "Book Chili's, prepare trophies, write acceptance speech (just in case), and arrange the PowerPoint slideshow.",
+      "Finalize the homepage layout, review the mobile designs, and share the handoff with engineering.",
     priority: "high",
     status: "in-progress",
     position: 1,
@@ -76,16 +76,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Michael Scott",
+    assigneeName: "Alex Morgan",
     assigneeImage: null,
-    labels: [{ id: "lbl-3", name: "hr", color: "#10b981" }],
+    labels: [{ id: "lbl-3", name: "design", color: "#10b981" }],
   },
   {
     id: "t-102",
     number: 2,
-    title: "Negotiate new paper contract with Prince Family Paper",
+    title: "Build the signup flow",
     description:
-      "Undercut their pricing while maintaining a friendly relationship. Do not mention the secret intel.",
+      "Connect the signup screens, validate form states, and review the first-run experience.",
     priority: "medium",
     status: "in-progress",
     position: 2,
@@ -96,16 +96,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Jim Halpert",
+    assigneeName: "Jordan Lee",
     assigneeImage: null,
-    labels: [{ id: "lbl-2", name: "sales", color: "#6366f1" }],
+    labels: [{ id: "lbl-2", name: "product", color: "#6366f1" }],
   },
   {
     id: "t-103",
     number: 3,
-    title: "Organize Pretzel Day logistics",
+    title: "Finalize launch messaging",
     description:
-      "Coordinate with the pretzel vendor, manage the queue system, and prevent stampedes near the reception desk.",
+      "Align the headline, product benefits, and launch announcement with the team.",
     priority: "urgent",
     status: "to-do",
     position: 1,
@@ -116,16 +116,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Pam Beesly",
+    assigneeName: "Taylor Chen",
     assigneeImage: null,
     labels: [{ id: "lbl-1", name: "urgent", color: "#ef4444" }],
   },
   {
     id: "t-104",
     number: 4,
-    title: "Update fire safety training video",
+    title: "Check mobile accessibility",
     description:
-      "The current video references a fax machine nobody uses anymore. Replace fire extinguisher scene. Do NOT involve Kevin.",
+      "Review keyboard navigation, touch targets, and contrast across the mobile layouts.",
     priority: "low",
     status: "to-do",
     position: 2,
@@ -136,16 +136,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Dwight Schrute",
+    assigneeName: "Sam Rivera",
     assigneeImage: null,
     labels: [],
   },
   {
     id: "t-105",
     number: 5,
-    title: "Review Dwight's beet farm expense report",
+    title: "Review the product walkthrough",
     description:
-      "He's submitted $400 in 'office-related beet research'. Finance needs a sign-off before the quarter closes.",
+      "Collect feedback from design and product before publishing the walkthrough.",
     priority: "high",
     status: "in-review",
     position: 1,
@@ -156,16 +156,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Jim Halpert",
+    assigneeName: "Jordan Lee",
     assigneeImage: null,
-    labels: [{ id: "lbl-4", name: "bears", color: "#f59e0b" }],
+    labels: [{ id: "lbl-4", name: "review", color: "#f59e0b" }],
   },
   {
     id: "t-106",
     number: 6,
-    title: "Complete CPR recertification",
+    title: "Approve the visual direction",
     description:
-      "Annual requirement. Staple has agreed to leave the mannequin face intact this time.",
+      "Review typography, color, and page layouts with the team and document the agreed direction.",
     priority: "medium",
     status: "done",
     position: 1,
@@ -176,16 +176,16 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Pam Beesly",
+    assigneeName: "Taylor Chen",
     assigneeImage: null,
-    labels: [{ id: "lbl-3", name: "hr", color: "#10b981" }],
+    labels: [{ id: "lbl-3", name: "design", color: "#10b981" }],
   },
   {
     id: "t-107",
     number: 7,
-    title: "Migrate contact database off the index cards",
+    title: "Map the customer journey",
     description:
-      "Dwight insists the card system is more secure. It isn't. Move everything to Salesforce.",
+      "Outline the journey from first visit to an active workspace and identify key touchpoints.",
     priority: "medium",
     status: "done",
     position: 2,
@@ -196,17 +196,18 @@ const scrTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Dwight Schrute",
+    assigneeName: "Sam Rivera",
     assigneeImage: null,
-    labels: [{ id: "lbl-2", name: "sales", color: "#6366f1" }],
+    labels: [{ id: "lbl-2", name: "product", color: "#6366f1" }],
   },
 ];
 
 export const WEB_PROJECT: ProjectWithTasks = {
   id: SCR_ID,
-  name: "Scranton Branch",
-  slug: "SCR",
-  description: "Day-to-day operations of the Scranton office.",
+  name: "Website launch",
+  slug: "WEB",
+  description:
+    "Coordinate design, content, and engineering for the website launch.",
   icon: null,
   workspaceId: WS_ID,
   isPublic: false,
@@ -249,7 +250,7 @@ export const WEB_PROJECT: ProjectWithTasks = {
 };
 
 // ------------------------------------------------------------------
-// Project 2: Threat Level Midnight
+// Project 2: Customer onboarding
 // ------------------------------------------------------------------
 const TLM_ID = "p-2";
 
@@ -257,9 +258,9 @@ const tlmTasks: TaskWithExtras[] = [
   {
     id: "t-201",
     number: 1,
-    title: "Edit the casino heist sequence",
+    title: "Create the welcome email",
     description:
-      "Michael Scarn's dialogue in act 2 needs tightening. The line 'Threat Level Midnight' should land harder.",
+      "Introduce the first steps, link to useful resources, and review the message with customer success.",
     priority: "high",
     status: "in-progress",
     position: 1,
@@ -270,16 +271,16 @@ const tlmTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Michael Scott",
+    assigneeName: "Alex Morgan",
     assigneeImage: null,
-    labels: [{ id: "lbl-5", name: "cinema", color: "#8b5cf6" }],
+    labels: [{ id: "lbl-5", name: "content", color: "#8b5cf6" }],
   },
   {
     id: "t-202",
     number: 2,
-    title: "Rewrite the love interest subplot",
+    title: "Write the getting-started guide",
     description:
-      "Catherine Zeta-Jones was unavailable. Recasting with Carol from the realtor office. Update all related scenes.",
+      "Explain how to create a project, invite teammates, and plan the first week of work.",
     priority: "high",
     status: "to-do",
     position: 1,
@@ -290,16 +291,16 @@ const tlmTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Pam Beesly",
+    assigneeName: "Taylor Chen",
     assigneeImage: null,
-    labels: [{ id: "lbl-5", name: "cinema", color: "#8b5cf6" }],
+    labels: [{ id: "lbl-5", name: "content", color: "#8b5cf6" }],
   },
   {
     id: "t-203",
     number: 3,
-    title: "Review Golden Face's villain monologue",
+    title: "Review onboarding feedback",
     description:
-      "Dwight's delivery is technically correct but lacks menace. Consider additional coaching.",
+      "Group customer feedback into themes and agree on the next improvements.",
     priority: "urgent",
     status: "in-review",
     position: 1,
@@ -310,19 +311,19 @@ const tlmTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Jim Halpert",
+    assigneeName: "Jordan Lee",
     assigneeImage: null,
     labels: [
-      { id: "lbl-4", name: "bears", color: "#f59e0b" },
-      { id: "lbl-5", name: "cinema", color: "#8b5cf6" },
+      { id: "lbl-4", name: "review", color: "#f59e0b" },
+      { id: "lbl-5", name: "content", color: "#8b5cf6" },
     ],
   },
   {
     id: "t-204",
     number: 4,
-    title: "Source ice hockey rink for final showdown",
+    title: "Plan customer training sessions",
     description:
-      "The Scranton rink has agreed to a half-day rental. Confirm insurance waiver and bring spare zamboni driver.",
+      "Prepare the agenda, confirm session times, and share the materials with the success team.",
     priority: "medium",
     status: "to-do",
     position: 2,
@@ -338,9 +339,9 @@ const tlmTasks: TaskWithExtras[] = [
   {
     id: "t-205",
     number: 5,
-    title: "Score the opening title sequence",
+    title: "Publish the welcome checklist",
     description:
-      "Kevin has offered to handle the music. Nobody else applied. Finalize the saxophone arrangement.",
+      "Create a short checklist that helps new teams reach their first project milestone.",
     priority: "medium",
     status: "done",
     position: 1,
@@ -351,17 +352,18 @@ const tlmTasks: TaskWithExtras[] = [
     workspaceId: WS_ID,
     createdAt: CREATED_AT,
     updatedAt: UPDATED_AT,
-    assigneeName: "Jim Halpert",
+    assigneeName: "Jordan Lee",
     assigneeImage: null,
-    labels: [{ id: "lbl-5", name: "cinema", color: "#8b5cf6" }],
+    labels: [{ id: "lbl-5", name: "content", color: "#8b5cf6" }],
   },
 ];
 
 export const MOB_PROJECT: ProjectWithTasks = {
   id: TLM_ID,
-  name: "Threat Level Midnight",
-  slug: "TLM",
-  description: "Michael Scott's magnum opus. In production since 1996.",
+  name: "Customer onboarding",
+  slug: "ONB",
+  description:
+    "Help new teams get started and build a repeatable onboarding experience.",
   icon: null,
   workspaceId: WS_ID,
   isPublic: false,
