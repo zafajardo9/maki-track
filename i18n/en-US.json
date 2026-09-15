@@ -154,6 +154,12 @@
 					"crimson": "Crimson"
 				}
 			}
+		},
+		"editorLink": {
+			"title": "Edit link",
+			"description": "Enter a URL, or leave it blank to remove the link.",
+			"url": "URL",
+			"apply": "Apply"
 		}
 	},
 	"auth": {
@@ -1726,6 +1732,7 @@
 		"properties": {
 			"title": "Properties",
 			"labels": "Labels",
+			"addLabel": "Add label",
 			"copyTaskLink": "Copy task link",
 			"copyTaskBranch": "Copy task branch",
 			"start": "Start",
@@ -2062,7 +2069,9 @@
 			},
 			"noDueDate": "No due date",
 			"reorderHandle": "Reorder project",
-			"reorderError": "Failed to reorder projects"
+			"reorderError": "Failed to reorder projects",
+			"created": "Created",
+			"nextTaskDue": "Next task due"
 		},
 		"overview": {
 			"tabs": {
@@ -2087,7 +2096,29 @@
 				"description": "How far along each project is.",
 				"empty": "No projects to chart yet.",
 				"caption": "{{completed}} of {{total}} tasks"
-			}
+			},
+			"metrics": {
+				"projects": "Projects",
+				"tasks": "Total tasks",
+				"open": "Open tasks",
+				"overdue": "Overdue tasks"
+			},
+			"schedule": {
+				"title": "Task schedule",
+				"created": "Created {{date}}",
+				"error": "Could not load task deadlines. Try again.",
+				"retry": "Try again",
+				"unscheduled_one": "{{count}} open task has no due date",
+				"unscheduled_other": "{{count}} open tasks have no due date",
+				"overdue": "Overdue · {{count}}",
+				"overdueDescription": "Open tasks past their deadline, oldest first.",
+				"upcoming": "Next 7 days · {{count}}",
+				"upcomingDescription": "Upcoming deadlines across your projects, soonest first.",
+				"noOverdue": "No overdue tasks.",
+				"noUpcoming": "No open tasks are due in the next seven days.",
+				"showing": "Showing the first {{count}} of {{total}} tasks."
+			},
+			"loadError": "Could not load the workspace overview. Try again."
 		},
 		"search": {
 			"pageTitle": "Search",

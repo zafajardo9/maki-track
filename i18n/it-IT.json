@@ -154,6 +154,12 @@
 					"crimson": "Cremisi"
 				}
 			}
+		},
+		"editorLink": {
+			"apply": "Apply",
+			"description": "Enter a URL, or leave it blank to remove the link.",
+			"title": "Edit link",
+			"url": "URL"
 		}
 	},
 	"auth": {
@@ -1724,6 +1730,7 @@
 		"properties": {
 			"title": "Proprietà",
 			"labels": "Etichette",
+			"addLabel": "Aggiungi etichetta",
 			"copyTaskLink": "Copia link attività",
 			"copyTaskBranch": "Copia ramo attività",
 			"start": "Inizio",
@@ -2068,7 +2075,9 @@
 			},
 			"noDueDate": "Nessuna scadenza",
 			"reorderHandle": "Riordina progetto",
-			"reorderError": "Impossibile riordinare i progetti"
+			"reorderError": "Impossibile riordinare i progetti",
+			"created": "Created",
+			"nextTaskDue": "Next task due"
 		},
 		"search": {
 			"pageTitle": "Cerca",
@@ -2127,6 +2136,29 @@
 			"tabs": {
 				"dashboard": "Dashboard",
 				"projects": "Projects"
+			},
+			"loadError": "Could not load the workspace overview. Try again.",
+			"metrics": {
+				"open": "Open tasks",
+				"overdue": "Overdue tasks",
+				"projects": "Projects",
+				"tasks": "Total tasks"
+			},
+			"schedule": {
+				"created": "Created {{date}}",
+				"error": "Could not load task deadlines. Try again.",
+				"noOverdue": "No overdue tasks.",
+				"noUpcoming": "No open tasks are due in the next seven days.",
+				"overdue": "Overdue · {{count}}",
+				"overdueDescription": "Open tasks past their deadline, oldest first.",
+				"retry": "Try again",
+				"showing": "Showing the first {{count}} of {{total}} tasks.",
+				"title": "Task schedule",
+				"unscheduled_many": "{{count}} open tasks have no due date",
+				"unscheduled_one": "{{count}} open task has no due date",
+				"unscheduled_other": "{{count}} open tasks have no due date",
+				"upcoming": "Next 7 days · {{count}}",
+				"upcomingDescription": "Upcoming deadlines across your projects, soonest first."
 			}
 		}
 	},

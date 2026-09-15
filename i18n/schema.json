@@ -607,6 +607,25 @@
 						}
 					},
 					"required": ["createProject", "createWorkspace", "createTask"]
+				},
+				"editorLink": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": "string"
+						},
+						"url": {
+							"type": "string"
+						},
+						"apply": {
+							"type": "string"
+						}
+					},
+					"required": ["title", "description", "url", "apply"]
 				}
 			},
 			"required": [
@@ -621,7 +640,8 @@
 				"people",
 				"error",
 				"formats",
-				"modals"
+				"modals",
+				"editorLink"
 			]
 		},
 		"auth": {
@@ -778,6 +798,12 @@
 						},
 						"forgotPassword": {
 							"type": "string"
+						},
+						"rememberMe": {
+							"type": "string"
+						},
+						"rememberMeHint": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -785,7 +811,9 @@
 						"signedInSuccess",
 						"signingIn",
 						"signIn",
-						"forgotPassword"
+						"forgotPassword",
+						"rememberMe",
+						"rememberMeHint"
 					]
 				},
 				"forgotPassword": {
@@ -5213,9 +5241,6 @@
 						"projectSettings": {
 							"type": "string"
 						},
-						"linkCopied": {
-							"type": "string"
-						},
 						"addProject": {
 							"type": "string"
 						},
@@ -5236,7 +5261,6 @@
 						"viewProject",
 						"shareProject",
 						"projectSettings",
-						"linkCopied",
 						"addProject",
 						"deleteConfirmTitle",
 						"deleteConfirmDescription",
@@ -6321,6 +6345,34 @@
 						"urgent"
 					]
 				},
+				"statusChart": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"description": {
+							"type": "string"
+						},
+						"empty": {
+							"type": "string"
+						},
+						"parked": {
+							"type": "string"
+						},
+						"centerCaption": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"title",
+						"description",
+						"empty",
+						"parked",
+						"centerCaption"
+					]
+				},
 				"boardSearchPlaceholder": {
 					"type": "string"
 				},
@@ -6333,9 +6385,12 @@
 						},
 						"list": {
 							"type": "string"
+						},
+						"overview": {
+							"type": "string"
 						}
 					},
-					"required": ["board", "list"]
+					"required": ["board", "list", "overview"]
 				},
 				"common": {
 					"type": "object",
@@ -6930,6 +6985,9 @@
 						"labels": {
 							"type": "string"
 						},
+						"addLabel": {
+							"type": "string"
+						},
 						"copyTaskLink": {
 							"type": "string"
 						},
@@ -6949,6 +7007,7 @@
 					"required": [
 						"title",
 						"labels",
+						"addLabel",
 						"copyTaskLink",
 						"copyTaskBranch",
 						"start",
@@ -7304,6 +7363,16 @@
 						"noTasksInSection",
 						"filters"
 					]
+				},
+				"board": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"createTask": {
+							"type": "string"
+						}
+					},
+					"required": ["createTask"]
 				},
 				"sort": {
 					"type": "object",
@@ -8131,11 +8200,141 @@
 						}
 					},
 					"required": ["table"]
+				},
+				"overview": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"stats": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"total": {
+									"type": "string"
+								},
+								"completed": {
+									"type": "string"
+								},
+								"open": {
+									"type": "string"
+								},
+								"overdue": {
+									"type": "string"
+								},
+								"dueSoon": {
+									"type": "string"
+								},
+								"dueSoonHint": {
+									"type": "string"
+								},
+								"unassigned": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"total",
+								"completed",
+								"open",
+								"overdue",
+								"dueSoon",
+								"dueSoonHint",
+								"unassigned"
+							]
+						},
+						"completion": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"completed": {
+									"type": "string"
+								},
+								"open": {
+									"type": "string"
+								},
+								"centerCaption": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"title",
+								"description",
+								"completed",
+								"open",
+								"centerCaption",
+								"empty"
+							]
+						},
+						"priority": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": ["title", "description", "empty"]
+						},
+						"workload": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": ["title", "description", "empty"]
+						},
+						"deadlines": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": ["title", "description", "empty"]
+						}
+					},
+					"required": [
+						"stats",
+						"completion",
+						"priority",
+						"workload",
+						"deadlines"
+					]
 				}
 			},
 			"required": [
 				"status",
 				"priority",
+				"statusChart",
 				"boardSearchPlaceholder",
 				"view",
 				"common",
@@ -8147,6 +8346,7 @@
 				"move",
 				"popover",
 				"backlog",
+				"board",
 				"sort",
 				"boardFilters",
 				"calendar",
@@ -8163,7 +8363,8 @@
 				"contextMenu",
 				"actions",
 				"bulk",
-				"editor"
+				"editor",
+				"overview"
 			]
 		},
 		"invitations": {
@@ -8347,6 +8548,12 @@
 						},
 						"reorderError": {
 							"type": "string"
+						},
+						"created": {
+							"type": "string"
+						},
+						"nextTaskDue": {
+							"type": "string"
 						}
 					},
 					"required": [
@@ -8363,7 +8570,247 @@
 						"projectStatus",
 						"noDueDate",
 						"reorderHandle",
-						"reorderError"
+						"reorderError",
+						"created",
+						"nextTaskDue"
+					]
+				},
+				"overview": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"tabs": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"dashboard": {
+									"type": "string"
+								},
+								"projects": {
+									"type": "string"
+								}
+							},
+							"required": ["dashboard", "projects"]
+						},
+						"completion": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"completed": {
+									"type": "string"
+								},
+								"open": {
+									"type": "string"
+								},
+								"centerCaption": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"title",
+								"description",
+								"completed",
+								"open",
+								"centerCaption",
+								"empty"
+							]
+						},
+						"priority": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								}
+							},
+							"required": ["title", "description", "empty"]
+						},
+						"projects": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"description": {
+									"type": "string"
+								},
+								"empty": {
+									"type": "string"
+								},
+								"caption": {
+									"type": "string"
+								}
+							},
+							"required": ["title", "description", "empty", "caption"]
+						},
+						"metrics": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"projects": {
+									"type": "string"
+								},
+								"tasks": {
+									"type": "string"
+								},
+								"open": {
+									"type": "string"
+								},
+								"overdue": {
+									"type": "string"
+								}
+							},
+							"required": ["projects", "tasks", "open", "overdue"]
+						},
+						"schedule": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"title": {
+									"type": "string"
+								},
+								"created": {
+									"type": "string"
+								},
+								"error": {
+									"type": "string"
+								},
+								"retry": {
+									"type": "string"
+								},
+								"unscheduled_one": {
+									"type": "string"
+								},
+								"unscheduled_zero": {
+									"type": "string"
+								},
+								"unscheduled_two": {
+									"type": "string"
+								},
+								"unscheduled_few": {
+									"type": "string"
+								},
+								"unscheduled_many": {
+									"type": "string"
+								},
+								"unscheduled_other": {
+									"type": "string"
+								},
+								"overdue": {
+									"type": "string"
+								},
+								"overdue_zero": {
+									"type": "string"
+								},
+								"overdue_one": {
+									"type": "string"
+								},
+								"overdue_two": {
+									"type": "string"
+								},
+								"overdue_few": {
+									"type": "string"
+								},
+								"overdue_many": {
+									"type": "string"
+								},
+								"overdue_other": {
+									"type": "string"
+								},
+								"overdueDescription": {
+									"type": "string"
+								},
+								"upcoming": {
+									"type": "string"
+								},
+								"upcoming_zero": {
+									"type": "string"
+								},
+								"upcoming_one": {
+									"type": "string"
+								},
+								"upcoming_two": {
+									"type": "string"
+								},
+								"upcoming_few": {
+									"type": "string"
+								},
+								"upcoming_many": {
+									"type": "string"
+								},
+								"upcoming_other": {
+									"type": "string"
+								},
+								"upcomingDescription": {
+									"type": "string"
+								},
+								"noOverdue": {
+									"type": "string"
+								},
+								"noUpcoming": {
+									"type": "string"
+								},
+								"showing": {
+									"type": "string"
+								},
+								"showing_zero": {
+									"type": "string"
+								},
+								"showing_one": {
+									"type": "string"
+								},
+								"showing_two": {
+									"type": "string"
+								},
+								"showing_few": {
+									"type": "string"
+								},
+								"showing_many": {
+									"type": "string"
+								},
+								"showing_other": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"title",
+								"created",
+								"error",
+								"retry",
+								"overdueDescription",
+								"upcomingDescription",
+								"noOverdue",
+								"noUpcoming"
+							]
+						},
+						"loadError": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"tabs",
+						"completion",
+						"priority",
+						"projects",
+						"metrics",
+						"schedule",
+						"loadError"
 					]
 				},
 				"search": {
@@ -8509,7 +8956,7 @@
 					]
 				}
 			},
-			"required": ["projects", "search", "create"]
+			"required": ["projects", "overview", "search", "create"]
 		},
 		"team": {
 			"type": "object",
@@ -8745,6 +9192,22 @@
 				"badge": {
 					"type": "string"
 				},
+				"progress": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"title": {
+							"type": "string"
+						},
+						"counts": {
+							"type": "string"
+						},
+						"percent": {
+							"type": "string"
+						}
+					},
+					"required": ["title", "counts", "percent"]
+				},
 				"readOnly": {
 					"type": "string"
 				},
@@ -8865,6 +9328,7 @@
 			"required": [
 				"pageTitle",
 				"badge",
+				"progress",
 				"readOnly",
 				"error",
 				"taskCard",
@@ -8872,6 +9336,54 @@
 				"theme",
 				"copyUrl",
 				"branding"
+			]
+		},
+		"shareProject": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"title": {
+					"type": "string"
+				},
+				"description": {
+					"type": "string"
+				},
+				"publicUrlPrivateHint": {
+					"type": "string"
+				},
+				"internalUrl": {
+					"type": "string"
+				},
+				"internalUrlHint": {
+					"type": "string"
+				},
+				"copyFailed": {
+					"type": "string"
+				},
+				"copyPublicUrlAria": {
+					"type": "string"
+				},
+				"copyInternalUrlAria": {
+					"type": "string"
+				},
+				"openPublicUrlAria": {
+					"type": "string"
+				},
+				"openInternalUrlAria": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"title",
+				"description",
+				"publicUrlPrivateHint",
+				"internalUrl",
+				"internalUrlHint",
+				"copyFailed",
+				"copyPublicUrlAria",
+				"copyInternalUrlAria",
+				"openPublicUrlAria",
+				"openInternalUrlAria"
 			]
 		}
 	},
@@ -8886,6 +9398,7 @@
 		"invitations",
 		"workspace",
 		"team",
-		"publicProject"
+		"publicProject",
+		"shareProject"
 	]
 }

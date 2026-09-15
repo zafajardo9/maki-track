@@ -48,6 +48,7 @@ import { useBulkOperations } from "@/hooks/mutations/task/use-bulk-operations";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
+import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { getInitials } from "@/lib/get-initials";
@@ -74,6 +75,7 @@ type BacklogActionGroup = {
 
 function BacklogBulkToolbar() {
   const { t } = useTranslation();
+  const { confirm, confirmationDialog } = useConfirmationDialog();
   const { selectedTaskIds, clearSelection, selectAll } =
     useBacklogBulkSelectionStore();
 
@@ -129,6 +131,7 @@ function BacklogBulkToolbar() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
+      if (target?.closest('[role="dialog"], [role="alertdialog"]')) return;
       const isTypingContext = Boolean(
         target?.closest(
           "input, textarea, [contenteditable='true'], .ProseMirror",
@@ -170,7 +173,15 @@ function BacklogBulkToolbar() {
   );
 
   const handleBulkDelete = useCallback(async () => {
-    if (!confirm(t("tasks:bulk.deleteConfirm", { count: selectedCount }))) {
+    setIsActionsOpen(false);
+    if (
+      !(await confirm({
+        title: t("tasks:bulk.delete"),
+        description: t("tasks:bulk.deleteConfirm", { count: selectedCount }),
+        action: t("common:actions.delete"),
+        destructive: true,
+      }))
+    ) {
       return;
     }
 
@@ -182,7 +193,7 @@ function BacklogBulkToolbar() {
     } catch (_error) {
       toast.error(t("tasks:bulk.deleteError"));
     }
-  }, [bulkDelete, selectedTaskIds, selectedCount, clearSelection, t]);
+  }, [bulkDelete, selectedTaskIds, selectedCount, clearSelection, t, confirm]);
 
   const handleBulkArchive = useCallback(async () => {
     try {
@@ -379,6 +390,7 @@ function BacklogBulkToolbar() {
 
   return (
     <div className="-translate-x-1/2 fixed bottom-6 left-1/2 z-50 transition-[translate,opacity] duration-200 ease-out starting:translate-y-3 starting:opacity-0 motion-reduce:starting:translate-y-0">
+      {confirmationDialog}
       <Toolbar className="items-center gap-1 rounded-xl border-border/80 bg-background px-1.5 py-1 shadow-lg/8">
         <ToolbarGroup className="px-1.5">
           <span className="text-sm font-medium text-foreground">

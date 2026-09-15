@@ -67,7 +67,11 @@ async function getProjectStatistics(
       completedTasks: sql<number>`count(distinct case when ${columnTable.isFinal} is true then ${taskTable.id} end)`,
       openTasks: sql<number>`count(distinct case when ${columnTable.isFinal} is false then ${taskTable.id} end)`,
       overdueTasks: sql<number>`count(distinct case when ${columnTable.isFinal} is false and ${taskTable.dueDate} is not null and ${taskTable.dueDate} < ${new Date()} then ${taskTable.id} end)`,
-      dueDate: sql<Date | null>`min(case when ${columnTable.isFinal} is false then ${taskTable.dueDate} end)`,
+      // Decode the aggregate as a UTC database timestamp, just like task dates.
+      dueDate:
+        sql<Date | null>`min(case when ${columnTable.isFinal} is false then ${taskTable.dueDate} end)`.mapWith(
+          taskTable.dueDate,
+        ),
     })
     .from(taskTable)
     .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))

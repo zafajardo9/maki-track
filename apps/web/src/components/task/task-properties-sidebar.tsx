@@ -27,6 +27,7 @@ import useGetProject from "@/hooks/queries/project/use-get-project";
 import useGetProjects from "@/hooks/queries/project/use-get-projects";
 import useGetTask from "@/hooks/queries/task/use-get-task";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { getColumnIcon } from "@/lib/column";
 import {
@@ -94,6 +95,7 @@ export default function TaskPropertiesSidebar({
   const { data: githubIntegration } = useGetGithubIntegration(projectId);
   const { data: giteaIntegration } = useGetGiteaIntegration(projectId);
   const { data: workspaceProjects = [] } = useGetProjects({ workspaceId });
+  const canEditLabels = useWorkspacePermission().canUpdateLabels();
   const canMoveTask =
     Boolean(task) && workspaceProjects.some((p) => p.id !== task?.projectId);
   const statusColumn = columns.find(
@@ -713,12 +715,17 @@ export default function TaskPropertiesSidebar({
           </>
         )}
 
-        <div className="hidden lg:flex px-3 flex-col gap-3 p-2">
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-foreground/70 px-2">
+        {(taskLabels.length > 0 || canEditLabels) && (
+          <div
+            className={cn(
+              "flex flex-col gap-1 py-2 px-2",
+              !compact && "lg:px-3",
+            )}
+          >
+            <span className="text-xs font-medium text-foreground/70">
               {t("tasks:properties.labels")}
             </span>
-            <div className="flex flex-wrap items-center gap-1.5 px-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               {task &&
                 taskLabels.length > 0 &&
                 taskLabels.map(
@@ -731,38 +738,57 @@ export default function TaskPropertiesSidebar({
                     >
                       <Badge
                         variant="outline"
-                        className="flex items-center gap-1 px-1.5 py-0.5 cursor-pointer hover:bg-accent/50 transition-colors text-[10px]"
+                        className="cursor-pointer gap-1.5 px-1.5 py-0.5 text-[10px] transition-colors hover:bg-accent/50"
                       >
                         <span
-                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                          className="size-2 shrink-0 rounded-full"
                           style={{
                             backgroundColor:
                               labelColors.find((c) => c.value === label.color)
                                 ?.color || "var(--color-neutral-400)",
                           }}
                         />
-                        <span className="truncate max-w-[60px]">
-                          {label.name}
-                        </span>
+                        <span className="max-w-40 truncate">{label.name}</span>
                       </Badge>
                     </TaskLabelsPopover>
                   ),
                 )}
 
-              {task && (
+              {task && canEditLabels && (
                 <TaskLabelsPopover task={task} workspaceId={workspaceId}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-5 w-5 p-0 rounded-full"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+                  {taskLabels.length > 0 ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            aria-label={t("tasks:properties.addLabel")}
+                            className="size-6 rounded-full p-0"
+                          >
+                            <Plus className="size-3.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {t("tasks:properties.addLabel")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 gap-1.5 px-2 text-xs text-muted-foreground"
+                    >
+                      <Plus className="size-3.5" />
+                      {t("tasks:properties.addLabel")}
+                    </Button>
+                  )}
                 </TaskLabelsPopover>
               )}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

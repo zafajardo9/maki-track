@@ -154,6 +154,12 @@
 					"crimson": "Малиновый"
 				}
 			}
+		},
+		"editorLink": {
+			"apply": "Apply",
+			"description": "Enter a URL, or leave it blank to remove the link.",
+			"title": "Edit link",
+			"url": "URL"
 		}
 	},
 	"auth": {
@@ -1737,6 +1743,7 @@
 		"properties": {
 			"title": "Свойства",
 			"labels": "Метки",
+			"addLabel": "Добавить метку",
 			"copyTaskLink": "Скопировать ссылку на задачу",
 			"copyTaskBranch": "Скопировать ветку задачи",
 			"start": "Начало",
@@ -2130,7 +2137,9 @@
 			"noDueDate": "Без срока",
 			"reorderHandle": "Изменить порядок проекта",
 			"reorderError": "Не удалось изменить порядок проектов",
-			"emptyDescriptionReadOnly": "В этой рабочей области пока нет проектов. Попросите администратора создать проект."
+			"emptyDescriptionReadOnly": "В этой рабочей области пока нет проектов. Попросите администратора создать проект.",
+			"created": "Created",
+			"nextTaskDue": "Next task due"
 		},
 		"search": {
 			"pageTitle": "Поиск",
@@ -2190,6 +2199,30 @@
 			"tabs": {
 				"dashboard": "Dashboard",
 				"projects": "Projects"
+			},
+			"loadError": "Could not load the workspace overview. Try again.",
+			"metrics": {
+				"open": "Open tasks",
+				"overdue": "Overdue tasks",
+				"projects": "Projects",
+				"tasks": "Total tasks"
+			},
+			"schedule": {
+				"created": "Created {{date}}",
+				"error": "Could not load task deadlines. Try again.",
+				"noOverdue": "No overdue tasks.",
+				"noUpcoming": "No open tasks are due in the next seven days.",
+				"overdue": "Overdue · {{count}}",
+				"overdueDescription": "Open tasks past their deadline, oldest first.",
+				"retry": "Try again",
+				"showing": "Showing the first {{count}} of {{total}} tasks.",
+				"title": "Task schedule",
+				"unscheduled_few": "{{count}} open tasks have no due date",
+				"unscheduled_many": "{{count}} open tasks have no due date",
+				"unscheduled_one": "{{count}} open task has no due date",
+				"unscheduled_other": "{{count}} open tasks have no due date",
+				"upcoming": "Next 7 days · {{count}}",
+				"upcomingDescription": "Upcoming deadlines across your projects, soonest first."
 			}
 		}
 	},

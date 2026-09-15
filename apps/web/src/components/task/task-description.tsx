@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/menu";
 import { useUpdateTaskDescription } from "@/hooks/mutations/task/use-update-task-description";
 import useGetTask from "@/hooks/queries/task/use-get-task";
+import { useEditorLinkDialog } from "@/hooks/use-editor-link-dialog";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import { parseTaskListMarkdownToNodes } from "@/lib/editor-task-list-paste";
@@ -835,7 +836,8 @@ export default function TaskDescription({ taskId }: TaskDescriptionProps) {
   // the editor refuses content mutations.
   useEffect(() => {
     if (!editor) return;
-    editor.setEditable(canEdit);
+    // Permission changes must not emit content updates or trigger autosave.
+    editor.setEditable(canEdit, false);
   }, [editor, canEdit]);
 
   useEffect(() => {
@@ -890,29 +892,9 @@ export default function TaskDescription({ taskId }: TaskDescriptionProps) {
     slashMenuRef.current = slashMenu;
   }, [slashMenu]);
 
-  const setLink = useCallback(
-    (prefilledUrl?: string) => {
-      if (!canEditRef.current || !editor) return;
-      const previousUrl = editor.getAttributes("link").href as
-        | string
-        | undefined;
-      const url = window.prompt(
-        t("tasks:detail.editor.enterUrl"),
-        prefilledUrl || previousUrl || "",
-      );
-      if (url === null) return;
-      if (url.trim() === "") {
-        editor.chain().focus().extendMarkRange("link").unsetLink().run();
-        return;
-      }
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: url })
-        .run();
-    },
-    [editor, t],
+  const { openLinkDialog: setLink, linkDialog } = useEditorLinkDialog(
+    editor,
+    canEdit,
   );
 
   const filteredSlashCommands = useMemo(() => {
@@ -1673,6 +1655,7 @@ export default function TaskDescription({ taskId }: TaskDescriptionProps) {
               "maki-tiptap-bubble-btn",
               editor.isActive("link") && "bg-accent text-accent-foreground",
             )}
+            aria-label={t("common:editorLink.title")}
             onClick={() => setLink()}
           >
             <Link2 className="size-3.5" />
@@ -1954,6 +1937,7 @@ export default function TaskDescription({ taskId }: TaskDescriptionProps) {
           <span>{t("tasks:detail.editor.dropToUpload")}</span>
         </div>
       )}
+      {linkDialog}
       <Dialog
         open={Boolean(previewImage)}
         onOpenChange={(open) => {

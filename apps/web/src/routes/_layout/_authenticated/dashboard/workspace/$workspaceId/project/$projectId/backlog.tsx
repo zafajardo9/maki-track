@@ -28,6 +28,7 @@ import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
+import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
 import { useRegisterShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { DUE_DATE_FILTER_VALUES } from "@/hooks/use-task-filters";
 import { getInitials } from "@/lib/get-initials";
@@ -55,6 +56,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { t } = useTranslation();
+  const { confirm, confirmationDialog } = useConfirmationDialog();
   const { projectId, workspaceId } = Route.useParams();
   const { taskId } = Route.useSearch();
   const navigate = useNavigate();
@@ -310,10 +312,13 @@ function RouteComponent() {
     };
   }, [filteredProject, sort]);
 
-  const handleMoveAllPlannedToTodo = () => {
+  const handleMoveAllPlannedToTodo = async () => {
+    let project = useProjectStore.getState().project;
     if (!project) return;
 
-    const plannedTasks = project.plannedTasks || [];
+    let plannedTasks = project.plannedTasks || [];
+    const confirmedIds = new Set(plannedTasks.map((task) => task.id));
+    const confirmedProjectId = project.id;
 
     if (plannedTasks.length === 0) {
       toast.info(t("tasks:backlog.noTasksToMove"));
@@ -321,12 +326,24 @@ function RouteComponent() {
     }
 
     if (
-      !confirm(
-        t("tasks:backlog.moveAllConfirm", { count: plannedTasks.length }),
-      )
+      !(await confirm({
+        title: t("tasks:backlog.moveAll"),
+        description: t("tasks:backlog.moveAllConfirm", {
+          count: plannedTasks.length,
+        }),
+        action: t("tasks:backlog.moveAll"),
+      }))
     ) {
       return;
     }
+
+    // The app keeps updating while the confirmation is open.
+    project = useProjectStore.getState().project;
+    if (!project || project.id !== confirmedProjectId) return;
+    plannedTasks = (project.plannedTasks || []).filter((task) =>
+      confirmedIds.has(task.id),
+    );
+    if (!plannedTasks.length) return;
 
     for (const task of plannedTasks) {
       updateTask({
@@ -340,13 +357,15 @@ function RouteComponent() {
       const todoColumn = draft.columns?.find((col) => col.slug === "to-do");
       if (todoColumn && draft.plannedTasks) {
         todoColumn.tasks.push(
-          ...draft.plannedTasks.map((task) => ({
+          ...plannedTasks.map((task) => ({
             ...task,
             status: "to-do",
           })),
         );
 
-        draft.plannedTasks = [];
+        draft.plannedTasks = draft.plannedTasks.filter(
+          (task) => !confirmedIds.has(task.id),
+        );
       }
     });
 
@@ -362,6 +381,7 @@ function RouteComponent() {
       workspaceId={workspaceId}
       activeView="backlog"
     >
+      {confirmationDialog}
       <PageTitle
         title={t("tasks:backlog.pageTitle", { name: project?.name })}
       />

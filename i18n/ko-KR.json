@@ -154,6 +154,12 @@
 					"crimson": "크림슨"
 				}
 			}
+		},
+		"editorLink": {
+			"apply": "Apply",
+			"description": "Enter a URL, or leave it blank to remove the link.",
+			"title": "Edit link",
+			"url": "URL"
 		}
 	},
 	"auth": {
@@ -1714,6 +1720,7 @@
 		"properties": {
 			"title": "속성",
 			"labels": "라벨",
+			"addLabel": "라벨 추가",
 			"copyTaskLink": "작업 링크 복사",
 			"copyTaskBranch": "작업 브랜치 복사",
 			"start": "시작",
@@ -2056,7 +2063,9 @@
 			"noDueDate": "마감일 없음",
 			"reorderHandle": "프로젝트 순서 변경",
 			"reorderError": "프로젝트 순서를 변경하지 못했습니다",
-			"emptyDescriptionReadOnly": "이 워크스페이스에 아직 프로젝트가 없습니다. 관리자에게 프로젝트 생성을 요청하세요."
+			"emptyDescriptionReadOnly": "이 워크스페이스에 아직 프로젝트가 없습니다. 관리자에게 프로젝트 생성을 요청하세요.",
+			"created": "Created",
+			"nextTaskDue": "Next task due"
 		},
 		"search": {
 			"pageTitle": "검색",
@@ -2113,6 +2122,27 @@
 			"tabs": {
 				"dashboard": "Dashboard",
 				"projects": "Projects"
+			},
+			"loadError": "Could not load the workspace overview. Try again.",
+			"metrics": {
+				"open": "Open tasks",
+				"overdue": "Overdue tasks",
+				"projects": "Projects",
+				"tasks": "Total tasks"
+			},
+			"schedule": {
+				"created": "Created {{date}}",
+				"error": "Could not load task deadlines. Try again.",
+				"noOverdue": "No overdue tasks.",
+				"noUpcoming": "No open tasks are due in the next seven days.",
+				"overdue": "Overdue · {{count}}",
+				"overdueDescription": "Open tasks past their deadline, oldest first.",
+				"retry": "Try again",
+				"showing": "Showing the first {{count}} of {{total}} tasks.",
+				"title": "Task schedule",
+				"unscheduled_other": "{{count}} open tasks have no due date",
+				"upcoming": "Next 7 days · {{count}}",
+				"upcomingDescription": "Upcoming deadlines across your projects, soonest first."
 			}
 		}
 	},

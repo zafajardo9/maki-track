@@ -154,6 +154,12 @@
 					"crimson": "Karmozijn"
 				}
 			}
+		},
+		"editorLink": {
+			"apply": "Apply",
+			"description": "Enter a URL, or leave it blank to remove the link.",
+			"title": "Edit link",
+			"url": "URL"
 		}
 	},
 	"auth": {
@@ -1719,6 +1725,7 @@
 		"properties": {
 			"title": "Eigenschappen",
 			"labels": "Labels",
+			"addLabel": "Label toevoegen",
 			"copyTaskLink": "Taaklink kopiëren",
 			"copyTaskBranch": "Taakbranch kopiëren",
 			"start": "Start",
@@ -2062,7 +2069,9 @@
 			"noDueDate": "Geen einddatum",
 			"reorderHandle": "Project opnieuw ordenen",
 			"reorderError": "Projecten opnieuw ordenen mislukt",
-			"emptyDescriptionReadOnly": "Er zijn nog geen projecten in deze werkruimte. Vraag een beheerder om er een aan te maken."
+			"emptyDescriptionReadOnly": "Er zijn nog geen projecten in deze werkruimte. Vraag een beheerder om er een aan te maken.",
+			"created": "Created",
+			"nextTaskDue": "Next task due"
 		},
 		"search": {
 			"pageTitle": "Zoeken",
@@ -2120,6 +2129,28 @@
 			"tabs": {
 				"dashboard": "Dashboard",
 				"projects": "Projects"
+			},
+			"loadError": "Could not load the workspace overview. Try again.",
+			"metrics": {
+				"open": "Open tasks",
+				"overdue": "Overdue tasks",
+				"projects": "Projects",
+				"tasks": "Total tasks"
+			},
+			"schedule": {
+				"created": "Created {{date}}",
+				"error": "Could not load task deadlines. Try again.",
+				"noOverdue": "No overdue tasks.",
+				"noUpcoming": "No open tasks are due in the next seven days.",
+				"overdue": "Overdue · {{count}}",
+				"overdueDescription": "Open tasks past their deadline, oldest first.",
+				"retry": "Try again",
+				"showing": "Showing the first {{count}} of {{total}} tasks.",
+				"title": "Task schedule",
+				"unscheduled_one": "{{count}} open task has no due date",
+				"unscheduled_other": "{{count}} open tasks have no due date",
+				"upcoming": "Next 7 days · {{count}}",
+				"upcomingDescription": "Upcoming deadlines across your projects, soonest first."
 			}
 		}
 	},

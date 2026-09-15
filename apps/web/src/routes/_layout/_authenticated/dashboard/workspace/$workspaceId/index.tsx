@@ -29,6 +29,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { WorkspaceOverviewCharts } from "@/components/charts/workspace-overview-charts";
+import WorkspaceSchedule from "@/components/charts/workspace-schedule";
 import WorkspaceLayout from "@/components/common/workspace-layout";
 import PageTitle from "@/components/page-title";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
@@ -154,8 +155,14 @@ function RouteComponent() {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const { workspaceId } = Route.useParams();
   const navigate = useNavigate();
-  const { data: projects, isLoading } = useGetProjects({
+  const {
+    data: projects,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetProjects({
     workspaceId,
+    refresh: true,
   });
   const reorderProjects = useReorderProjects();
 
@@ -274,10 +281,11 @@ function RouteComponent() {
           }
         >
           <WorkspaceViewTabs>
-            <TabsPanel value="dashboard" className="px-6 pb-8">
+            <TabsPanel value="dashboard" className="space-y-6 px-6 pb-8">
+              <Skeleton className="h-24 rounded-2xl" />
               <div className="grid gap-6 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-52 rounded-2xl" />
+                  <Skeleton key={i} className="h-80 rounded-2xl" />
                 ))}
               </div>
             </TabsPanel>
@@ -290,10 +298,13 @@ function RouteComponent() {
                       {t("workspace:projects.title")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.created")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
                       {t("workspace:projects.progress")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
-                      {t("workspace:projects.targetDate")}
+                      {t("workspace:projects.nextTaskDue")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
                       {t("workspace:projects.status")}
@@ -308,6 +319,9 @@ function RouteComponent() {
                           <Skeleton className="h-5 w-5" />
                           <Skeleton className="h-4 w-24" />
                         </div>
+                      </TableCell>
+                      <TableCell className="py-3">
+                        <Skeleton className="h-4 w-24" />
                       </TableCell>
                       <TableCell className="py-3">
                         <Skeleton className="h-2 w-20" />
@@ -326,6 +340,19 @@ function RouteComponent() {
           </WorkspaceViewTabs>
         </WorkspaceLayout>
       </>
+    );
+  }
+
+  if (isError && !projects) {
+    return (
+      <WorkspaceLayout title={t("workspace:projects.pageTitle")}>
+        <div role="alert" className="space-y-3 p-6">
+          <p>{t("workspace:overview.loadError")}</p>
+          <Button variant="outline" onClick={() => refetch()}>
+            {t("workspace:overview.schedule.retry")}
+          </Button>
+        </div>
+      </WorkspaceLayout>
     );
   }
 
@@ -400,8 +427,9 @@ function RouteComponent() {
         }
       >
         <WorkspaceViewTabs>
-          <TabsPanel value="dashboard" className="px-6 pb-8">
+          <TabsPanel value="dashboard" className="space-y-6 px-6 pb-8">
             <WorkspaceOverviewCharts projects={orderedProjects ?? []} />
+            <WorkspaceSchedule workspaceId={workspaceId} />
           </TabsPanel>
 
           <TabsPanel value="projects">
@@ -422,10 +450,13 @@ function RouteComponent() {
                       {t("workspace:projects.title")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
+                      {t("workspace:projects.created")}
+                    </TableHead>
+                    <TableHead className="text-foreground font-medium">
                       {t("workspace:projects.progress")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
-                      {t("workspace:projects.dueDate")}
+                      {t("workspace:projects.nextTaskDue")}
                     </TableHead>
                     <TableHead className="text-foreground font-medium">
                       {t("workspace:projects.status")}
@@ -476,6 +507,14 @@ function RouteComponent() {
                                 {project.name}
                               </span>
                             </div>
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <time
+                              dateTime={project.createdAt}
+                              className="whitespace-nowrap text-muted-foreground text-sm"
+                            >
+                              {formatDateMedium(project.createdAt)}
+                            </time>
                           </TableCell>
                           <TableCell className="py-3">
                             <div className="flex items-center gap-2">

@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   >(),
   mutateAsync: vi.fn(),
   editors: [] as unknown[],
+  canEdit: true,
 }));
 
 vi.mock("@tiptap/react", async (importOriginal) => {
@@ -64,7 +65,7 @@ vi.mock("@/hooks/mutations/task/use-update-task-description", () => ({
   useUpdateTaskDescription: () => ({ mutateAsync: mocks.mutateAsync }),
 }));
 vi.mock("@/hooks/use-workspace-permission", () => ({
-  useWorkspacePermission: () => ({ canUpdateTasks: () => true }),
+  useWorkspacePermission: () => ({ canUpdateTasks: () => mocks.canEdit }),
 }));
 vi.mock("@/lib/toast", () => ({
   toast: {
@@ -102,6 +103,7 @@ function savedTaskIds() {
 }
 
 beforeEach(() => {
+  mocks.canEdit = true;
   mocks.mutateAsync.mockReset();
   mocks.mutateAsync.mockResolvedValue({});
   mocks.editors.length = 0;
@@ -122,6 +124,22 @@ afterEach(() => {
 });
 
 describe("TaskDescription pending saves", () => {
+  it("does not emit content updates when edit permissions change", async () => {
+    const { container, rerender, unmount } = render(
+      <TaskDescription taskId="task-a" />,
+    );
+    await waitFor(() => expect(container.textContent).toContain("alpha"));
+    await settle();
+    const onUpdate = vi.fn();
+    latestEditor().on("update", onUpdate);
+    mocks.canEdit = false;
+    rerender(<TaskDescription taskId="task-a" />);
+    mocks.canEdit = true;
+    rerender(<TaskDescription taskId="task-a" />);
+    expect(onUpdate).not.toHaveBeenCalled();
+    unmount();
+    expect(mocks.mutateAsync).not.toHaveBeenCalled();
+  });
   it("saves an edit to the task it was typed in, not the one navigated to", async () => {
     const { container, rerender } = render(<TaskDescription taskId="task-a" />);
     await waitFor(() => expect(container.textContent).toContain("alpha"));

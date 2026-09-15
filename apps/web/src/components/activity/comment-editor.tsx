@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/menu";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
+import { useEditorLinkDialog } from "@/hooks/use-editor-link-dialog";
 import { cn } from "@/lib/cn";
 import { parseTaskListMarkdownToNodes } from "@/lib/editor-task-list-paste";
 import {
@@ -1042,7 +1043,7 @@ export default function CommentEditor({
 
   useEffect(() => {
     if (!editor) return;
-    editor.setEditable(!readOnly && !disabled);
+    editor.setEditable(!readOnly && !disabled, false);
   }, [disabled, editor, readOnly]);
 
   useEffect(() => {
@@ -1079,20 +1080,10 @@ export default function CommentEditor({
     });
   }, [editor, value]);
 
-  const setLink = useCallback(() => {
-    if (readOnly || disabled || !editor) return;
-    const previousUrl = editor.getAttributes("link").href as string | undefined;
-    const url = window.prompt(
-      t("activity:comment.editor.enterUrl"),
-      previousUrl || "",
-    );
-    if (url === null) return;
-    if (!url.trim()) {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
-    }
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  }, [disabled, editor, readOnly, t]);
+  const { openLinkDialog: setLink, linkDialog } = useEditorLinkDialog(
+    editor,
+    !readOnly && !disabled,
+  );
 
   const resolveCodeBlockNodeData = useCallback(
     (pos: number) => {
@@ -1643,7 +1634,8 @@ export default function CommentEditor({
               "maki-comment-editor-bubble-btn",
               editor.isActive("link") && "bg-accent text-accent-foreground",
             )}
-            onClick={setLink}
+            aria-label={t("common:editorLink.title")}
+            onClick={() => setLink()}
           >
             <Link2 className="size-3.5" />
           </Button>
@@ -1938,6 +1930,7 @@ export default function CommentEditor({
           <span>{t("activity:comment.editor.dropImageToUpload")}</span>
         </div>
       )}
+      {linkDialog}
       <Dialog
         open={Boolean(previewImage)}
         onOpenChange={(open) => {
