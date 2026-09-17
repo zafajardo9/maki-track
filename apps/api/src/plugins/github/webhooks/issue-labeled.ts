@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, isNull, sql } from "drizzle-orm";
 import db from "../../../database";
 import { labelTable, taskTable } from "../../../database/schema";
 import { publishEvent } from "../../../events";
@@ -103,6 +103,7 @@ export async function handleIssueLabeled(payload: IssueLabeledPayload) {
               eq(table.workspaceId, task.project.workspaceId),
               eq(table.name, addedLabel.name),
               eq(table.taskId, task.id),
+              isNull(table.projectId),
             ),
         });
 
@@ -118,6 +119,7 @@ export async function handleIssueLabeled(payload: IssueLabeledPayload) {
             })
             .onConflictDoNothing({
               target: [labelTable.taskId, labelTable.name],
+              where: sql`${labelTable.projectId} is null`,
             });
         }
       }
@@ -129,6 +131,7 @@ export async function handleIssueLabeled(payload: IssueLabeledPayload) {
           and(
             eq(table.taskId, existingLink.taskId),
             eq(table.name, addedLabel.name),
+            isNull(table.projectId),
           ),
       });
 

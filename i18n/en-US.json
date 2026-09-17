@@ -133,8 +133,11 @@
 				"assignUnassigned": "Unassigned",
 				"assignUnassignedTitle": "Unassigned",
 				"labels": "Labels",
+				"tags": "Tags",
 				"searchLabels": "Search labels...",
 				"noLabelsFound": "No labels found",
+				"searchTags": "Search tags...",
+				"noTagsFound": "No tags found",
 				"createLabel": "Create \"{{name}}\"",
 				"chooseColor": "Choose color",
 				"labelCreated": "Label created",
@@ -869,6 +872,31 @@
 			"automationTitle": "Automation Rules",
 			"automationDescription": "Map integration events to columns. When an event occurs, the linked task moves to the specified column."
 		},
+		"projectTags": {
+			"pageTitle": "Tag Settings",
+			"title": "Tags",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"createTag": "Create Tag",
+			"editTag": "Edit Tag",
+			"deleteTag": "Delete",
+			"saveTag": "Save",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"editDescription": "Update the name or color of this tag.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"createSuccess": "Tag created",
+			"updateSuccess": "Tag updated",
+			"deleteSuccess": "Tag deleted",
+			"createError": "Failed to create tag",
+			"updateError": "Failed to update tag",
+			"deleteError": "Failed to delete tag",
+			"nameRequired": "Tag name is required"
+		},
 		"projectSwitcher": {
 			"selectProject": "Select project",
 			"noProjects": "No projects"
@@ -1447,6 +1475,7 @@
 		"changedDueDate": "changed due date from {{from}} to {{to}}",
 		"changedTitle": "changed title from \"{{from}}\" to \"{{to}}\"",
 		"moved": "moved task from \"{{from}}\" to \"{{to}}\"",
+		"removedTag": "removed the tag \"{{name}}\"",
 		"created": "created this task",
 		"githubUser": "GitHub User",
 		"comment": {
@@ -1732,7 +1761,9 @@
 		"properties": {
 			"title": "Properties",
 			"labels": "Labels",
+			"tags": "Tags",
 			"addLabel": "Add label",
+			"addTag": "Add tag",
 			"copyTaskLink": "Copy task link",
 			"copyTaskBranch": "Copy task branch",
 			"start": "Start",
@@ -1751,6 +1782,7 @@
 			"error": "Failed to move task"
 		},
 		"popover": {
+			"searchPlaceholder": "Search tags and labels...",
 			"assignee": {
 				"unassigned": "Unassigned",
 				"updateError": "Failed to update task assignee"
@@ -1773,14 +1805,15 @@
 			},
 			"labels": {
 				"searchPlaceholder": "Search labels...",
-				"empty": "No labels found",
-				"create": "Create \"{{name}}\"",
+				"empty": "No tags or labels found",
+				"create": "Create label \"{{name}}\"",
 				"chooseColor": "Choose color",
 				"addSuccess": "Label added",
 				"removeSuccess": "Label removed",
 				"updateError": "Failed to update label",
 				"createSuccess": "Label created and added",
 				"createError": "Failed to create label",
+				"noPermission": "You don't have permission to edit this",
 				"colors": {
 					"stone": "Stone",
 					"slate": "Slate",
@@ -1792,6 +1825,16 @@
 					"rose": "Rose",
 					"crimson": "Crimson"
 				}
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"searchPlaceholder": "Search tags...",
+				"create": "Create tag \"{{name}}\"",
+				"chooseColor": "Choose tag color",
+				"createSuccess": "Tag created and added",
+				"createError": "Failed to create tag",
+				"noPermission": "You don't have permission to edit tags"
 			}
 		},
 		"backlog": {
@@ -1815,6 +1858,7 @@
 				"assignee": "Assignee: {{name}}",
 				"due": "Due: {{date}}",
 				"label": "Label: {{name}}",
+				"tag": "Tag: {{name}}",
 				"dueThisWeek": "Due this week",
 				"dueNextWeek": "Due next week",
 				"noDueDate": "No due date"
@@ -1851,6 +1895,10 @@
 				"priority": "Priority",
 				"assignee": "Assignee",
 				"dueDate": "Due date",
+				"labels": "Labels"
+			},
+			"sections": {
+				"tags": "Tags",
 				"labels": "Labels"
 			},
 			"operators": {
@@ -1929,13 +1977,21 @@
 			"label": "Labels",
 			"empty": "No labels available"
 		},
+		"tags": {
+			"label": "Tags",
+			"empty": "No tags available"
+		},
 		"update": {
 			"success": "Task updated successfully",
 			"error": "Failed to update task"
 		},
 		"contextMenu": {
 			"copyLink": "Copy link",
-			"copyLinkSuccess": "Task link copied!"
+			"copyLinkSuccess": "Task link copied!",
+			"tags": "Tags",
+			"labels": "Labels",
+			"noTags": "No tags",
+			"noLabels": "No labels"
 		},
 		"actions": {
 			"archive": "Archive",
@@ -1967,6 +2023,8 @@
 			"addLabel": "Add Label",
 			"addLabelSuccess": "Label added to {{count}} tasks",
 			"addLabelError": "Failed to add label",
+			"addTagSuccess": "Tag added to {{count}} tasks",
+			"addTagError": "Failed to add tag",
 			"setDueDate": "Set Due Date",
 			"updateDueDateError": "Failed to update due date",
 			"actions": "Actions",

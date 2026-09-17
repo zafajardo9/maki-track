@@ -197,6 +197,7 @@ const moveTaskRoute = createRoute({
     },
   },
   responses: {
+    409: errorResponse("Task moved concurrently; reload it and try again"),
     200: jsonResponse(
       "The moved task, with both project ids",
       moveTaskResultSchema,

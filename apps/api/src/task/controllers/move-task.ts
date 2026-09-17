@@ -2,8 +2,10 @@ import { and, asc, eq, max } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
+  activityTable,
   assetTable,
   columnTable,
+  labelTable,
   projectTable,
   taskTable,
 } from "../../database/schema";
@@ -153,12 +155,17 @@ async function moveTask({
         number: nextTaskNumber,
         position: nextPosition,
       })
-      .where(eq(taskTable.id, taskId))
+      .where(
+        and(
+          eq(taskTable.id, taskId),
+          eq(taskTable.projectId, existingTask.projectId),
+        ),
+      )
       .returning();
 
     if (!updatedTask) {
-      throw new HTTPException(500, {
-        message: "Failed to move task",
+      throw new HTTPException(409, {
+        message: "Task moved concurrently; reload it and try again",
       });
     }
 
@@ -167,7 +174,46 @@ async function moveTask({
       .set({ projectId: destinationProjectId })
       .where(eq(assetTable.taskId, taskId));
 
-    return updatedTask;
+    // Project tags do not follow a task across projects: strip the task's
+    // tag copies (project_id set) from the source project. Workspace label
+    // copies (project_id NULL) stay attached.
+    const strippedTagCopies = await tx
+      .select()
+      .from(labelTable)
+      .where(
+        and(
+          eq(labelTable.taskId, taskId),
+          eq(labelTable.projectId, existingTask.projectId),
+        ),
+      );
+
+    if (strippedTagCopies.length > 0) {
+      await tx
+        .delete(labelTable)
+        .where(
+          and(
+            eq(labelTable.taskId, taskId),
+            eq(labelTable.projectId, existingTask.projectId),
+          ),
+        );
+    }
+
+    if (strippedTagCopies.length > 0) {
+      await tx.insert(activityTable).values(
+        strippedTagCopies.map((tagCopy) => ({
+          taskId,
+          type: "label_unassigned",
+          userId: currentUserId,
+          content: null,
+          eventData: {
+            labelName: tagCopy.name,
+            labelColor: tagCopy.color,
+            fromProjectId: sourceProject.id,
+          },
+        })),
+      );
+    }
+    return { task: updatedTask, strippedTagCopies };
   });
 
   await publishEvent("task.moved", {
@@ -183,7 +229,7 @@ async function moveTask({
   });
 
   return {
-    task: movedTask,
+    task: movedTask.task,
     sourceProjectId: sourceProject.id,
     destinationProjectId: destinationProject.id,
   };

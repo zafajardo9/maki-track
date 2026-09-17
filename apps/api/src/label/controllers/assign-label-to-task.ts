@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
@@ -27,6 +27,14 @@ async function assignLabelToTask(id: string, taskId: string, userId: string) {
   if (!label) {
     throw new HTTPException(404, {
       message: "Label not found",
+    });
+  }
+
+  // Project-scoped rows are tags; they can only be attached through the
+  // tag routes.
+  if (label.projectId) {
+    throw new HTTPException(400, {
+      message: "Not a workspace label",
     });
   }
 
@@ -75,6 +83,12 @@ async function assignLabelToTask(id: string, taskId: string, userId: string) {
         });
       }
 
+      if (currentLabel.projectId) {
+        throw new HTTPException(400, {
+          message: "Not a workspace label",
+        });
+      }
+
       if (
         currentLabel.workspaceId &&
         currentLabel.workspaceId !== task.workspaceId
@@ -108,6 +122,7 @@ async function assignLabelToTask(id: string, taskId: string, userId: string) {
         })
         .onConflictDoNothing({
           target: [labelTable.taskId, labelTable.name],
+          where: sql`${labelTable.projectId} is null`,
         })
         .returning();
 
@@ -124,6 +139,7 @@ async function assignLabelToTask(id: string, taskId: string, userId: string) {
         where: and(
           eq(labelTable.taskId, taskId),
           eq(labelTable.name, currentLabel.name),
+          isNull(labelTable.projectId),
         ),
       });
 

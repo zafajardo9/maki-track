@@ -160,6 +160,7 @@ async function getTasks(projectId: string, options: GetTasksOptions = {}) {
             name: labelTable.name,
             color: labelTable.color,
             taskId: labelTable.taskId,
+            projectId: labelTable.projectId,
           })
           .from(labelTable)
           .where(inArray(labelTable.taskId, taskIds))
@@ -175,7 +176,7 @@ async function getTasks(projectId: string, options: GetTasksOptions = {}) {
 
   const taskLabelsMap = new Map<
     string,
-    Array<{ id: string; name: string; color: string }>
+    Array<{ id: string; name: string; color: string; projectId: string | null }>
   >();
   for (const label of labelsData) {
     if (label.taskId) {
@@ -186,6 +187,7 @@ async function getTasks(projectId: string, options: GetTasksOptions = {}) {
         id: label.id,
         name: label.name,
         color: label.color,
+        projectId: label.projectId,
       });
     }
   }

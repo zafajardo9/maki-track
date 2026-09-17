@@ -2,6 +2,7 @@ type TaskLabel = {
   id: string;
   name: string;
   color: string;
+  projectId?: string | null;
 };
 
 type TaskExternalLink = {

@@ -97,7 +97,7 @@ const getLabelRoute = createRoute({
   responses: {
     200: jsonResponse("Label details", labelSchema),
     400: errorResponse(
-      "Unknown label, or its workspace could not be determined",
+      "Unknown label, its workspace could not be determined, or not a workspace label",
     ),
     403: errorResponse("No access to the label's workspace"),
   },
@@ -175,7 +175,10 @@ const updateLabelRoute = createRoute({
   },
   responses: {
     200: jsonResponse("Label updated successfully", labelSchema),
-    400: errorResponse("Invalid body, or unknown label"),
+    409: errorResponse(
+      "A label with this name already exists in the workspace or on an affected task",
+    ),
+    400: errorResponse("Invalid body, unknown label, or not a workspace label"),
     403: errorResponse(
       "No workspace access, or missing label:update permission",
     ),
@@ -197,7 +200,7 @@ const deleteLabelRoute = createRoute({
   responses: {
     200: jsonResponse("Label deleted successfully", labelSchema),
     400: errorResponse(
-      "Unknown label, or its workspace could not be determined",
+      "Unknown label, its workspace could not be determined, or not a workspace label",
     ),
     403: errorResponse(
       "No workspace access, or missing label:delete permission",

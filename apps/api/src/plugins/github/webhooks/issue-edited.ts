@@ -142,9 +142,7 @@ export async function handleIssueEdited(payload: IssueEditedPayload) {
           lastDescSync.value === formattedDescription &&
           lastDescSync.source === "maki"
         ) {
-          console.log(
-            "Skipping description update - already synced from Maki",
-          );
+          console.log("Skipping description update - already synced from Maki");
           shouldUpdateDescription = false;
         }
 

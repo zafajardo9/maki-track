@@ -46,6 +46,7 @@ import { initializeScheduler, shutdownScheduler } from "./scheduler";
 import search from "./search";
 import slackIntegration from "./slack-integration";
 import { getPrivateObject } from "./storage/imagekit";
+import tag from "./tag";
 import task from "./task";
 import taskRelation from "./task-relation";
 import telegramIntegration from "./telegram-integration";
@@ -58,6 +59,7 @@ import { getInvitationDetails } from "./utils/check-registration-allowed";
 import { migrateApiKeyReferenceId } from "./utils/migrate-apikey-reference-id";
 import { migrateNotificationPreferencesSchema } from "./utils/migrate-notification-preferences-schema";
 import { migrateSessionColumn } from "./utils/migrate-session-column";
+import { migrateWorkspaceRoleTagStatements } from "./utils/migrate-workspace-role-tag-statements";
 import { migrateWorkspaceUserEmail } from "./utils/migrate-workspace-user-email";
 import { normalizeApiServerUrl } from "./utils/openapi-spec";
 import { seedDefaultWorkspaceRoles } from "./utils/seed-default-workspace-roles";
@@ -581,6 +583,7 @@ export function createApp() {
     notificationPreferences,
   );
   const searchApi = api.route("/search", search);
+  const tagApi = api.route("/tag", tag);
   const githubIntegrationApi = api.route(
     "/github-integration",
     githubIntegration,
@@ -763,6 +766,7 @@ export function createApp() {
     publicProjectApi,
     searchApi,
     slackIntegrationApi,
+    tagApi,
     taskApi,
     taskRelationApi,
     telegramIntegrationApi,
@@ -803,6 +807,7 @@ export async function runStartupTasks() {
   await migrateNotificationPreferencesSchema();
   await migrateColumns();
   await seedDefaultWorkspaceRoles();
+  await migrateWorkspaceRoleTagStatements();
 
   initializePlugins();
   initializeScheduler();
@@ -879,6 +884,7 @@ const {
   publicProjectApi,
   searchApi,
   slackIntegrationApi,
+  tagApi,
   taskApi,
   taskRelationApi,
   telegramIntegrationApi,
@@ -924,6 +930,7 @@ export type AppType =
   | typeof workspaceApi
   | typeof userApi
   | typeof publicProjectApi
-  | typeof invitationPublicApi;
+  | typeof invitationPublicApi
+  | typeof tagApi;
 
 export default app;

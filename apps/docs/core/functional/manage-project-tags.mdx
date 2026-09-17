@@ -1,0 +1,55 @@
+---
+title: Labels and Tags
+description: The two label pools — workspace labels and project tags — and how they differ
+---
+
+Maki has two pools of colored markers that attach to tasks:
+
+- **Labels** are workspace-wide: one palette shared by every project in the workspace. They are the right place for cross-project categories like work type or domain.
+- **Tags** are project-scoped: each project has its own tag vocabulary for workflow that only makes sense inside that project.
+
+Both behave the same on a task — attach, detach, color, filter — and the same name may exist as a label and as a tag at once. They are two distinct entries, and a task can hold both.
+
+## How they differ
+
+| | Workspace labels | Project tags |
+| --- | --- | --- |
+| Scope | Whole workspace | One project |
+| Managed in | **Settings -> Workspace -> Labels** | The project's Tags settings, the API, or MCP |
+| Cascade on rename/delete | Across the workspace | Within the project only |
+| Survive a task move to another project | Yes | No — tag copies are stripped and recorded in activity |
+| Sync to GitHub / Gitea | Yes | **Never** |
+| Permissions | `label:*` statements | `tag:*` statements |
+
+## Project tags
+
+A tag belongs to exactly one project. Renaming or recoloring it updates every task in that project; a workspace label sharing the same name is untouched — and the reverse holds. Deleting a project tag removes it from all tasks in the project and never affects workspace labels.
+
+When a task is moved to another project, its tags stay behind: tag copies from the source project are removed (and recorded in the task's activity), while workspace labels travel with the task.
+
+Deleting a project deletes its tags and tag copies; workspace labels are unaffected.
+
+## Permissions
+
+Workspace roles carry separate permission statements for each pool. Members, admins, and owners get full `label:*` and `tag:*` permissions by default; viewers get read on both. Admins can edit each pool's permissions per role independently.
+
+## Managing tags programmatically
+
+Project tags are available through the API (`/api/tag` endpoints) and the MCP integration. The MCP tools are:
+
+- `list_project_tags` — list a project's tags
+- `create_tag` — create a tag in a project
+- `attach_tag_to_task` / `detach_tag_from_task` — attach or detach a tag
+- `delete_tag` — delete a tag and its copies in that project
+
+Unlike workspace labels, palette tags can be deleted through MCP because the blast radius is one project. See [MCP](/core/integrations/mcp) for setup.
+
+## Best practices
+
+- Use workspace labels for cross-project categories (`bug`, `feature`, `api`) and project tags for project-specific workflow
+- Keep tag names short and project-local, since they never leave the project
+
+## Related
+
+- [Manage Workspace Labels](/core/functional/manage-workspace-labels)
+- [MCP integration](/core/integrations/mcp)

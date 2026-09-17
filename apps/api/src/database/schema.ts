@@ -651,14 +651,30 @@ export const labelTable = pgTable(
       onDelete: "cascade",
       onUpdate: "cascade",
     }),
+    // Project-scoped rows are tags; NULL means a workspace-wide label.
+    projectId: text("project_id").references(() => projectTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   },
   (table) => [
     index("label_task_id_idx").on(table.taskId),
     index("label_workspace_id_idx").on(table.workspaceId),
-    unique("label_task_name_unique").on(table.taskId, table.name),
+    index("label_project_id_idx").on(table.projectId),
+    // Task-level uniqueness is per scope so a task can hold both a workspace
+    // label copy and a tag copy of the same name; each scope stays deduped.
+    uniqueIndex("label_task_name_unique")
+      .on(table.taskId, table.name)
+      .where(sql`${table.projectId} is null`),
+    uniqueIndex("label_task_tag_name_unique")
+      .on(table.taskId, table.name)
+      .where(sql`${table.projectId} is not null`),
     uniqueIndex("label_workspace_name_unique")
       .on(table.workspaceId, table.name)
-      .where(sql`${table.taskId} is null`),
+      .where(sql`${table.taskId} is null and ${table.projectId} is null`),
+    uniqueIndex("label_project_name_unique")
+      .on(table.projectId, table.name)
+      .where(sql`${table.taskId} is null and ${table.projectId} is not null`),
   ],
 );
 

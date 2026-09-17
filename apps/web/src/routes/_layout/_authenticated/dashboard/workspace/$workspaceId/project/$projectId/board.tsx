@@ -12,6 +12,7 @@ import TaskDetailsSheet from "@/components/task/task-details-sheet";
 import { Input } from "@/components/ui/input";
 import { shortcuts } from "@/constants/shortcuts";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
+import useGetTagsByProject from "@/hooks/queries/tag/use-get-tags-by-project";
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { useBoardSort } from "@/hooks/use-board-sort";
@@ -92,6 +93,7 @@ function RouteComponent() {
 
   const { data: users } = useGetActiveWorkspaceUsers(workspaceId);
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(workspaceId);
+  const { data: projectTags = [] } = useGetTagsByProject(projectId);
 
   const handleCloseTaskSheet = useCallback(() => {
     navigate({
@@ -236,6 +238,7 @@ function RouteComponent() {
           hasActiveFilters={hasActiveFilters}
           users={users}
           workspaceLabels={workspaceLabels}
+          projectTags={projectTags}
           viewMode={viewMode}
           setViewMode={setViewMode}
           sort={sort}

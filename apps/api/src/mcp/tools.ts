@@ -663,6 +663,93 @@ export function registerMcpTools(
   );
 
   registerTool(
+    "list_project_tags",
+    {
+      description:
+        "List tags defined in a project. Tags are project-scoped labels: they behave like workspace labels but belong to one project and never sync to GitHub or Gitea.",
+      inputSchema: z.object({ projectId: nonEmptyString }),
+    },
+    async (args) =>
+      run(() =>
+        client.json(`/api/tag/project/${encodeURIComponent(args.projectId)}`, {
+          method: "GET",
+        }),
+      ),
+  );
+
+  registerTool(
+    "create_tag",
+    {
+      description:
+        "Create a tag in a project. Tags are project-scoped labels and never sync to GitHub or Gitea.",
+      inputSchema: z.object({
+        name: nonEmptyString,
+        color: hexColorSchema,
+        projectId: nonEmptyString,
+      }),
+    },
+    async (args) =>
+      run(() =>
+        client.json("/api/tag", {
+          method: "POST",
+          body: JSON.stringify({
+            name: args.name,
+            color: args.color,
+            projectId: args.projectId,
+          }),
+        }),
+      ),
+  );
+
+  registerTool(
+    "attach_tag_to_task",
+    {
+      description:
+        "Attach an existing project tag to a task. The tag and the task must belong to the same project.",
+      inputSchema: z.object({
+        tagId: nonEmptyString,
+        taskId: nonEmptyString,
+      }),
+    },
+    async (args) =>
+      run(() =>
+        client.json(`/api/tag/${encodeURIComponent(args.tagId)}/task`, {
+          method: "PUT",
+          body: JSON.stringify({ taskId: args.taskId }),
+        }),
+      ),
+  );
+
+  registerTool(
+    "detach_tag_from_task",
+    {
+      description: "Detach a tag from its current task.",
+      inputSchema: z.object({ tagId: nonEmptyString }),
+    },
+    async (args) =>
+      run(() =>
+        client.json(`/api/tag/${encodeURIComponent(args.tagId)}/task`, {
+          method: "DELETE",
+        }),
+      ),
+  );
+
+  registerTool(
+    "delete_tag",
+    {
+      description:
+        "Delete a project tag by ID, including its copies on tasks in that project. Unlike workspace labels, palette tags are deletable because the blast radius is one project.",
+      inputSchema: z.object({ tagId: nonEmptyString }),
+    },
+    async (args) =>
+      run(() =>
+        client.json(`/api/tag/${encodeURIComponent(args.tagId)}`, {
+          method: "DELETE",
+        }),
+      ),
+  );
+
+  registerTool(
     "create_task_relation",
     {
       description:

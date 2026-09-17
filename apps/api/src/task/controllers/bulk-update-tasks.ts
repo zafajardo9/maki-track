@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
@@ -237,6 +237,10 @@ async function bulkUpdateTasks({
         throw new HTTPException(404, { message: "Label not found" });
       }
 
+      if (label.projectId) {
+        throw new HTTPException(400, { message: "Not a workspace label" });
+      }
+
       if (label.workspaceId && label.workspaceId !== workspaceId) {
         throw new HTTPException(400, {
           message: "Label and tasks must belong to the same workspace",
@@ -248,6 +252,7 @@ async function bulkUpdateTasks({
           where: and(
             eq(labelTable.name, label.name),
             eq(labelTable.taskId, task.id),
+            isNull(labelTable.projectId),
           ),
         });
 
@@ -262,6 +267,7 @@ async function bulkUpdateTasks({
             })
             .onConflictDoNothing({
               target: [labelTable.taskId, labelTable.name],
+              where: sql`${labelTable.projectId} is null`,
             });
           updatedCount++;
 
@@ -289,6 +295,16 @@ async function bulkUpdateTasks({
         throw new HTTPException(404, { message: "Label not found" });
       }
 
+      if (label.projectId) {
+        throw new HTTPException(400, { message: "Not a workspace label" });
+      }
+
+      if (label.workspaceId !== workspaceId) {
+        throw new HTTPException(400, {
+          message: "Label and tasks must belong to the same workspace",
+        });
+      }
+
       const deletedLabels = await db
         .delete(labelTable)
         .where(
@@ -296,6 +312,7 @@ async function bulkUpdateTasks({
             eq(labelTable.workspaceId, workspaceId),
             eq(labelTable.name, label.name),
             inArray(labelTable.taskId, foundIds),
+            isNull(labelTable.projectId),
           ),
         )
         .returning();

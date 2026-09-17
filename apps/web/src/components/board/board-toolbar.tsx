@@ -35,6 +35,13 @@ type WorkspaceLabel = {
   color: string;
 };
 
+type ProjectTag = {
+  id: string;
+  name: string;
+  color: string;
+  taskId?: string | null;
+};
+
 type ActiveUsers = {
   members?: Array<{
     userId: string;
@@ -57,6 +64,7 @@ type BoardToolbarProps = {
   hasActiveFilters: boolean;
   users?: ActiveUsers;
   workspaceLabels: WorkspaceLabel[];
+  projectTags?: ProjectTag[];
   viewMode: "board" | "list";
   setViewMode: (mode: "board" | "list") => void;
   sort: SortConfig;
@@ -143,6 +151,7 @@ export default function BoardToolbar({
   hasActiveFilters,
   users,
   workspaceLabels,
+  projectTags = [],
   viewMode,
   setViewMode,
   sort,
@@ -203,6 +212,39 @@ export default function BoardToolbar({
     return workspaceLabels
       .filter((l) => l.name === label.name && l.color === label.color)
       .some((l) => filters.labels?.includes(l.id));
+  };
+
+  const uniqueTags = projectTags.reduce(
+    (acc: ProjectTag[], tag: ProjectTag) => {
+      const existing = acc.find(
+        (t) => t.name === tag.name && t.color === tag.color,
+      );
+      if (!existing) acc.push(tag);
+      return acc;
+    },
+    [],
+  );
+
+  const isTagGroupSelected = (tag: { name: string; color: string }) => {
+    return projectTags
+      .filter((t) => t.name === tag.name && t.color === tag.color)
+      .some((t) => filters.labels?.includes(t.id));
+  };
+
+  const toggleTagGroup = (tag: { name: string; color: string }) => {
+    const matching = projectTags.filter(
+      (t) => t.name === tag.name && t.color === tag.color,
+    );
+    const anySelected = matching.some((t) => filters.labels?.includes(t.id));
+
+    for (const t of matching) {
+      if (
+        (anySelected && filters.labels?.includes(t.id)) ||
+        (!anySelected && !filters.labels?.includes(t.id))
+      ) {
+        updateLabelFilter(t.id);
+      }
+    }
   };
 
   const toggleStatusFilter = (statusId: string) => {
@@ -489,6 +531,45 @@ export default function BoardToolbar({
                       {t("tasks:boardFilters.allLabels")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+
+                    {uniqueTags.length > 0 && (
+                      <>
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-[11px] uppercase tracking-wide">
+                            {t("tasks:boardFilters.sections.tags")}
+                          </DropdownMenuLabel>
+                        </DropdownMenuGroup>
+                        {uniqueTags.map((tag) => (
+                          <DropdownMenuItem
+                            key={tag.id}
+                            onClick={() => toggleTagGroup(tag)}
+                            className="h-8 rounded-md text-sm"
+                          >
+                            <CheckSlot checked={isTagGroupSelected(tag)} />
+                            <span
+                              className="h-2.5 w-2.5 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  labelColors.find((c) => c.value === tag.color)
+                                    ?.color || "var(--color-neutral-400)",
+                              }}
+                            />
+                            <span className="max-w-20 truncate">
+                              {tag.name}
+                            </span>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+
+                    {uniqueLabels.length > 0 && (
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel className="text-[11px] uppercase tracking-wide">
+                          {t("tasks:boardFilters.sections.labels")}
+                        </DropdownMenuLabel>
+                      </DropdownMenuGroup>
+                    )}
                     {uniqueLabels.length > 0 ? (
                       uniqueLabels.map((label) => (
                         <DropdownMenuItem

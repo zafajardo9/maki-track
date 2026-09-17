@@ -60,7 +60,7 @@ export async function handleLabelCreated(payload: LabelCreatedPayload) {
       })
       .onConflictDoNothing({
         target: [labelTable.workspaceId, labelTable.name],
-        where: sql`${labelTable.taskId} is null`,
+        where: sql`${labelTable.taskId} is null and ${labelTable.projectId} is null`,
       });
   }
 }

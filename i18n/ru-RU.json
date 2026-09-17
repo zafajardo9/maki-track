@@ -152,7 +152,10 @@
 					"terracotta": "Терракота",
 					"rose": "Роза",
 					"crimson": "Малиновый"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1272,6 +1275,31 @@
 			"updateError": "Не удалось обновить метку",
 			"deleteError": "Не удалось удалить метку",
 			"nameRequired": "Название метки обязательно"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1565,7 +1593,8 @@
 			}
 		},
 		"moved": "переместил задачу из «{{from}}» в «{{to}}»",
-		"created": "создал эту задачу"
+		"created": "создал эту задачу",
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1748,7 +1777,9 @@
 			"copyTaskBranch": "Скопировать ветку задачи",
 			"start": "Начало",
 			"startDate": "Дата начала",
-			"noDate": "Без даты"
+			"noDate": "Без даты",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "Переместить задачу",
@@ -1802,8 +1833,20 @@
 					"terracotta": "Терракота",
 					"rose": "Роза",
 					"crimson": "Малиновый"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Бэклог – {{name}}",
@@ -1831,7 +1874,8 @@
 				"label": "Метка: {{name}}",
 				"dueThisWeek": "Срок на этой неделе",
 				"dueNextWeek": "Срок на следующей неделе",
-				"noDueDate": "Без срока"
+				"noDueDate": "Без срока",
+				"tag": "Tag: {{name}}"
 			},
 			"moveAllSuccess": "{{count}} задач перемещено в «К выполнению»"
 		},
@@ -1875,7 +1919,11 @@
 				"isAnyOf": "любой из",
 				"includeAnyOf": "включает любой из"
 			},
-			"selectedCount": "{{count}} выбрано"
+			"selectedCount": "{{count}} выбрано",
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
+			}
 		},
 		"gantt": {
 			"pageTitle": "{{name}} – Гант",
@@ -1947,7 +1995,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Скопировать ссылку",
-			"copyLinkSuccess": "Ссылка на задачу скопирована!"
+			"copyLinkSuccess": "Ссылка на задачу скопирована!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Архивировать",
@@ -2020,7 +2072,9 @@
 			"archiveSuccess": "{{count}} задач архивировано",
 			"updateSuccess": "{{count}} задач обновлено",
 			"assignSuccess": "{{count}} задач назначено",
-			"addLabelSuccess": "Метка добавлена к {{count}} задачам"
+			"addLabelSuccess": "Метка добавлена к {{count}} задачам",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2086,6 +2140,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

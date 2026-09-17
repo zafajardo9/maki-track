@@ -636,5 +636,8 @@ crediting authors). `dry_run` prints the version and notes without shipping.
 - **event** — an internal notification used by activity, notifications,
   integrations, or realtime updates.
 - **column** — a status lane within a project (tasks live in columns).
+- **tag** — a project-scoped colored marker attached to tasks. Shares the
+  `label` table with workspace labels via a nullable `project_id`; never
+  syncs to GitHub or Gitea.
 - **initiator** — the `userId:windowId` identity used to exclude a user's own
   changes from WebSocket broadcasts.

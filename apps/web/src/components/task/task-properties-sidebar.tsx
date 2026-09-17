@@ -8,8 +8,8 @@ import {
   Plus,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { LabelChip } from "@/components/common/label-chip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { KbdSequence } from "@/components/ui/kbd";
 import {
@@ -18,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import labelColors from "@/constants/label-colors";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
 import useGetGiteaIntegration from "@/hooks/queries/gitea-integration/use-get-gitea-integration";
 import useGetGithubIntegration from "@/hooks/queries/github-integration/use-get-github-integration";
@@ -95,7 +94,12 @@ export default function TaskPropertiesSidebar({
   const { data: githubIntegration } = useGetGithubIntegration(projectId);
   const { data: giteaIntegration } = useGetGiteaIntegration(projectId);
   const { data: workspaceProjects = [] } = useGetProjects({ workspaceId });
-  const canEditLabels = useWorkspacePermission().canUpdateLabels();
+  const { canUpdateLabels, canUpdateTags } = useWorkspacePermission();
+  const canEditLabels = canUpdateLabels();
+  const canEditTags = canUpdateTags();
+  // A task carries copies of both pools in one list; scope comes from projectId.
+  const assignedTags = taskLabels.filter((label) => Boolean(label.projectId));
+  const assignedLabels = taskLabels.filter((label) => !label.projectId);
   const canMoveTask =
     Boolean(task) && workspaceProjects.some((p) => p.id !== task?.projectId);
   const statusColumn = columns.find(
@@ -715,80 +719,130 @@ export default function TaskPropertiesSidebar({
           </>
         )}
 
-        {(taskLabels.length > 0 || canEditLabels) && (
-          <div
-            className={cn(
-              "flex flex-col gap-1 py-2 px-2",
-              !compact && "lg:px-3",
-            )}
-          >
-            <span className="text-xs font-medium text-foreground/70">
-              {t("tasks:properties.labels")}
-            </span>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {task &&
-                taskLabels.length > 0 &&
-                taskLabels.map(
-                  (label: { id: string; name: string; color: string }) => (
+        {(() => {
+          const scopes = ["tag", "label"] as const;
+
+          const scopeHeading = (scope: "tag" | "label") =>
+            t(
+              scope === "tag"
+                ? "tasks:properties.tags"
+                : "tasks:properties.labels",
+            );
+
+          const renderScopeChips = (scope: "tag" | "label") => {
+            const items = scope === "tag" ? assignedTags : assignedLabels;
+            return (
+              <>
+                {task &&
+                  items.map((label) => (
                     <TaskLabelsPopover
                       key={`edit-${label.id}`}
                       task={task}
                       workspaceId={workspaceId}
                       triggerNativeButton={false}
+                      scope={scope}
                     >
-                      <Badge
-                        variant="outline"
-                        className="cursor-pointer gap-1.5 px-1.5 py-0.5 text-[10px] transition-colors hover:bg-accent/50"
-                      >
-                        <span
-                          className="size-2 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor:
-                              labelColors.find((c) => c.value === label.color)
-                                ?.color || "var(--color-neutral-400)",
-                          }}
-                        />
-                        <span className="max-w-40 truncate">{label.name}</span>
-                      </Badge>
+                      <LabelChip
+                        label={label}
+                        compact
+                        className="cursor-pointer transition-opacity hover:opacity-85"
+                      />
                     </TaskLabelsPopover>
-                  ),
-                )}
+                  ))}
+              </>
+            );
+          };
 
-              {task && canEditLabels && (
-                <TaskLabelsPopover task={task} workspaceId={workspaceId}>
-                  {taskLabels.length > 0 ? (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            aria-label={t("tasks:properties.addLabel")}
-                            className="size-6 rounded-full p-0"
-                          >
-                            <Plus className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {t("tasks:properties.addLabel")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 gap-1.5 px-2 text-xs text-muted-foreground"
-                    >
-                      <Plus className="size-3.5" />
-                      {t("tasks:properties.addLabel")}
-                    </Button>
-                  )}
-                </TaskLabelsPopover>
-              )}
+          // Per-scope add control for the roomier full-page view, which keeps
+          // the two headed sections.
+          const renderScopeAdd = (scope: "tag" | "label") => {
+            const items = scope === "tag" ? assignedTags : assignedLabels;
+            const canEditScope = scope === "tag" ? canEditTags : canEditLabels;
+            if (!task || !canEditScope) return null;
+            const addItem = t(
+              scope === "tag"
+                ? "tasks:properties.addTag"
+                : "tasks:properties.addLabel",
+            );
+
+            return (
+              <TaskLabelsPopover
+                task={task}
+                workspaceId={workspaceId}
+                scope={scope}
+              >
+                {items.length > 0 ? (
+                  // The Button must stay the popover trigger's direct child.
+                  // Wrapping it in a context-only component (a Tooltip, say)
+                  // makes the trigger render that component instead of a DOM
+                  // node, so its click handler never reaches a real element and
+                  // the picker silently fails to open. The label comes from
+                  // `title` + `aria-label` instead.
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={addItem}
+                    title={addItem}
+                    className="size-6 rounded-full p-0"
+                  >
+                    <Plus className="size-3.5" />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 gap-1.5 px-2 text-xs text-muted-foreground"
+                  >
+                    <Plus className="size-3.5" />
+                    {addItem}
+                  </Button>
+                )}
+              </TaskLabelsPopover>
+            );
+          };
+
+          // Tags first: they are the project-local pool and read as the more
+          // specific grouping.
+          const visibleScopes = scopes.filter((scope) => {
+            const items = scope === "tag" ? assignedTags : assignedLabels;
+            const canEditScope = scope === "tag" ? canEditTags : canEditLabels;
+            return items.length > 0 || canEditScope;
+          });
+          if (visibleScopes.length === 0) return null;
+
+          // Compact mode (the details sheet): each pool keeps its own row, so a
+          // tag and a label never share a line and each row owns its add action.
+          if (compact) {
+            return (
+              <div className="flex flex-col gap-1.5 px-3 pt-2 pb-3">
+                {visibleScopes.map((scope) => (
+                  <div
+                    key={scope}
+                    className="flex flex-wrap items-center gap-1.5"
+                  >
+                    <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      {scopeHeading(scope)}
+                    </span>
+                    {renderScopeChips(scope)}
+                    {renderScopeAdd(scope)}
+                  </div>
+                ))}
+              </div>
+            );
+          }
+
+          return visibleScopes.map((scope) => (
+            <div key={scope} className="flex flex-col gap-1 py-2 px-2 lg:px-3">
+              <span className="text-xs font-medium text-foreground/70">
+                {scopeHeading(scope)}
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {renderScopeChips(scope)}
+                {renderScopeAdd(scope)}
+              </div>
             </div>
-          </div>
-        )}
+          ));
+        })()}
       </div>
     </div>
   );

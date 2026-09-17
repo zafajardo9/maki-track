@@ -393,6 +393,24 @@ function renderActivityContent({
     }
   }
 
+  if (activity.type === "label_unassigned") {
+    // Cross-project moves strip a task's tag copies and record one
+    // label_unassigned row per stripped tag, carrying the tag name.
+    if (eventData?.labelName) {
+      return (
+        <span className="text-sm text-muted-foreground">
+          {t("activity:removedTag", { name: String(eventData.labelName) })}
+        </span>
+      );
+    }
+
+    return (
+      <span className="text-sm text-muted-foreground">
+        {content || toDisplayCase(activity.type)}
+      </span>
+    );
+  }
+
   if (activity.type === "created") {
     if (eventData) {
       return (

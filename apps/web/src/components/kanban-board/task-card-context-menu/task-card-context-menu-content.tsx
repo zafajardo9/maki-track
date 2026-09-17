@@ -12,6 +12,11 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
 } from "@/components/ui/context-menu";
+import labelColors from "@/constants/label-colors";
+import useAttachLabelToTask from "@/hooks/mutations/label/use-attach-label-to-task";
+import useDetachLabelFromTask from "@/hooks/mutations/label/use-detach-label-from-task";
+import useAttachTagToTask from "@/hooks/mutations/tag/use-attach-tag-to-task";
+import useDetachTagFromTask from "@/hooks/mutations/tag/use-detach-tag-from-task";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import { useUpdateTaskAssignee } from "@/hooks/mutations/task/use-update-task-assignee";
 import { useUpdateTaskDescription } from "@/hooks/mutations/task/use-update-task-description";
@@ -20,11 +25,15 @@ import { useUpdateTaskStatus } from "@/hooks/mutations/task/use-update-task-stat
 import { useUpdateTaskPriority } from "@/hooks/mutations/task/use-update-task-status-priority";
 import { useUpdateTaskTitle } from "@/hooks/mutations/task/use-update-task-title";
 import { useGetColumns } from "@/hooks/queries/column/use-get-columns";
+import useGetLabelsByTask from "@/hooks/queries/label/use-get-labels-by-task";
+import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
+import useGetTagsByProject from "@/hooks/queries/tag/use-get-tags-by-project";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { getColumnIcon } from "@/lib/column";
 import { generateLink } from "@/lib/generate-link";
 import { getInitials } from "@/lib/get-initials";
+import { getTaskLabelOptions } from "@/lib/get-task-label-options";
 import { getPriorityLabel } from "@/lib/i18n/domain";
 import { getPriorityIcon } from "@/lib/priority";
 import { toast } from "@/lib/toast";
@@ -74,11 +83,97 @@ export default function TaskCardContextMenuContent({
   const { mutateAsync: updateTaskTitle } = useUpdateTaskTitle();
   const { mutateAsync: updateTaskDescription } = useUpdateTaskDescription();
   const { mutateAsync: updateTaskDueDate } = useUpdateTaskDueDate();
-  const { canUpdateTasks, canDeleteTasks, canAssignTasks } =
-    useWorkspacePermission();
+  const {
+    canUpdateTasks,
+    canDeleteTasks,
+    canAssignTasks,
+    canUpdateLabels,
+    canUpdateTags,
+  } = useWorkspacePermission();
   const canEdit = canUpdateTasks();
   const canDelete = canDeleteTasks();
   const canAssign = canAssignTasks();
+  const canEditLabels = canUpdateLabels();
+  const canEditTags = canUpdateTags();
+
+  const { data: taskLabels = [] } = useGetLabelsByTask(task.id);
+  const { data: projectTags = [] } = useGetTagsByProject(
+    taskCardContext.projectId,
+  );
+  const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(
+    taskCardContext.worskpaceId,
+  );
+  const { mutateAsync: attachLabel } = useAttachLabelToTask();
+  const { mutateAsync: detachLabel } = useDetachLabelFromTask();
+  const { mutateAsync: attachTag } = useAttachTagToTask();
+  const { mutateAsync: detachTag } = useDetachTagFromTask();
+
+  // Options are deduped per scope so a tag never hides a same-named label.
+  const tagOptions = useMemo(
+    () =>
+      getTaskLabelOptions(projectTags, task.id).filter((row) =>
+        Boolean(row.projectId),
+      ),
+    [projectTags, task.id],
+  );
+
+  const labelOptions = useMemo(
+    () =>
+      getTaskLabelOptions(workspaceLabels, task.id).filter(
+        (row) => !row.projectId,
+      ),
+    [workspaceLabels, task.id],
+  );
+
+  const assignedTagNames = useMemo(
+    () => new Set(taskLabels.filter((l) => l.projectId).map((l) => l.name)),
+    [taskLabels],
+  );
+  const assignedLabelNames = useMemo(
+    () => new Set(taskLabels.filter((l) => !l.projectId).map((l) => l.name)),
+    [taskLabels],
+  );
+
+  const handleToggleScope = async (
+    scope: "tag" | "label",
+    option: { id: string; name: string; taskId: string | null },
+  ) => {
+    try {
+      const isTag = scope === "tag";
+      const assigned = (isTag ? assignedTagNames : assignedLabelNames).has(
+        option.name,
+      );
+      // Detaching needs the id of the copy on THIS task, not the palette row.
+      const assignedCopy = taskLabels.find(
+        (label) =>
+          label.name === option.name && Boolean(label.projectId) === isTag,
+      );
+
+      if (assigned && assignedCopy) {
+        if (isTag) {
+          await detachTag({ tagId: assignedCopy.id });
+          toast.success(t("tasks:popover.tags.removeSuccess"));
+        } else {
+          await detachLabel({ labelId: assignedCopy.id });
+          toast.success(t("tasks:popover.labels.removeSuccess"));
+        }
+        return;
+      }
+
+      if (option.taskId !== null) return;
+      if (isTag) {
+        await attachTag({ tagId: option.id, taskId: task.id });
+        toast.success(t("tasks:popover.tags.addSuccess"));
+      } else {
+        await attachLabel({ labelId: option.id, taskId: task.id });
+        toast.success(t("tasks:popover.labels.addSuccess"));
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("tasks:update.error"),
+      );
+    }
+  };
 
   const usersOptions = useMemo(() => {
     return workspaceUsers?.members?.map((member) => ({
@@ -131,6 +226,59 @@ export default function TaskCardContextMenuContent({
     } finally {
       toast.success(t("tasks:update.success"));
     }
+  };
+
+  // Read-only users still see what is attached; the items are just disabled.
+  const renderScopeSubmenu = (scope: "tag" | "label") => {
+    const isTag = scope === "tag";
+    const options = isTag ? tagOptions : labelOptions;
+    const assignedNames = isTag ? assignedTagNames : assignedLabelNames;
+    const canEditScope = isTag ? canEditTags : canEditLabels;
+    if (!canEditScope && assignedNames.size === 0) return null;
+
+    return (
+      <ContextMenuSub key={scope}>
+        <ContextMenuSubTrigger>
+          <span>
+            {t(isTag ? "tasks:contextMenu.tags" : "tasks:contextMenu.labels")}
+          </span>
+        </ContextMenuSubTrigger>
+        <ContextMenuSubContent className="w-48">
+          {options.length === 0 ? (
+            <ContextMenuItem disabled>
+              <span>
+                {t(
+                  isTag
+                    ? "tasks:contextMenu.noTags"
+                    : "tasks:contextMenu.noLabels",
+                )}
+              </span>
+            </ContextMenuItem>
+          ) : (
+            options.map((option) => (
+              <ContextMenuCheckboxItem
+                key={option.id}
+                checked={assignedNames.has(option.name)}
+                disabled={!canEditScope}
+                onCheckedChange={() => handleToggleScope(scope, option)}
+                closeOnClick={false}
+                className="[&_svg]:text-muted-foreground"
+              >
+                <span
+                  className="w-2 h-2 flex-shrink-0 rounded-full"
+                  style={{
+                    backgroundColor:
+                      labelColors.find((c) => c.value === option.color)
+                        ?.color || "var(--color-neutral-400)",
+                  }}
+                />
+                <span className="max-w-32 truncate">{option.name}</span>
+              </ContextMenuCheckboxItem>
+            ))
+          )}
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+    );
   };
 
   return (
@@ -194,6 +342,10 @@ export default function TaskCardContextMenuContent({
           </ContextMenuSubContent>
         </ContextMenuSub>
       )}
+
+      {renderScopeSubmenu("tag")}
+
+      {renderScopeSubmenu("label")}
 
       {canEdit && (
         <ContextMenuSub>

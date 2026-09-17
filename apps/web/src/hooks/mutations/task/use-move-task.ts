@@ -11,6 +11,14 @@ export function useMoveTask() {
     mutationFn: moveTask,
     onSuccess: (result, variables) => {
       toast.success(t("tasks:move.success"));
+      queryClient.invalidateQueries({ queryKey: ["labels", variables.taskId] });
+      queryClient.invalidateQueries({
+        queryKey: ["tags", result.sourceProjectId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["tags", result.destinationProjectId],
+      });
+
       queryClient.invalidateQueries({
         queryKey: ["task", variables.taskId],
       });

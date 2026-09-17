@@ -14,4 +14,18 @@ describe("TaskLabels", () => {
 
     expect(screen.getByText("Bug")).toBeVisible();
   });
+  it("renders both same-named scopes with the project tag first", () => {
+    const { container } = render(
+      <TaskLabels
+        labels={[
+          { id: "label", name: "Bug", color: "red", projectId: null },
+          { id: "tag", name: "Bug", color: "green", projectId: "project-1" },
+        ]}
+      />,
+    );
+    expect(screen.getAllByText("Bug")).toHaveLength(2);
+    expect(container.querySelector("span[style]")).toHaveStyle({
+      "--label-color": "var(--color-green-600)",
+    });
+  });
 });

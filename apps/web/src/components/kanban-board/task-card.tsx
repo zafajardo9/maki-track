@@ -250,9 +250,9 @@ function TaskCard({ task, disableDragDrop = false }: TaskCardProps) {
               </div>
             </div>
 
-            {showLabels && (
-              <div className="mb-2.5">
-                <TaskLabels labels={task.labels ?? []} />
+            {showLabels && Boolean(task.labels?.length) && (
+              <div className="mb-2">
+                <TaskLabels labels={task.labels ?? []} compact />
               </div>
             )}
 

@@ -56,6 +56,18 @@ export function useProjectWebSocket(projectId: string) {
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          if (message.type === "PROJECT_TAGS_UPDATED") {
+            void queryClient.invalidateQueries({
+              queryKey: ["tags", message.projectId],
+            });
+            void queryClient.invalidateQueries({
+              queryKey: ["tasks", message.projectId],
+            });
+            void queryClient.invalidateQueries({ queryKey: ["labels"] });
+            void queryClient.invalidateQueries({ queryKey: ["task"] });
+            return;
+          }
+
           if (
             message.type === "TASK_UPDATED" ||
             message.type === "TASK_CREATED" ||
@@ -97,9 +109,17 @@ export function useProjectWebSocket(projectId: string) {
               });
             }
 
-            if (message.type === "TASK_LABEL_UPDATED") {
+            if (
+              message.type === "TASK_LABEL_UPDATED" ||
+              message.type === "TASK_MOVED"
+            ) {
               queryClient.invalidateQueries({
                 queryKey: ["labels", message.taskId],
+              });
+              // Tag changes reuse the label events, so the project tag
+              // palette needs the same refresh as the task label list.
+              queryClient.invalidateQueries({
+                queryKey: ["tags", message.projectId],
               });
             }
 

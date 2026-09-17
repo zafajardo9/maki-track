@@ -44,8 +44,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import labelColors from "@/constants/label-colors";
+import useAttachTagToTask from "@/hooks/mutations/tag/use-attach-tag-to-task";
 import { useBulkOperations } from "@/hooks/mutations/task/use-bulk-operations";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
+import useGetTagsByProject from "@/hooks/queries/tag/use-get-tags-by-project";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
@@ -106,12 +108,20 @@ function BacklogBulkToolbar() {
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(
     workspace?.id ?? "",
   );
-  const { canUpdateTasks, canDeleteTasks, canAssignTasks, canUpdateLabels } =
-    useWorkspacePermission();
+  const { data: projectTags = [] } = useGetTagsByProject(project?.id ?? "");
+  const { mutateAsync: attachTagToTask } = useAttachTagToTask();
+  const {
+    canUpdateTasks,
+    canDeleteTasks,
+    canAssignTasks,
+    canUpdateLabels,
+    canUpdateTags,
+  } = useWorkspacePermission();
   const canEdit = canUpdateTasks();
   const canDelete = canDeleteTasks();
   const canAssign = canAssignTasks();
   const canEditLabels = canUpdateLabels();
+  const canEditTags = canUpdateTags();
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
@@ -127,6 +137,11 @@ function BacklogBulkToolbar() {
     }
     return Array.from(labelMap.values());
   }, [workspaceLabels]);
+
+  const tagPalette = useMemo(
+    () => projectTags.filter((tag) => tag.taskId === null),
+    [projectTags],
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -256,6 +271,24 @@ function BacklogBulkToolbar() {
     [bulkAddLabel, selectedTaskIds, selectedCount, clearSelection, t],
   );
 
+  const handleBulkAddTag = useCallback(
+    async (tagId: string) => {
+      try {
+        // Tags attach through the tag route so copies stay project-scoped;
+        // the bulk label endpoint would create workspace-label copies.
+        for (const taskId of Array.from(selectedTaskIds)) {
+          await attachTagToTask({ tagId, taskId });
+        }
+        toast.success(t("tasks:bulk.addTagSuccess", { count: selectedCount }));
+        clearSelection();
+        setIsActionsOpen(false);
+      } catch (_error) {
+        toast.error(t("tasks:bulk.addTagError"));
+      }
+    },
+    [attachTagToTask, selectedTaskIds, selectedCount, clearSelection, t],
+  );
+
   const handleBulkDueDate = useCallback(
     async (date: Date | undefined) => {
       try {
@@ -345,6 +378,29 @@ function BacklogBulkToolbar() {
         })),
       });
     }
+    if (canEditTags && tagPalette.length > 0) {
+      groups.push({
+        value: "tag",
+        label: t("tasks:tags.label"),
+        items: tagPalette.map((tag) => ({
+          value: `tag-${tag.id}`,
+          label: tag.name,
+          icon: (
+            <span
+              className="inline-block w-3 h-3 rounded-full shrink-0"
+              style={{
+                backgroundColor:
+                  labelColors.find((c) => c.value === tag.color)?.color ||
+                  "var(--color-neutral-400)",
+              }}
+            />
+          ),
+          onRun: () => {
+            void handleBulkAddTag(tag.id);
+          },
+        })),
+      });
+    }
     if (canEditLabels) {
       groups.push({
         value: "label",
@@ -374,19 +430,23 @@ function BacklogBulkToolbar() {
     canDelete,
     canAssign,
     canEditLabels,
+    canEditTags,
     workspaceUsers?.members,
     uniqueLabels,
+    tagPalette,
     handleBulkDelete,
     handleBulkArchive,
     handleBulkAssign,
     handleBulkPriority,
     handleBulkAddLabel,
+    handleBulkAddTag,
     priorityOptions,
     t,
   ]);
 
   if (selectedCount === 0) return null;
-  if (!canEdit && !canDelete && !canAssign && !canEditLabels) return null;
+  if (!canEdit && !canDelete && !canAssign && !canEditLabels && !canEditTags)
+    return null;
 
   return (
     <div className="-translate-x-1/2 fixed bottom-6 left-1/2 z-50 transition-[translate,opacity] duration-200 ease-out starting:translate-y-3 starting:opacity-0 motion-reduce:starting:translate-y-0">

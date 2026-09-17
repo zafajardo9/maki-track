@@ -17,6 +17,16 @@ const mockRemoveLabelFromGitea = vi.fn();
 
 vi.mock("../../../apps/api/src/database", () => ({
   default: {
+    transaction: async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback({
+        query: {
+          labelTable: {
+            findFirst: (...args: unknown[]) => mockFindFirst(...args),
+          },
+        },
+        select: (...args: unknown[]) => mockSelect(...args),
+        delete: (...args: unknown[]) => mockDelete(...args),
+      }),
     query: {
       labelTable: {
         findFirst: (...args: unknown[]) => mockFindFirst(...args),
@@ -57,6 +67,7 @@ const WORKSPACE_LABEL = {
   updatedAt: new Date(),
   taskId: null,
   workspaceId: "ws-1",
+  projectId: null,
 };
 
 const DELETED_WORKSPACE_LABEL = { ...WORKSPACE_LABEL };
@@ -69,6 +80,7 @@ const TASK_LABEL_1 = {
   updatedAt: new Date(),
   taskId: "task-1",
   workspaceId: "ws-1",
+  projectId: null,
 };
 
 const TASK_LABEL_2 = {
@@ -79,7 +91,40 @@ const TASK_LABEL_2 = {
   updatedAt: new Date(),
   taskId: "task-2",
   workspaceId: "ws-1",
+  projectId: null,
 };
+
+const TASK_TAG_LABEL = {
+  id: "label-tag-1",
+  name: "bug",
+  color: "EF4444",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  taskId: "task-9",
+  workspaceId: "ws-1",
+  projectId: "proj-9",
+};
+
+const AFFECTED_ROWS = [
+  {
+    label: TASK_LABEL_1,
+    taskId: "task-1",
+    projectId: "proj-1",
+    workspaceId: "ws-1",
+  },
+  {
+    label: TASK_LABEL_2,
+    taskId: "task-2",
+    projectId: "proj-2",
+    workspaceId: "ws-1",
+  },
+  {
+    label: TASK_TAG_LABEL,
+    taskId: "task-9",
+    projectId: "proj-9",
+    workspaceId: "ws-1",
+  },
+];
 
 /**
  * Build a mock chain for `db.select().from().innerJoin().innerJoin().where()`.
@@ -129,27 +174,12 @@ describe("deleteLabel", () => {
       mockRemoveLabelFromGitHub.mockResolvedValue(undefined);
       mockRemoveLabelFromGitea.mockResolvedValue(undefined);
       mockFindFirst.mockResolvedValue(WORKSPACE_LABEL);
-      mockSelect.mockReturnValue(
-        makeSelectMock([
-          {
-            label: TASK_LABEL_1,
-            taskId: "task-1",
-            projectId: "proj-1",
-            workspaceId: "ws-1",
-          },
-          {
-            label: TASK_LABEL_2,
-            taskId: "task-2",
-            projectId: "proj-2",
-            workspaceId: "ws-1",
-          },
-        ]),
-      );
+      mockSelect.mockReturnValue(makeSelectMock(AFFECTED_ROWS));
       mockDelete.mockReturnValue(makeDeleteMock(DELETED_WORKSPACE_LABEL));
 
       await deleteLabel("label-ws-1", "user-1");
 
-      expect(mockPublishEvent).toHaveBeenCalledTimes(2);
+      expect(mockPublishEvent).toHaveBeenCalledTimes(3);
       expect(mockPublishEvent).toHaveBeenCalledWith("task.label_deleted", {
         label: TASK_LABEL_1,
         task: { id: "task-1", projectId: "proj-1" },
@@ -166,28 +196,21 @@ describe("deleteLabel", () => {
         userId: "user-1",
         type: "label_deleted",
       });
+      expect(mockPublishEvent).toHaveBeenCalledWith("task.label_deleted", {
+        label: TASK_TAG_LABEL,
+        task: { id: "task-9", projectId: "proj-9" },
+        projectId: "proj-9",
+        taskId: "task-9",
+        userId: "user-1",
+        type: "label_deleted",
+      });
     });
 
-    it("calls removeLabelFromGitHub and removeLabelFromGitea for each affected task", async () => {
+    it("syncs providers for workspace copies but never for tag copies", async () => {
       mockRemoveLabelFromGitHub.mockResolvedValue(undefined);
       mockRemoveLabelFromGitea.mockResolvedValue(undefined);
       mockFindFirst.mockResolvedValue(WORKSPACE_LABEL);
-      mockSelect.mockReturnValue(
-        makeSelectMock([
-          {
-            label: TASK_LABEL_1,
-            taskId: "task-1",
-            projectId: "proj-1",
-            workspaceId: "ws-1",
-          },
-          {
-            label: TASK_LABEL_2,
-            taskId: "task-2",
-            projectId: "proj-2",
-            workspaceId: "ws-1",
-          },
-        ]),
-      );
+      mockSelect.mockReturnValue(makeSelectMock(AFFECTED_ROWS));
       mockDelete.mockReturnValue(makeDeleteMock(DELETED_WORKSPACE_LABEL));
 
       await deleteLabel("label-ws-1", "user-1");

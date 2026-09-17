@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { ProjectWithTasks } from "@/types/project";
 import { useTaskFiltersWithLabelsSupport } from "./use-task-filters-with-labels-support";
 
 describe("useTaskFiltersWithLabelsSupport", () => {
@@ -179,6 +180,45 @@ describe("useTaskFiltersWithLabelsSupport", () => {
       expect(result.current.filteredProject?.columns[0]?.tasks).toEqual([
         expect.objectContaining({ id: "task-123" }),
       ]);
+    },
+  );
+  it.each(["label", "tag"])(
+    "filters same-named scopes independently by %s id",
+    async (scope) => {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({ labels: [scope] }),
+      );
+      const label = { id: "label", name: "bug", color: "red" };
+      const tag = {
+        id: "tag",
+        name: "bug",
+        color: "green",
+        projectId: "project-1",
+      };
+      const project = {
+        id: "project-1",
+        columns: [
+          {
+            tasks: [
+              { id: "label-only", labels: [label] },
+              { id: "tag-only", labels: [tag] },
+              { id: "both", labels: [label, tag] },
+            ],
+          },
+        ],
+      } as ProjectWithTasks;
+      const { result } = renderHook(() =>
+        useTaskFiltersWithLabelsSupport(project, "project-1"),
+      );
+      await waitFor(() =>
+        expect(result.current.filters.labels).toEqual([scope]),
+      );
+      expect(
+        result.current.filteredProject?.columns[0]?.tasks.map(
+          (task) => task.id,
+        ),
+      ).toEqual([`${scope}-only`, "both"]);
     },
   );
 });

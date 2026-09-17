@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import CreateTaskModal from "./create-task-modal";
 
 const useLocation = vi.fn();
@@ -11,10 +11,46 @@ const createTask = vi.fn(async (input: Record<string, unknown>) => ({
   createdAt: "2026-08-05T00:00:00.000Z",
 }));
 
+const mocks = vi.hoisted(() => ({
+  projectTags: [] as Array<{
+    id: string;
+    name: string;
+    color: string;
+    taskId: string | null;
+    projectId: string | null;
+    workspaceId: string | null;
+    createdAt: string;
+  }>,
+  permissions: {
+    canCreateTasks: true,
+    canCreateLabels: true,
+    canUpdateTags: true,
+  },
+}));
+
+const tagOption = {
+  id: "tag-1",
+  name: "urgent",
+  color: "red",
+  taskId: null,
+  projectId: "project-1",
+  workspaceId: "workspace-1",
+  createdAt: "2026-01-01T00:00:00.000Z",
+};
+
 afterEach(() => {
   cleanup();
   document.body.innerHTML = "";
   vi.clearAllMocks();
+});
+
+beforeEach(() => {
+  mocks.projectTags = [];
+  mocks.permissions = {
+    canCreateTasks: true,
+    canCreateLabels: true,
+    canUpdateTags: true,
+  };
 });
 
 vi.mock("@tanstack/react-router", () => ({
@@ -45,6 +81,14 @@ vi.mock("@/hooks/queries/label/use-get-labels-by-workspace", () => ({
   default: () => ({ data: [] }),
 }));
 
+vi.mock("@/hooks/queries/tag/use-get-tags-by-project", () => ({
+  default: () => ({ data: mocks.projectTags }),
+}));
+
+vi.mock("@/hooks/mutations/tag/use-attach-tag-to-task", () => ({
+  default: () => ({ mutateAsync: vi.fn() }),
+}));
+
 vi.mock("@/hooks/queries/workspace/use-active-workspace", () => ({
   default: () => ({ data: { id: "workspace-1", name: "WS" } }),
 }));
@@ -58,8 +102,9 @@ vi.mock(
 
 vi.mock("@/hooks/use-workspace-permission", () => ({
   useWorkspacePermission: () => ({
-    canCreateTasks: () => true,
-    canCreateLabels: () => true,
+    canCreateTasks: () => mocks.permissions.canCreateTasks,
+    canCreateLabels: () => mocks.permissions.canCreateLabels,
+    canUpdateTags: () => mocks.permissions.canUpdateTags,
   }),
 }));
 
@@ -127,5 +172,58 @@ describe("CreateTaskModal project picker", () => {
     expect(
       screen.queryByText("common:modals.createTask.selectProject"),
     ).toBeNull();
+  });
+});
+
+describe("CreateTaskModal tags picker", () => {
+  beforeEach(() => {
+    useLocation.mockReturnValue({
+      pathname: "/dashboard/workspace/workspace-1/project/project-1/board",
+    });
+  });
+
+  it("lists project tags in a dedicated tags picker", async () => {
+    mocks.projectTags = [tagOption];
+    render(<CreateTaskModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByText("common:modals.createTask.tags"));
+
+    expect(await screen.findByText("urgent")).toBeInTheDocument();
+  });
+
+  it("keeps project tags out of the labels picker", async () => {
+    mocks.projectTags = [tagOption];
+    render(<CreateTaskModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByText("common:modals.createTask.labels"));
+
+    expect(
+      await screen.findByText("common:modals.createTask.noLabelsFound"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("urgent")).toBeNull();
+  });
+
+  it("adds a chip when a tag is selected", async () => {
+    mocks.projectTags = [tagOption];
+    render(<CreateTaskModal open onClose={vi.fn()} />);
+
+    fireEvent.click(screen.getByText("common:modals.createTask.tags"));
+    const option = await screen.findByText("urgent");
+    expect(screen.getAllByText("urgent")).toHaveLength(1);
+
+    fireEvent.click(option);
+
+    // One entry in the picker plus the selected chip above the toolbar.
+    expect(screen.getAllByText("urgent")).toHaveLength(2);
+  });
+
+  it("hides the tags picker without tag:update permission", () => {
+    mocks.permissions.canUpdateTags = false;
+    render(<CreateTaskModal open onClose={vi.fn()} />);
+
+    expect(screen.queryByText("common:modals.createTask.tags")).toBeNull();
+    expect(
+      screen.getByText("common:modals.createTask.labels"),
+    ).toBeInTheDocument();
   });
 });

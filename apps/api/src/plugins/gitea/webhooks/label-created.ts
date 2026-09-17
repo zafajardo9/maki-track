@@ -65,7 +65,7 @@ export async function handleGiteaLabelCreated(
       })
       .onConflictDoNothing({
         target: [labelTable.workspaceId, labelTable.name],
-        where: sql`${labelTable.taskId} is null`,
+        where: sql`${labelTable.taskId} is null and ${labelTable.projectId} is null`,
       });
   }
 }

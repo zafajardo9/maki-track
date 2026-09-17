@@ -499,10 +499,19 @@
 								"labels": {
 									"type": "string"
 								},
+								"tags": {
+									"type": "string"
+								},
 								"searchLabels": {
 									"type": "string"
 								},
 								"noLabelsFound": {
+									"type": "string"
+								},
+								"searchTags": {
+									"type": "string"
+								},
+								"noTagsFound": {
 									"type": "string"
 								},
 								"createLabel": {
@@ -593,8 +602,11 @@
 								"assignUnassigned",
 								"assignUnassignedTitle",
 								"labels",
+								"tags",
 								"searchLabels",
 								"noLabelsFound",
+								"searchTags",
+								"noTagsFound",
 								"createLabel",
 								"chooseColor",
 								"labelCreated",
@@ -3405,6 +3417,106 @@
 						"automationDescription"
 					]
 				},
+				"projectTags": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"pageTitle": {
+							"type": "string"
+						},
+						"title": {
+							"type": "string"
+						},
+						"subtitle": {
+							"type": "string"
+						},
+						"cardDescription": {
+							"type": "string"
+						},
+						"createTag": {
+							"type": "string"
+						},
+						"editTag": {
+							"type": "string"
+						},
+						"deleteTag": {
+							"type": "string"
+						},
+						"saveTag": {
+							"type": "string"
+						},
+						"nameLabel": {
+							"type": "string"
+						},
+						"namePlaceholder": {
+							"type": "string"
+						},
+						"colorLabel": {
+							"type": "string"
+						},
+						"createDescription": {
+							"type": "string"
+						},
+						"editDescription": {
+							"type": "string"
+						},
+						"deleteConfirmTitle": {
+							"type": "string"
+						},
+						"deleteConfirmDescription": {
+							"type": "string"
+						},
+						"empty": {
+							"type": "string"
+						},
+						"createSuccess": {
+							"type": "string"
+						},
+						"updateSuccess": {
+							"type": "string"
+						},
+						"deleteSuccess": {
+							"type": "string"
+						},
+						"createError": {
+							"type": "string"
+						},
+						"updateError": {
+							"type": "string"
+						},
+						"deleteError": {
+							"type": "string"
+						},
+						"nameRequired": {
+							"type": "string"
+						}
+					},
+					"required": [
+						"pageTitle",
+						"title",
+						"subtitle",
+						"cardDescription",
+						"createTag",
+						"editTag",
+						"deleteTag",
+						"saveTag",
+						"nameLabel",
+						"namePlaceholder",
+						"colorLabel",
+						"createDescription",
+						"editDescription",
+						"deleteConfirmTitle",
+						"deleteConfirmDescription",
+						"empty",
+						"createSuccess",
+						"updateSuccess",
+						"deleteSuccess",
+						"createError",
+						"updateError",
+						"deleteError",
+						"nameRequired"
+					]
+				},
 				"projectSwitcher": {
 					"type": "object",
 					"additionalProperties": false,
@@ -5094,6 +5206,7 @@
 				"projectIntegrations",
 				"projectVisibility",
 				"projectWorkflow",
+				"projectTags",
 				"projectSwitcher",
 				"columnEditor",
 				"githubIntegration",
@@ -5852,6 +5965,9 @@
 				"moved": {
 					"type": "string"
 				},
+				"removedTag": {
+					"type": "string"
+				},
 				"created": {
 					"type": "string"
 				},
@@ -6268,6 +6384,7 @@
 				"changedDueDate",
 				"changedTitle",
 				"moved",
+				"removedTag",
 				"created",
 				"githubUser",
 				"comment"
@@ -6985,7 +7102,13 @@
 						"labels": {
 							"type": "string"
 						},
+						"tags": {
+							"type": "string"
+						},
 						"addLabel": {
+							"type": "string"
+						},
+						"addTag": {
 							"type": "string"
 						},
 						"copyTaskLink": {
@@ -7007,7 +7130,9 @@
 					"required": [
 						"title",
 						"labels",
+						"tags",
 						"addLabel",
+						"addTag",
 						"copyTaskLink",
 						"copyTaskBranch",
 						"start",
@@ -7063,6 +7188,9 @@
 					"type": "object",
 					"additionalProperties": false,
 					"properties": {
+						"searchPlaceholder": {
+							"type": "string"
+						},
 						"assignee": {
 							"type": "object",
 							"additionalProperties": false,
@@ -7159,6 +7287,9 @@
 								"createError": {
 									"type": "string"
 								},
+								"noPermission": {
+									"type": "string"
+								},
 								"colors": {
 									"type": "object",
 									"additionalProperties": false,
@@ -7214,17 +7345,60 @@
 								"updateError",
 								"createSuccess",
 								"createError",
+								"noPermission",
 								"colors"
+							]
+						},
+						"tags": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"addSuccess": {
+									"type": "string"
+								},
+								"removeSuccess": {
+									"type": "string"
+								},
+								"searchPlaceholder": {
+									"type": "string"
+								},
+								"create": {
+									"type": "string"
+								},
+								"chooseColor": {
+									"type": "string"
+								},
+								"createSuccess": {
+									"type": "string"
+								},
+								"createError": {
+									"type": "string"
+								},
+								"noPermission": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"addSuccess",
+								"removeSuccess",
+								"searchPlaceholder",
+								"create",
+								"chooseColor",
+								"createSuccess",
+								"createError",
+								"noPermission"
 							]
 						}
 					},
 					"required": [
+						"searchPlaceholder",
 						"assignee",
 						"status",
 						"priority",
 						"dueDate",
 						"startDate",
-						"labels"
+						"labels",
+						"tags"
 					]
 				},
 				"backlog": {
@@ -7329,6 +7503,9 @@
 								"label": {
 									"type": "string"
 								},
+								"tag": {
+									"type": "string"
+								},
 								"dueThisWeek": {
 									"type": "string"
 								},
@@ -7344,6 +7521,7 @@
 								"assignee",
 								"due",
 								"label",
+								"tag",
 								"dueThisWeek",
 								"dueNextWeek",
 								"noDueDate"
@@ -7506,6 +7684,19 @@
 								"labels"
 							]
 						},
+						"sections": {
+							"type": "object",
+							"additionalProperties": false,
+							"properties": {
+								"tags": {
+									"type": "string"
+								},
+								"labels": {
+									"type": "string"
+								}
+							},
+							"required": ["tags", "labels"]
+						},
 						"operators": {
 							"type": "object",
 							"additionalProperties": false,
@@ -7528,6 +7719,7 @@
 						"allDueDates",
 						"allLabels",
 						"subjects",
+						"sections",
 						"operators"
 					]
 				},
@@ -7835,6 +8027,19 @@
 					},
 					"required": ["label", "empty"]
 				},
+				"tags": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"label": {
+							"type": "string"
+						},
+						"empty": {
+							"type": "string"
+						}
+					},
+					"required": ["label", "empty"]
+				},
 				"update": {
 					"type": "object",
 					"additionalProperties": false,
@@ -7857,9 +8062,28 @@
 						},
 						"copyLinkSuccess": {
 							"type": "string"
+						},
+						"tags": {
+							"type": "string"
+						},
+						"labels": {
+							"type": "string"
+						},
+						"noTags": {
+							"type": "string"
+						},
+						"noLabels": {
+							"type": "string"
 						}
 					},
-					"required": ["copyLink", "copyLinkSuccess"]
+					"required": [
+						"copyLink",
+						"copyLinkSuccess",
+						"tags",
+						"labels",
+						"noTags",
+						"noLabels"
+					]
 				},
 				"actions": {
 					"type": "object",
@@ -8115,6 +8339,30 @@
 						"addLabelError": {
 							"type": "string"
 						},
+						"addTagSuccess": {
+							"type": "string"
+						},
+						"addTagSuccess_zero": {
+							"type": "string"
+						},
+						"addTagSuccess_one": {
+							"type": "string"
+						},
+						"addTagSuccess_two": {
+							"type": "string"
+						},
+						"addTagSuccess_few": {
+							"type": "string"
+						},
+						"addTagSuccess_many": {
+							"type": "string"
+						},
+						"addTagSuccess_other": {
+							"type": "string"
+						},
+						"addTagError": {
+							"type": "string"
+						},
 						"setDueDate": {
 							"type": "string"
 						},
@@ -8150,6 +8398,7 @@
 						"updatePriorityError",
 						"addLabel",
 						"addLabelError",
+						"addTagError",
 						"setDueDate",
 						"updateDueDateError",
 						"actions",
@@ -8359,6 +8608,7 @@
 				"assignee",
 				"dueDate",
 				"labels",
+				"tags",
 				"update",
 				"contextMenu",
 				"actions",

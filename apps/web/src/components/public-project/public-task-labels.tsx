@@ -1,8 +1,12 @@
-import { Badge } from "@/components/ui/badge";
-import labelColors from "@/constants/label-colors";
+import { LabelChip } from "@/components/common/label-chip";
 
 type PublicTaskLabelsProps = {
-  labels: Array<{ id: string; name: string; color: string }>;
+  labels: Array<{
+    id: string;
+    name: string;
+    color: string;
+    projectId?: string | null;
+  }>;
 };
 
 export function PublicTaskLabels({ labels }: PublicTaskLabelsProps) {
@@ -10,23 +14,13 @@ export function PublicTaskLabels({ labels }: PublicTaskLabelsProps) {
 
   return (
     <div className="flex flex-wrap gap-1">
-      {labels.map((label) => (
-        <Badge
-          key={label.id}
-          variant="outline"
-          className="px-2 py-0.5 text-[10px] flex items-center"
-        >
-          <span
-            className="inline-block w-1.5 h-1.5 mr-1 rounded-full"
-            style={{
-              backgroundColor:
-                labelColors.find((c) => c.value === label.color)?.color ||
-                "var(--color-neutral-400)",
-            }}
-          />
-          <span className="max-w-20 truncate">{label.name}</span>
-        </Badge>
-      ))}
+      {[...labels]
+        .sort(
+          (a, b) => Number(Boolean(b.projectId)) - Number(Boolean(a.projectId)),
+        )
+        .map((label) => (
+          <LabelChip key={label.id} label={label} />
+        ))}
     </div>
   );
 }

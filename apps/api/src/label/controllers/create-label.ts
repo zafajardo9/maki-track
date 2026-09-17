@@ -42,13 +42,18 @@ async function createLabel(
       .values({ name, color, taskId, workspaceId: task.workspaceId })
       .onConflictDoNothing({
         target: [labelTable.taskId, labelTable.name],
+        where: sql`${labelTable.projectId} is null`,
       })
       .returning();
 
     const label =
       inserted ??
       (await db.query.labelTable.findFirst({
-        where: and(eq(labelTable.taskId, taskId), eq(labelTable.name, name)),
+        where: and(
+          eq(labelTable.taskId, taskId),
+          eq(labelTable.name, name),
+          isNull(labelTable.projectId),
+        ),
       }));
 
     if (!label) {
@@ -78,7 +83,7 @@ async function createLabel(
     .values({ name, color, taskId: null, workspaceId })
     .onConflictDoNothing({
       target: [labelTable.workspaceId, labelTable.name],
-      where: sql`${labelTable.taskId} is null`,
+      where: sql`${labelTable.taskId} is null and ${labelTable.projectId} is null`,
     })
     .returning();
 
@@ -89,6 +94,7 @@ async function createLabel(
         eq(labelTable.workspaceId, workspaceId),
         eq(labelTable.name, name),
         isNull(labelTable.taskId),
+        isNull(labelTable.projectId),
       ),
     }));
 

@@ -152,7 +152,10 @@
 					"terracotta": "Теракота",
 					"rose": "Троянда",
 					"crimson": "Багряний"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1264,6 +1267,31 @@
 			"updateError": "Не вдалося оновити мітку",
 			"deleteError": "Не вдалося видалити мітку",
 			"nameRequired": "Назва мітки є обов'язковою"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1557,7 +1585,8 @@
 			}
 		},
 		"moved": "перемістив завдання з «{{from}}» до «{{to}}»",
-		"created": "створив це завдання"
+		"created": "створив це завдання",
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1740,7 +1769,9 @@
 			"copyTaskBranch": "Копіювати гілку завдання",
 			"start": "Початок",
 			"startDate": "Дата початку",
-			"noDate": "Немає дати"
+			"noDate": "Немає дати",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "Перемістити завдання",
@@ -1794,8 +1825,20 @@
 					"terracotta": "Теракота",
 					"rose": "Троянда",
 					"crimson": "Багряний"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Беклог {{name}}",
@@ -1820,7 +1863,8 @@
 				"label": "Мітка: {{name}}",
 				"dueThisWeek": "Термін цього тижня",
 				"dueNextWeek": "Термін наступного тижня",
-				"noDueDate": "Без дати завершення"
+				"noDueDate": "Без дати завершення",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1859,6 +1903,10 @@
 			"operators": {
 				"isAnyOf": "є будь-яким з",
 				"includeAnyOf": "включає будь-який з"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"gantt": {
@@ -1927,7 +1975,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Копіювати посилання",
-			"copyLinkSuccess": "Посилання на завдання скопійовано!"
+			"copyLinkSuccess": "Посилання на завдання скопійовано!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Архівувати",
@@ -1964,7 +2016,9 @@
 			"actions": "Дії",
 			"searchActions": "Пошук дій...",
 			"noActionsFound": "Дій не знайдено.",
-			"changeStatus": "Змінити статус"
+			"changeStatus": "Змінити статус",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2030,6 +2084,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

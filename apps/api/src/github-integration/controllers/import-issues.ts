@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import {
@@ -278,7 +278,7 @@ async function importSingleIssue(
   return "imported";
 }
 
-async function importLabelsForTask(
+export async function importLabelsForTask(
   issueLabels: GitHubIssue["labels"],
   taskId: string,
   workspaceId: string,
@@ -304,6 +304,7 @@ async function importLabelsForTask(
     const existingLabelOnTask = await db.query.labelTable.findFirst({
       where: and(
         eq(labelTable.taskId, taskId),
+        isNull(labelTable.projectId),
         eq(labelTable.name, labelData.name),
       ),
     });
@@ -315,6 +316,7 @@ async function importLabelsForTask(
     const existingWorkspaceLabel = await db.query.labelTable.findFirst({
       where: and(
         eq(labelTable.workspaceId, workspaceId),
+        isNull(labelTable.projectId),
         eq(labelTable.name, labelData.name),
       ),
     });
@@ -331,6 +333,7 @@ async function importLabelsForTask(
       })
       .onConflictDoNothing({
         target: [labelTable.taskId, labelTable.name],
+        where: sql`${labelTable.projectId} is null`,
       });
   }
 }

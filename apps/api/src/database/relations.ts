@@ -71,6 +71,7 @@ export const workspaceTableRelations = relations(
     members: many(workspaceUserTable),
     projects: many(projectTable),
     assets: many(assetTable),
+    tags: many(labelTable),
     invitations: many(invitationTable),
     notificationWorkspaceRules: many(userNotificationWorkspaceRuleTable),
   }),
@@ -99,6 +100,7 @@ export const projectTableRelations = relations(
     }),
     tasks: many(taskTable),
     assets: many(assetTable),
+    tags: many(labelTable),
     columns: many(columnTable),
     workflowRules: many(workflowRuleTable),
     integrations: many(integrationTable),
@@ -198,6 +200,10 @@ export const assetTableRelations = relations(assetTable, ({ one }) => ({
 }));
 
 export const labelTableRelations = relations(labelTable, ({ one }) => ({
+  project: one(projectTable, {
+    fields: [labelTable.projectId],
+    references: [projectTable.id],
+  }),
   task: one(taskTable, {
     fields: [labelTable.taskId],
     references: [taskTable.id],

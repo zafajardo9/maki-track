@@ -152,7 +152,10 @@
 					"terracotta": "Terre cuite",
 					"rose": "Rose",
 					"crimson": "Cramoisi"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1263,6 +1266,31 @@
 			"updateError": "Échec de la mise à jour du label",
 			"deleteError": "Échec de la suppression du label",
 			"nameRequired": "Le nom du label est requis"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1552,7 +1580,8 @@
 					"renderFailed": "Impossible d'afficher le diagramme Mermaid"
 				}
 			}
-		}
+		},
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1735,7 +1764,9 @@
 			"copyTaskBranch": "Copier la branche de la tâche",
 			"start": "Début",
 			"startDate": "Date de début",
-			"noDate": "Pas de date"
+			"noDate": "Pas de date",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "Déplacer la tâche",
@@ -1789,8 +1820,20 @@
 					"terracotta": "Terre cuite",
 					"rose": "Rose",
 					"crimson": "Cramoisi"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Backlog de {{name}}",
@@ -1815,7 +1858,8 @@
 				"label": "Label : {{name}}",
 				"dueThisWeek": "Échéance cette semaine",
 				"dueNextWeek": "Échéance la semaine prochaine",
-				"noDueDate": "Pas de date d'échéance"
+				"noDueDate": "Pas de date d'échéance",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1854,6 +1898,10 @@
 			"operators": {
 				"isAnyOf": "est l'un des",
 				"includeAnyOf": "inclut l'un des"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"gantt": {
@@ -1921,7 +1969,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Copier le lien",
-			"copyLinkSuccess": "Lien de la tâche copié !"
+			"copyLinkSuccess": "Lien de la tâche copié !",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Archiver",
@@ -1958,7 +2010,9 @@
 			"actions": "Actions",
 			"searchActions": "Rechercher des actions...",
 			"noActionsFound": "Aucune action trouvée.",
-			"changeStatus": "Changer le statut"
+			"changeStatus": "Changer le statut",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2024,6 +2078,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

@@ -152,7 +152,10 @@
 					"terracotta": "테라코타",
 					"rose": "로즈",
 					"crimson": "크림슨"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1261,6 +1264,31 @@
 			"updateError": "라벨 업데이트에 실패했습니다",
 			"deleteError": "라벨 삭제에 실패했습니다",
 			"nameRequired": "라벨 이름은 필수입니다"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1542,7 +1570,8 @@
 					"renderFailed": "Mermaid 다이어그램을 렌더링할 수 없습니다"
 				}
 			}
-		}
+		},
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1725,7 +1754,9 @@
 			"copyTaskBranch": "작업 브랜치 복사",
 			"start": "시작",
 			"startDate": "시작일",
-			"noDate": "날짜 없음"
+			"noDate": "날짜 없음",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "작업 이동",
@@ -1779,8 +1810,20 @@
 					"terracotta": "테라코타",
 					"rose": "로즈",
 					"crimson": "크림슨"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "{{name}}님의 백로그",
@@ -1805,7 +1848,8 @@
 				"label": "라벨: {{name}}",
 				"dueThisWeek": "이번 주 마감",
 				"dueNextWeek": "다음 주 마감",
-				"noDueDate": "마감일 없음"
+				"noDueDate": "마감일 없음",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1844,6 +1888,10 @@
 			"operators": {
 				"isAnyOf": "다음 중 하나",
 				"includeAnyOf": "다음 중 하나 포함"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"calendar": {
@@ -1922,7 +1970,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "링크 복사",
-			"copyLinkSuccess": "작업 링크가 복사되었습니다!"
+			"copyLinkSuccess": "작업 링크가 복사되었습니다!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "보관",
@@ -1959,7 +2011,9 @@
 			"actions": "작업",
 			"searchActions": "작업 검색...",
 			"noActionsFound": "작업을 찾을 수 없습니다.",
-			"changeStatus": "상태 변경"
+			"changeStatus": "상태 변경",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2012,6 +2066,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

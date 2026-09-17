@@ -152,7 +152,10 @@
 					"terracotta": "Terracota",
 					"rose": "Rosa",
 					"crimson": "Carmesí"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1263,6 +1266,31 @@
 			"connect": "Conectar Telegram",
 			"saveChanges": "Guardar cambios",
 			"disconnect": "Desconectar"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1552,7 +1580,8 @@
 					"renderFailed": "No se pudo renderizar el diagrama de Mermaid"
 				}
 			}
-		}
+		},
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1735,7 +1764,9 @@
 			"copyTaskBranch": "Copiar la rama de la tarea",
 			"start": "Comenzar",
 			"startDate": "Fecha de inicio",
-			"noDate": "Sin fecha"
+			"noDate": "Sin fecha",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"popover": {
 			"assignee": {
@@ -1778,8 +1809,20 @@
 					"terracotta": "Terracota",
 					"rose": "Rosa",
 					"crimson": "Carmesí"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Backlog de {{name}}",
@@ -1804,7 +1847,8 @@
 				"label": "Etiqueta: {{name}}",
 				"dueThisWeek": "Para esta semana",
 				"dueNextWeek": "Para la semana que viene",
-				"noDueDate": "Sin fecha de vencimiento"
+				"noDueDate": "Sin fecha de vencimiento",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1843,6 +1887,10 @@
 			"operators": {
 				"isAnyOf": "es alguno de",
 				"includeAnyOf": "incluye alguno de"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"gantt": {
@@ -1910,7 +1958,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Copiar enlace",
-			"copyLinkSuccess": "¡Enlace a la tarea copiado!"
+			"copyLinkSuccess": "¡Enlace a la tarea copiado!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Archivar",
@@ -1947,7 +1999,9 @@
 			"actions": "Actiones",
 			"searchActions": "Buscar acciones...",
 			"noActionsFound": "No se han encontrado acciones.",
-			"changeStatus": "Cambiar estado"
+			"changeStatus": "Cambiar estado",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"move": {
 			"title": "Mover tarea",
@@ -2024,6 +2078,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

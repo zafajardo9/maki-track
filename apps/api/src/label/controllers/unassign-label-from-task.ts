@@ -16,6 +16,14 @@ async function unassignLabelFromTask(id: string, userId: string) {
     });
   }
 
+  // Project-scoped rows are tags; they can only be detached through the
+  // tag routes.
+  if (label.projectId) {
+    throw new HTTPException(400, {
+      message: "Not a workspace label",
+    });
+  }
+
   if (!label.taskId) {
     throw new HTTPException(400, {
       message: "Label is not assigned to a task",

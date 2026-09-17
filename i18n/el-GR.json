@@ -152,7 +152,10 @@
 					"terracotta": "Τερακότα",
 					"rose": "Ροζ",
 					"crimson": "Βυσσινί"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1262,6 +1265,31 @@
 			"updateError": "Αποτυχία ενημέρωσης ετικέτας",
 			"deleteError": "Αποτυχία διαγραφής ετικέτας",
 			"nameRequired": "Το όνομα ετικέτας είναι υποχρεωτικό"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1547,7 +1575,8 @@
 					"renderFailed": "Δεν ήταν δυνατή η απόδοση του διαγράμματος Mermaid"
 				}
 			}
-		}
+		},
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1730,7 +1759,9 @@
 			"copyTaskBranch": "Αντιγραφή κλάδου εργασίας",
 			"start": "Έναρξη",
 			"startDate": "Ημερομηνία έναρξης",
-			"noDate": "Χωρίς ημερομηνία"
+			"noDate": "Χωρίς ημερομηνία",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "Μετακίνηση εργασίας",
@@ -1784,8 +1815,20 @@
 					"terracotta": "Τερακότα",
 					"rose": "Ροζ",
 					"crimson": "Βυσσινί"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Backlog του {{name}}",
@@ -1810,7 +1853,8 @@
 				"label": "Ετικέτα: {{name}}",
 				"dueThisWeek": "Λήγει αυτή την εβδομάδα",
 				"dueNextWeek": "Λήγει την επόμενη εβδομάδα",
-				"noDueDate": "Χωρίς ημερομηνία λήξης"
+				"noDueDate": "Χωρίς ημερομηνία λήξης",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1849,6 +1893,10 @@
 			"operators": {
 				"isAnyOf": "είναι ένα από",
 				"includeAnyOf": "περιλαμβάνει κάποιο από"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"gantt": {
@@ -1915,7 +1963,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Αντιγραφή συνδέσμου",
-			"copyLinkSuccess": "Ο σύνδεσμος της εργασίας αντιγράφηκε!"
+			"copyLinkSuccess": "Ο σύνδεσμος της εργασίας αντιγράφηκε!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Αρχειοθέτηση",
@@ -1952,7 +2004,9 @@
 			"actions": "Ενέργειες",
 			"searchActions": "Αναζήτηση ενεργειών...",
 			"noActionsFound": "Δεν βρέθηκαν ενέργειες.",
-			"changeStatus": "Αλλαγή κατάστασης"
+			"changeStatus": "Αλλαγή κατάστασης",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2018,6 +2072,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

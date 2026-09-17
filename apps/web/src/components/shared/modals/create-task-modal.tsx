@@ -7,14 +7,15 @@ import {
   Plus,
   Search,
   Tag,
+  Tags,
   UserIcon,
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LabelChip } from "@/components/common/label-chip";
 import TaskDescriptionEditor from "@/components/task/task-description-editor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,11 +40,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import useCreateLabel from "@/hooks/mutations/label/use-create-label";
+import useAttachTagToTask from "@/hooks/mutations/tag/use-attach-tag-to-task";
 import useCreateTask from "@/hooks/mutations/task/use-create-task";
 import { useDeleteTask } from "@/hooks/mutations/task/use-delete-task";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
 import useGetProjects from "@/hooks/queries/project/use-get-projects";
+import useGetTagsByProject from "@/hooks/queries/tag/use-get-tags-by-project";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
@@ -81,6 +84,7 @@ type Label = {
   color: string;
   taskId: string | null;
   workspaceId: string;
+  projectId: string | null;
   createdAt: string;
 };
 
@@ -179,7 +183,9 @@ function CreateTaskModal({
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(
     workspace?.id || "",
   );
-  const { canCreateTasks, canCreateLabels } = useWorkspacePermission();
+  const { canCreateTasks, canCreateLabels, canUpdateTags } =
+    useWorkspacePermission();
+  const canAttachTag = canUpdateTags();
   const canCreateTaskCapability = canCreateTasks();
   const canCreateLabelCapability = canCreateLabels();
 
@@ -196,6 +202,8 @@ function CreateTaskModal({
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [labelsStep, setLabelsStep] = useState<PopoverStep>("select");
   const [searchValue, setSearchValue] = useState("");
+  const [tagsOpen, setTagsOpen] = useState(false);
+  const [tagSearchValue, setTagSearchValue] = useState("");
   const [selectedColor, setSelectedColor] = useState<LabelColor>("gray");
   const [newLabelName, setNewLabelName] = useState("");
 
@@ -211,8 +219,19 @@ function CreateTaskModal({
   const resolvedProject = explicitProjectId
     ? project
     : (workspaceProjects?.find((p) => p.id === resolvedProjectId) ?? null);
+  const { data: projectTags = [] } = useGetTagsByProject(resolvedProjectId);
+  const { mutateAsync: attachTagToTask } = useAttachTagToTask();
+
+  useEffect(() => {
+    setLabels((current) =>
+      current.filter(
+        (label) => !label.projectId || label.projectId === resolvedProjectId,
+      ),
+    );
+  }, [resolvedProjectId]);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const tagSearchInputRef = useRef<HTMLInputElement>(null);
   const draftCreationPromiseRef = useRef<Promise<Task> | null>(null);
   const didSubmitRef = useRef(false);
 
@@ -220,21 +239,47 @@ function CreateTaskModal({
   const { mutateAsync: updateTask } = useUpdateTask();
   const { mutateAsync: deleteTask } = useDeleteTask();
 
-  const filteredLabels = (() => {
-    const searchFiltered = workspaceLabels.filter((label) =>
-      label.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
+  const tagPaletteOptions = useMemo(
+    () => projectTags.filter((tag) => tag.taskId === null),
+    [projectTags],
+  );
 
-    const labelMap = new Map<string, (typeof workspaceLabels)[0]>();
-    for (const label of searchFiltered) {
-      const existing = labelMap.get(label.name);
-      if (!existing || (label.taskId === null && existing.taskId !== null)) {
-        labelMap.set(label.name, label);
+  // Key by scope + name: a tag and a label may share a name and both must
+  // stay selectable. Within one scope a palette row wins over a copy.
+  const allOptions = (() => {
+    const combined = [...tagPaletteOptions, ...workspaceLabels];
+    const optionMap = new Map<string, (typeof combined)[number]>();
+    for (const option of combined) {
+      const key = `${option.projectId ? "tag" : "label"}:${option.name}`;
+      const existing = optionMap.get(key);
+      if (!existing || (option.taskId === null && existing.taskId !== null)) {
+        optionMap.set(key, option);
       }
     }
 
-    return Array.from(labelMap.values());
+    return Array.from(optionMap.values());
   })();
+
+  // Tags and labels are separate pools with their own pickers, so each keeps
+  // its own search term rather than sharing one.
+  const matchesSearch = (name: string, term: string) =>
+    name.toLowerCase().includes(term.toLowerCase());
+
+  const tagOptions = allOptions.filter(
+    (option) =>
+      Boolean(option.projectId) && matchesSearch(option.name, tagSearchValue),
+  );
+  const labelOptions = allOptions.filter(
+    (option) => !option.projectId && matchesSearch(option.name, searchValue),
+  );
+
+  const selectedTags = labels.filter((label) => Boolean(label.projectId));
+  const selectedLabels = labels.filter((label) => !label.projectId);
+  const isSelected = (option: { name: string; projectId: string | null }) =>
+    labels.some(
+      (label) =>
+        label.name === option.name && label.projectId === option.projectId,
+    );
 
   const isCreatingNewLabel =
     searchValue &&
@@ -255,6 +300,8 @@ function CreateTaskModal({
     setLabels([]);
     setLabelsStep("select");
     setSearchValue("");
+    setTagsOpen(false);
+    setTagSearchValue("");
     setSelectedColor("gray");
     setNewLabelName("");
     draftCreationPromiseRef.current = null;
@@ -417,14 +464,20 @@ function CreateTaskModal({
 
       for (const label of labels) {
         try {
-          await createLabel({
-            name: label.name,
-            color: label.color,
-            taskId: savedTask.id,
-            workspaceId: workspace.id,
-          });
+          if (label.projectId) {
+            // Project tag: attach the palette row so the copy stays
+            // project-scoped.
+            await attachTagToTask({ tagId: label.id, taskId: savedTask.id });
+          } else {
+            await createLabel({
+              name: label.name,
+              color: label.color,
+              taskId: savedTask.id,
+              workspaceId: workspace.id,
+            });
+          }
         } catch (error) {
-          console.error("Failed to create label:", error);
+          console.error("Failed to attach label:", error);
         }
       }
 
@@ -493,6 +546,12 @@ function CreateTaskModal({
     }
   }, [labelsOpen, labelsStep]);
 
+  useEffect(() => {
+    if (tagsOpen && tagSearchInputRef.current) {
+      setTimeout(() => tagSearchInputRef.current?.focus(), 100);
+    }
+  }, [tagsOpen]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!open) return;
@@ -529,25 +588,42 @@ function CreateTaskModal({
     setTimeout(resetLabelsPopover, 200);
   };
 
-  const toggleLabel = (labelName: string) => {
-    const existingLabel = labels.find((l) => l.name === labelName);
+  const handleTagsClose = () => {
+    setTagsOpen(false);
+    setTimeout(() => setTagSearchValue(""), 200);
+  };
+
+  const toggleOption = (option: {
+    id: string;
+    name: string;
+    color: string;
+    taskId: string | null;
+    workspaceId: string | null;
+    projectId: string | null;
+    createdAt: string;
+  }) => {
+    const existingLabel = labels.find(
+      (l) => l.name === option.name && l.projectId === option.projectId,
+    );
     if (existingLabel) {
-      setLabels(labels.filter((l) => l.name !== labelName));
+      setLabels(
+        labels.filter(
+          (l) => !(l.name === option.name && l.projectId === option.projectId),
+        ),
+      );
     } else {
-      const workspaceLabel = workspaceLabels.find((l) => l.name === labelName);
-      if (workspaceLabel) {
-        setLabels([
-          ...labels,
-          {
-            id: workspaceLabel.id,
-            name: workspaceLabel.name,
-            color: workspaceLabel.color,
-            taskId: null,
-            workspaceId: workspaceLabel.workspaceId || "",
-            createdAt: workspaceLabel.createdAt,
-          },
-        ]);
-      }
+      setLabels([
+        ...labels,
+        {
+          id: option.id,
+          name: option.name,
+          color: option.color,
+          taskId: null,
+          workspaceId: option.workspaceId || "",
+          projectId: option.projectId,
+          createdAt: option.createdAt,
+        },
+      ]);
     }
   };
 
@@ -574,6 +650,7 @@ function CreateTaskModal({
         color: createdLabel.color,
         taskId: createdLabel.taskId ?? null,
         workspaceId: createdLabel.workspaceId ?? workspace.id,
+        projectId: createdLabel.projectId ?? null,
         createdAt: createdLabel.createdAt,
       };
 
@@ -589,8 +666,12 @@ function CreateTaskModal({
     }
   };
 
-  const removeLabel = (labelName: string) => {
-    setLabels(labels.filter((l) => l.name !== labelName));
+  const removeLabel = (label: Label) => {
+    setLabels(
+      labels.filter(
+        (l) => !(l.name === label.name && l.projectId === label.projectId),
+      ),
+    );
   };
 
   // Defense-in-depth: if the user lacks task-create permission, don't render
@@ -652,25 +733,15 @@ function CreateTaskModal({
             </div>
 
             {labels.length > 0 && (
-              <div className="flex flex-wrap mb-2">
+              <div className="flex flex-wrap gap-1 mb-2">
                 {labels.map((label) => (
-                  <Badge
-                    key={label.name}
-                    color={label.color}
-                    variant="outline"
-                    className="flex items-center gap-1 pl-3 cursor-pointer hover:bg-accent/50 transition-colors"
-                    onClick={() => removeLabel(label.name)}
-                  >
-                    <span
-                      className="inline-block w-2 h-2 mr-1.5 rounded-full"
-                      style={{
-                        backgroundColor:
-                          labelColors.find((c) => c.value === label.color)
-                            ?.color || "var(--color-neutral-400)",
-                      }}
-                    />
-                    <span className="max-w-20 truncate">{label.name}</span>
-                  </Badge>
+                  <LabelChip
+                    key={`${label.projectId ?? "label"}:${label.name}`}
+                    label={label}
+                    compact
+                    className="cursor-pointer transition-opacity hover:opacity-85"
+                    onClick={() => removeLabel(label)}
+                  />
                 ))}
               </div>
             )}
@@ -926,13 +997,86 @@ function CreateTaskModal({
                 </PopoverContent>
               </Popover>
 
+              {canAttachTag && (
+                <Popover
+                  open={tagsOpen}
+                  onOpenChange={(open) =>
+                    open ? setTagsOpen(true) : handleTagsClose()
+                  }
+                >
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors border border-border hover:bg-accent/50",
+                        selectedTags.length > 0
+                          ? "bg-accent/30 text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      <Tags className="w-3.5 h-3.5" />
+                      <span>{t("common:modals.createTask.tags")}</span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0" align="start">
+                    <div className="w-auto">
+                      <div className="flex items-center gap-2 p-2 border-b border-border">
+                        <Search className="w-3 h-3 text-muted-foreground" />
+                        <input
+                          ref={tagSearchInputRef}
+                          value={tagSearchValue}
+                          onChange={(e) => setTagSearchValue(e.target.value)}
+                          placeholder={t("common:modals.createTask.searchTags")}
+                          className="w-full bg-transparent border-none text-foreground text-xs focus:outline-none placeholder:text-muted-foreground"
+                        />
+                      </div>
+
+                      <div className="py-1">
+                        {tagOptions.length === 0 && (
+                          <span className="text-xs text-muted-foreground px-2">
+                            {t("common:modals.createTask.noTagsFound")}
+                          </span>
+                        )}
+
+                        {tagOptions.map((option) => (
+                          <button
+                            key={option.id}
+                            type="button"
+                            className="w-full flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-accent/50 text-left"
+                            onClick={() => toggleOption(option)}
+                          >
+                            <div className="flex-shrink-0 w-3 flex justify-center">
+                              {isSelected(option) && (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </div>
+                            <span
+                              className="w-2 h-2 rounded-full flex-shrink-0"
+                              style={{
+                                backgroundColor:
+                                  labelColors.find(
+                                    (c) => c.value === option.color,
+                                  )?.color || "var(--color-neutral-400)",
+                              }}
+                            />
+                            <span className="max-w-20 truncate">
+                              {option.name}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+
               <Popover open={labelsOpen} onOpenChange={setLabelsOpen}>
                 <PopoverTrigger asChild>
                   <button
                     type="button"
                     className={cn(
                       "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors border border-border hover:bg-accent/50",
-                      labels.length > 0
+                      selectedLabels.length > 0
                         ? "bg-accent/30 text-foreground"
                         : "text-muted-foreground",
                     )}
@@ -958,21 +1102,22 @@ function CreateTaskModal({
                       </div>
 
                       <div className="py-1">
-                        {filteredLabels.length === 0 &&
+                        {labelOptions.length === 0 &&
                           searchValue.length === 0 && (
                             <span className="text-xs text-muted-foreground px-2">
                               {t("common:modals.createTask.noLabelsFound")}
                             </span>
                           )}
-                        {filteredLabels.map((label) => (
+
+                        {labelOptions.map((option) => (
                           <button
-                            key={label.id}
+                            key={option.id}
                             type="button"
                             className="w-full flex items-center gap-2 px-2 py-1.5 text-xs hover:bg-accent/50 text-left"
-                            onClick={() => toggleLabel(label.name)}
+                            onClick={() => toggleOption(option)}
                           >
                             <div className="flex-shrink-0 w-3 flex justify-center">
-                              {labels.some((l) => l.name === label.name) && (
+                              {isSelected(option) && (
                                 <Check className="w-3 h-3" />
                               )}
                             </div>
@@ -981,19 +1126,19 @@ function CreateTaskModal({
                               style={{
                                 backgroundColor:
                                   labelColors.find(
-                                    (c) => c.value === label.color,
+                                    (c) => c.value === option.color,
                                   )?.color || "var(--color-neutral-400)",
                               }}
                             />
                             <span className="max-w-20 truncate">
-                              {label.name}
+                              {option.name}
                             </span>
                           </button>
                         ))}
 
                         {canCreateLabelCapability &&
                           isCreatingNewLabel &&
-                          filteredLabels.length > 0 && (
+                          labelOptions.length > 0 && (
                             <div className="border-t border-border my-1" />
                           )}
                         {canCreateLabelCapability && isCreatingNewLabel && (

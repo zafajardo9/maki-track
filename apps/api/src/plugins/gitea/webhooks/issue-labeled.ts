@@ -1,4 +1,4 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import db from "../../../database";
 import { labelTable, taskTable } from "../../../database/schema";
 import { publishEvent } from "../../../events";
@@ -58,8 +58,10 @@ async function syncGiteaLabelsToTask(
   giteaLabels: Array<{ name: string; color?: string }>,
 ) {
   const desiredNames = new Set(giteaLabels.map((l) => l.name));
+  // GitHub/Gitea sync only ever touches workspace-scope label copies; tags
+  // are project-scoped and never sync.
   const existingRows = await db.query.labelTable.findMany({
-    where: eq(labelTable.taskId, taskId),
+    where: and(eq(labelTable.taskId, taskId), isNull(labelTable.projectId)),
   });
 
   const labelsToInsert = giteaLabels
@@ -98,6 +100,7 @@ async function syncGiteaLabelsToTask(
       .values(labelsToInsert)
       .onConflictDoNothing({
         target: [labelTable.taskId, labelTable.name],
+        where: sql`${labelTable.projectId} is null`,
       });
   }
 
@@ -217,6 +220,7 @@ export async function handleGiteaIssueLabeled(
                 e(table.workspaceId, task.project.workspaceId),
                 e(table.name, addedLabel.name),
                 e(table.taskId, task.id),
+                isNull(table.projectId),
               ),
           });
 
@@ -234,6 +238,7 @@ export async function handleGiteaIssueLabeled(
               })
               .onConflictDoNothing({
                 target: [labelTable.taskId, labelTable.name],
+                where: sql`${labelTable.projectId} is null`,
               });
           }
         }
@@ -245,6 +250,7 @@ export async function handleGiteaIssueLabeled(
             and(
               e(table.taskId, existingLink.taskId),
               e(table.name, addedLabel.name),
+              isNull(table.projectId),
             ),
         });
 

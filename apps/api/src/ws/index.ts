@@ -264,6 +264,17 @@ type TaskEvent = {
   targetTaskId: string | undefined;
 };
 
+subscribeToEvent<{ projectId: string; initiatorId?: string }>(
+  "project.tags_changed",
+  async ({ projectId, initiatorId }) => {
+    broadcastToProject(
+      projectId,
+      { type: "PROJECT_TAGS_UPDATED", projectId },
+      initiatorId,
+    );
+  },
+);
+
 const taskUpdateEvents = [
   "task.created",
   "task.updated",

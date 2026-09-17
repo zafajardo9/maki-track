@@ -43,6 +43,7 @@ describe("useWorkspacePermission", () => {
     const granted = {
       task: new Set(["create", "read", "update"]),
       label: new Set(["create", "read", "update"]),
+      tag: new Set(["create", "read", "update"]),
     } as Record<string, Set<string>>;
 
     hasPermission.mockImplementation(
@@ -69,5 +70,8 @@ describe("useWorkspacePermission", () => {
     expect(result.current.canCreateLabels()).toBe(true);
     expect(result.current.canUpdateLabels()).toBe(true);
     expect(result.current.canDeleteLabels()).toBe(false);
+    expect(result.current.canCreateTags()).toBe(true);
+    expect(result.current.canUpdateTags()).toBe(true);
+    expect(result.current.canDeleteTags()).toBe(false);
   });
 });

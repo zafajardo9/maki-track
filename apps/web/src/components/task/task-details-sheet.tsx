@@ -161,7 +161,7 @@ export default function TaskDetailsSheet({
           />
 
           <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="px-4 py-4">
+            <div className="px-4 pt-5 pb-6">
               <TaskDetailsContent
                 taskId={currentTaskId}
                 projectId={projectId}

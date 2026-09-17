@@ -207,3 +207,68 @@ describe("MCP tool catalog", () => {
     expect(result.content[0].text).toContain("Task not found");
   });
 });
+
+describe("project tag tools", () => {
+  it("lists the tags of a project", async () => {
+    await call("list_project_tags", { projectId: "p 1" });
+
+    const request = lastRequest();
+    expect(request.url).toBe("http://api.test/api/tag/project/p%201");
+    expect(request.method).toBe("GET");
+    expect(request.auth).toBe("Bearer test-token");
+  });
+
+  it("creates a tag with name, color, and projectId", async () => {
+    await call("create_tag", {
+      name: "bug",
+      color: "#FF6600",
+      projectId: "p1",
+    });
+
+    expect(lastRequest()).toMatchObject({
+      url: "http://api.test/api/tag",
+      method: "POST",
+      body: { name: "bug", color: "#FF6600", projectId: "p1" },
+    });
+  });
+
+  it("rejects a tag color that is not a hex color", async () => {
+    const result = await call("create_tag", {
+      name: "bug",
+      color: "red",
+      projectId: "p1",
+    });
+
+    expect(result.isError).toBe(true);
+    expect(apiFetch).not.toHaveBeenCalled();
+  });
+
+  it("attaches a tag to a task", async () => {
+    await call("attach_tag_to_task", { tagId: "tag 1", taskId: "t1" });
+
+    expect(lastRequest()).toMatchObject({
+      url: "http://api.test/api/tag/tag%201/task",
+      method: "PUT",
+      body: { taskId: "t1" },
+    });
+  });
+
+  it("detaches a tag from its task without a body", async () => {
+    await call("detach_tag_from_task", { tagId: "tag1" });
+
+    const request = lastRequest();
+    expect(request.url).toBe("http://api.test/api/tag/tag1/task");
+    expect(request.method).toBe("DELETE");
+    expect(request.body).toBeUndefined();
+  });
+
+  it("deletes a palette tag without a task-association guard", async () => {
+    await call("delete_tag", { tagId: "tag1" });
+
+    expect(lastRequest()).toMatchObject({
+      url: "http://api.test/api/tag/tag1",
+      method: "DELETE",
+    });
+    expect(apiFetch).toHaveBeenCalledTimes(1);
+  });
+});

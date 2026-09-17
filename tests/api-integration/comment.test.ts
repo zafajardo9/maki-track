@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import db, { schema } from "../../apps/api/src/database";
 import { createApp } from "../../apps/api/src/index";
@@ -88,11 +88,11 @@ describe("API integration: task comments", () => {
       );
     expect(storedComments).toHaveLength(2);
 
-    const legacyComments = await db
-      .select()
-      .from(schema.commentTable)
-      .where(eq(schema.commentTable.taskId, task.id));
-    expect(legacyComments).toHaveLength(0);
+    // Migration 0045 removed the legacy table after comments were unified.
+    const legacyTable = await db.execute(
+      sql`select to_regclass('public.comment') as name`,
+    );
+    expect(legacyTable.rows[0]?.name).toBeNull();
   });
 
   it("records an external author when both name and source are given", async () => {

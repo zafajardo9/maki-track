@@ -26,6 +26,7 @@ import labelColors from "@/constants/label-colors";
 import { shortcuts } from "@/constants/shortcuts";
 import { useUpdateTask } from "@/hooks/mutations/task/use-update-task";
 import useGetLabelsByWorkspace from "@/hooks/queries/label/use-get-labels-by-workspace";
+import useGetTagsByProject from "@/hooks/queries/tag/use-get-tags-by-project";
 import { useGetTasks } from "@/hooks/queries/task/use-get-tasks";
 import { useGetActiveWorkspaceUsers } from "@/hooks/queries/workspace-users/use-get-active-workspace-users";
 import { useConfirmationDialog } from "@/hooks/use-confirmation-dialog";
@@ -71,6 +72,7 @@ function RouteComponent() {
 
   const { data: users } = useGetActiveWorkspaceUsers(workspaceId);
   const { data: workspaceLabels = [] } = useGetLabelsByWorkspace(workspaceId);
+  const { data: projectTags = [] } = useGetTagsByProject(projectId);
   const queryClient = useQueryClient();
 
   const handleCloseTaskSheet = useCallback(() => {
@@ -268,6 +270,56 @@ function RouteComponent() {
     },
     [],
   );
+
+  const uniqueTags = projectTags.reduce(
+    (
+      acc: { id: string; name: string; color: string }[],
+      tag: { id: string; name: string; color: string },
+    ) => {
+      const existing = acc.find(
+        (t) => t.name === tag.name && t.color === tag.color,
+      );
+      if (!existing) {
+        acc.push(tag);
+      }
+      return acc;
+    },
+    [],
+  );
+
+  const isTagGroupSelected = (tag: { name: string; color: string }) => {
+    return projectTags
+      .filter(
+        (t: { name: string; color: string }) =>
+          t.name === tag.name && t.color === tag.color,
+      )
+      .some((t: { id: string }) => filters.labels?.includes(t.id));
+  };
+
+  const toggleTagGroup = (tag: { name: string; color: string }) => {
+    const matchingTags = projectTags.filter(
+      (t: { name: string; color: string }) =>
+        t.name === tag.name && t.color === tag.color,
+    );
+
+    const isAnySelected = matchingTags.some((t: { id: string }) =>
+      filters.labels?.includes(t.id),
+    );
+
+    if (isAnySelected) {
+      for (const t of matchingTags) {
+        if (filters.labels?.includes(t.id)) {
+          updateLabelFilter(t.id);
+        }
+      }
+    } else {
+      for (const t of matchingTags) {
+        if (!filters.labels?.includes(t.id)) {
+          updateLabelFilter(t.id);
+        }
+      }
+    }
+  };
 
   const isLabelGroupSelected = (label: { name: string; color: string }) => {
     return workspaceLabels
@@ -499,6 +551,54 @@ function RouteComponent() {
 
                 {filters.labels &&
                   filters.labels.length > 0 &&
+                  uniqueTags
+                    .filter((uniqueTag) =>
+                      projectTags
+                        .filter(
+                          (t: { name: string; color: string }) =>
+                            t.name === uniqueTag.name &&
+                            t.color === uniqueTag.color,
+                        )
+                        .some((t: { id: string }) =>
+                          filters.labels?.includes(t.id),
+                        ),
+                    )
+                    .map((tag) => (
+                      <Button
+                        key={`tag-${tag.name}-${tag.color}`}
+                        variant="secondary"
+                        size="xs"
+                        className="h-7 rounded-md px-2 text-xs font-medium gap-1.5"
+                      >
+                        <span
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{
+                            backgroundColor:
+                              labelColors.find((c) => c.value === tag.color)
+                                ?.color || "var(--color-neutral-400)",
+                          }}
+                        />
+                        <span>
+                          {t("tasks:backlog.filters.tag", {
+                            name: tag.name,
+                          })}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4 p-0 ml-1 hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleTagGroup(tag);
+                          }}
+                        >
+                          <X className="h-2.5 w-2.5" />
+                        </Button>
+                      </Button>
+                    ))}
+
+                {filters.labels &&
+                  filters.labels.length > 0 &&
                   uniqueLabels
                     .filter((uniqueLabel) =>
                       workspaceLabels
@@ -666,9 +766,46 @@ function RouteComponent() {
                     ))}
 
                     <DropdownMenuSeparator />
+                    {uniqueTags.length > 0 && (
+                      <>
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel className="text-[11px] uppercase tracking-wide">
+                            {t("tasks:boardFilters.sections.tags")}
+                          </DropdownMenuLabel>
+                        </DropdownMenuGroup>
+                        {uniqueTags.map(
+                          (tag: {
+                            id: string;
+                            name: string;
+                            color: string;
+                          }) => (
+                            <DropdownMenuCheckboxItem
+                              key={tag.id}
+                              checked={isTagGroupSelected(tag)}
+                              onCheckedChange={() => toggleTagGroup(tag)}
+                              className="h-8 rounded-md text-sm"
+                            >
+                              <span
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    labelColors.find(
+                                      (c) => c.value === tag.color,
+                                    )?.color || "var(--color-neutral-400)",
+                                }}
+                              />
+                              <span className="max-w-20 truncate">
+                                {tag.name}
+                              </span>
+                            </DropdownMenuCheckboxItem>
+                          ),
+                        )}
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
                     <DropdownMenuGroup>
                       <DropdownMenuLabel className="text-[11px] uppercase tracking-wide">
-                        {t("tasks:labels.label")}
+                        {t("tasks:boardFilters.sections.labels")}
                       </DropdownMenuLabel>
                     </DropdownMenuGroup>
                     {uniqueLabels.length > 0 ? (

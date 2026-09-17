@@ -36,7 +36,12 @@ export const taskWithAssigneeSchema = taskSchema
   .openapi("TaskWithAssignee");
 
 const taskLabelSchema = z
-  .object({ id: z.string(), name: z.string(), color: z.string() })
+  .object({
+    id: z.string(),
+    name: z.string(),
+    color: z.string(),
+    projectId: z.string().nullable().optional(),
+  })
   .openapi("TaskLabel");
 
 const taskExternalLinkSchema = z
@@ -195,7 +200,8 @@ export const imageUploadSchema = z
       description: "Sanitized file name used for the upload.",
     }),
     filePath: z.string().openapi({
-      description: "Expected ImageKit file path; send it to the finalize route.",
+      description:
+        "Expected ImageKit file path; send it to the finalize route.",
     }),
     publicKey: z.string().openapi({
       description: "ImageKit public key for the client-side upload.",

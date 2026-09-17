@@ -81,6 +81,7 @@ const WORKSPACE_LABEL = {
   updatedAt: new Date(),
   taskId: null,
   workspaceId: "ws-1",
+  projectId: null,
 };
 
 const TASK_LABEL = {
@@ -91,6 +92,7 @@ const TASK_LABEL = {
   updatedAt: new Date(),
   taskId: "task-1",
   workspaceId: "ws-1",
+  projectId: null,
 };
 
 const TASK = {
@@ -210,6 +212,7 @@ describe("assignLabelToTask", () => {
     expect(mockDelete).not.toHaveBeenCalled();
     expect(insertChain.onConflict).toHaveBeenCalledWith({
       target: [expect.anything(), expect.anything()],
+      where: expect.anything(),
     });
     expect(mockPublishEvent).toHaveBeenCalledWith("task.label_assigned", {
       label: insertedCopy,

@@ -1,8 +1,12 @@
 type TaskScopedLabel = {
   name: string;
   taskId: string | null;
+  projectId?: string | null;
 };
 
+// Labels and project tags may share a name ("bug" in both pools). Options are
+// keyed by scope + name so a tag never hides a same-named label and vice
+// versa; within one scope a palette row still wins over a task-scoped copy.
 export function getTaskLabelOptions<T extends TaskScopedLabel>(
   labels: T[],
   taskId: string,
@@ -12,9 +16,10 @@ export function getTaskLabelOptions<T extends TaskScopedLabel>(
   for (const label of labels) {
     if (label.taskId !== null && label.taskId !== taskId) continue;
 
-    const existing = labelMap.get(label.name);
+    const key = `${label.projectId ? "tag" : "label"}:${label.name}`;
+    const existing = labelMap.get(key);
     if (!existing || (label.taskId === null && existing.taskId !== null)) {
-      labelMap.set(label.name, label);
+      labelMap.set(key, label);
     }
   }
 

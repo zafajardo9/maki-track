@@ -9,6 +9,8 @@ export const labelSchema = z
     updatedAt: responseTimestamp,
     taskId: z.string().nullable(),
     workspaceId: z.string().nullable(),
+    // NULL for workspace-wide labels; set when the row is a project tag.
+    projectId: z.string().nullable(),
   })
   .openapi("Label");
 

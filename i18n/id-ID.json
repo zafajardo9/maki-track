@@ -152,7 +152,10 @@
 					"terracotta": "Merah Bata",
 					"rose": "Merah Mawar",
 					"crimson": "Merah Tua"
-				}
+				},
+				"noTagsFound": "No tags found",
+				"searchTags": "Search tags...",
+				"tags": "Tags"
 			}
 		},
 		"editorLink": {
@@ -1261,6 +1264,31 @@
 			"updateError": "Gagal memperbarui label",
 			"deleteError": "Gagal menghapus label",
 			"nameRequired": "Nama label wajib diisi"
+		},
+		"projectTags": {
+			"cardDescription": "Manage tags that can be assigned to tasks in this project.",
+			"colorLabel": "Color",
+			"createDescription": "Create a new tag that can be used across tasks in this project.",
+			"createError": "Failed to create tag",
+			"createSuccess": "Tag created",
+			"createTag": "Create Tag",
+			"deleteConfirmDescription": "Any tasks using this tag will have it removed. This action cannot be undone.",
+			"deleteConfirmTitle": "Delete this tag?",
+			"deleteError": "Failed to delete tag",
+			"deleteSuccess": "Tag deleted",
+			"deleteTag": "Delete",
+			"editDescription": "Update the name or color of this tag.",
+			"editTag": "Edit Tag",
+			"empty": "No tags yet. Create your first tag to get started.",
+			"nameLabel": "Tag name",
+			"namePlaceholder": "Enter tag name",
+			"nameRequired": "Tag name is required",
+			"pageTitle": "Tag Settings",
+			"saveTag": "Save",
+			"subtitle": "Create, edit, and delete tags for this project.",
+			"title": "Tags",
+			"updateError": "Failed to update tag",
+			"updateSuccess": "Tag updated"
 		}
 	},
 	"navigation": {
@@ -1542,7 +1570,8 @@
 					"renderFailed": "Diagram Mermaid tidak dapat dirender"
 				}
 			}
-		}
+		},
+		"removedTag": "removed the tag \"{{name}}\""
 	},
 	"tasks": {
 		"status": {
@@ -1725,7 +1754,9 @@
 			"copyTaskBranch": "Salin branch tugas",
 			"start": "Mulai",
 			"startDate": "Tanggal mulai",
-			"noDate": "Tanpa tanggal"
+			"noDate": "Tanpa tanggal",
+			"addTag": "Add tag",
+			"tags": "Tags"
 		},
 		"move": {
 			"title": "Pindahkan tugas",
@@ -1779,8 +1810,20 @@
 					"terracotta": "Terracotta",
 					"rose": "Rose",
 					"crimson": "Crimson"
-				}
-			}
+				},
+				"noPermission": "You don't have permission to edit this"
+			},
+			"tags": {
+				"addSuccess": "Tag added",
+				"removeSuccess": "Tag removed",
+				"chooseColor": "Choose tag color",
+				"create": "Create tag \"{{name}}\"",
+				"createError": "Failed to create tag",
+				"createSuccess": "Tag created and added",
+				"noPermission": "You don't have permission to edit tags",
+				"searchPlaceholder": "Search tags..."
+			},
+			"searchPlaceholder": "Search tags and labels..."
 		},
 		"backlog": {
 			"pageTitle": "Backlog {{name}}",
@@ -1805,7 +1848,8 @@
 				"label": "Label: {{name}}",
 				"dueThisWeek": "Tenggat minggu ini",
 				"dueNextWeek": "Tenggat minggu depan",
-				"noDueDate": "Tanpa tenggat"
+				"noDueDate": "Tanpa tenggat",
+				"tag": "Tag: {{name}}"
 			}
 		},
 		"board": {
@@ -1844,6 +1888,10 @@
 			"operators": {
 				"isAnyOf": "adalah salah satu dari",
 				"includeAnyOf": "menyertakan salah satu dari"
+			},
+			"sections": {
+				"labels": "Labels",
+				"tags": "Tags"
 			}
 		},
 		"gantt": {
@@ -1909,7 +1957,11 @@
 		},
 		"contextMenu": {
 			"copyLink": "Salin tautan",
-			"copyLinkSuccess": "Tautan tugas disalin!"
+			"copyLinkSuccess": "Tautan tugas disalin!",
+			"labels": "Labels",
+			"noLabels": "No labels",
+			"noTags": "No tags",
+			"tags": "Tags"
 		},
 		"actions": {
 			"archive": "Arsipkan",
@@ -1946,7 +1998,9 @@
 			"actions": "Aksi",
 			"searchActions": "Cari aksi...",
 			"noActionsFound": "Tidak ada aksi ditemukan.",
-			"changeStatus": "Ubah Status"
+			"changeStatus": "Ubah Status",
+			"addTagError": "Failed to add tag",
+			"addTagSuccess": "Tag added to {{count}} tasks"
 		},
 		"editor": {
 			"table": {
@@ -2012,6 +2066,10 @@
 				"empty": "No open tasks are assigned yet.",
 				"title": "Open tasks per assignee"
 			}
+		},
+		"tags": {
+			"empty": "No tags available",
+			"label": "Tags"
 		}
 	},
 	"invitations": {

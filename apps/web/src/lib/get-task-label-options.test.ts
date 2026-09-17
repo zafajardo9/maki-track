@@ -24,4 +24,26 @@ describe("getTaskLabelOptions", () => {
 
     expect(options).toEqual([{ id: "workspace", name: "Bug", taskId: null }]);
   });
+
+  it("keeps same-named entries from both scopes instead of deduping them", () => {
+    const labels = [
+      { id: "tag", name: "Bug", taskId: null, projectId: "project-1" },
+      { id: "label", name: "Bug", taskId: null, projectId: null },
+    ];
+
+    const options = getTaskLabelOptions(labels, "task-1");
+
+    expect(options.map((label) => label.id)).toEqual(["tag", "label"]);
+  });
+
+  it("prefers a tag palette row over a tag copy on the same task", () => {
+    const labels = [
+      { id: "tag-copy", name: "Bug", taskId: "task-1", projectId: "project-1" },
+      { id: "tag", name: "Bug", taskId: null, projectId: "project-1" },
+    ];
+
+    const options = getTaskLabelOptions(labels, "task-1");
+
+    expect(options.map((label) => label.id)).toEqual(["tag"]);
+  });
 });
