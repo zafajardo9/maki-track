@@ -8,8 +8,13 @@ import {
 import { workspaceAccess } from "../utils/workspace-access-middleware";
 import getWorkspaceMembersCtrl from "./controllers/get-workspace-members";
 import getWorkspaceSchedule from "./controllers/get-workspace-schedule";
-import { workspaceMemberListSchema, workspaceScheduleSchema } from "./response";
-import { workspaceIdParam } from "./schema";
+import getWorkspaceTasks from "./controllers/get-workspace-tasks";
+import {
+  workspaceMemberListSchema,
+  workspaceScheduleSchema,
+  workspaceTaskListSchema,
+} from "./response";
+import { workspaceIdParam, workspaceTasksQuery } from "./schema";
 
 const getWorkspaceMembersRoute = createRoute({
   method: "get",
@@ -44,12 +49,41 @@ const getWorkspaceScheduleRoute = createRoute({
   },
 });
 
+const listWorkspaceTasksRoute = createRoute({
+  method: "get",
+  operationId: "listWorkspaceTasks",
+  path: "/{workspaceId}/tasks",
+  tags: ["Workspaces"],
+  summary: "List workspace tasks",
+  description:
+    "The workspace's open work, ranked overdue first, then by due date, then by priority. `scope=mine` limits the list to the caller's assigned tasks; `all` covers every member's. Returns at most `limit` rows plus the uncapped total. Excludes completed, planned, and archived tasks.",
+  middleware: [workspaceAccess.fromParam("workspaceId")] as const,
+  request: { params: workspaceIdParam, query: workspaceTasksQuery },
+  responses: {
+    200: jsonResponse("Workspace task queue", workspaceTaskListSchema),
+    401: errorResponse("Unauthorized"),
+    403: errorResponse("No access to the workspace"),
+  },
+});
+
 const workspace = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(getWorkspaceMembersRoute, async (c) =>
     c.json(await getWorkspaceMembersCtrl(c.get("workspaceId")), 200),
   )
   .openapi(getWorkspaceScheduleRoute, async (c) =>
     c.json(await getWorkspaceSchedule(c.get("workspaceId")), 200),
+  )
+  .openapi(listWorkspaceTasksRoute, async (c) =>
+    c.json(
+      await getWorkspaceTasks(
+        c.get("workspaceId"),
+        // Session identity, not a request parameter: `scope=mine` can never be
+        // pointed at another member's queue.
+        c.get("userId"),
+        c.req.valid("query"),
+      ),
+      200,
+    ),
   );
 
 export default workspace;

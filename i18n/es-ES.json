@@ -2217,6 +2217,16 @@
 				"unscheduled_other": "{{count}} open tasks have no due date",
 				"upcoming": "Next 7 days · {{count}}",
 				"upcomingDescription": "Upcoming deadlines across your projects, soonest first."
+			},
+			"myTasks": {
+				"title": "My tasks",
+				"description": "Open work across this workspace, most urgent first.",
+				"tabMine": "Assigned to me",
+				"tabAll": "Everyone",
+				"emptyMine": "Nothing is assigned to you right now.",
+				"emptyAll": "No open tasks in this workspace.",
+				"error": "Could not load your tasks. Try again.",
+				"showing": "Showing the first {{count}} of {{total}} tasks."
 			}
 		}
 	},

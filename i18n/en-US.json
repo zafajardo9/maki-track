@@ -1321,7 +1321,18 @@
 			"members": "Members",
 			"invitations": "Invitations",
 			"more": "More",
-			"backToBoard": "Back to board"
+			"backToBoard": "Back to board",
+			"announcements": "Announcements"
+		},
+		"announcementsPage": {
+			"pageTitle": "Announcements",
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"readMore": "Read more",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			}
 		},
 		"projectList": {
 			"viewProject": "View Project",
@@ -2160,6 +2171,16 @@
 				"tasks": "Total tasks",
 				"open": "Open tasks",
 				"overdue": "Overdue tasks"
+			},
+			"myTasks": {
+				"title": "My tasks",
+				"description": "Open work across this workspace, most urgent first.",
+				"tabMine": "Assigned to me",
+				"tabAll": "Everyone",
+				"emptyMine": "Nothing is assigned to you right now.",
+				"emptyAll": "No open tasks in this workspace.",
+				"error": "Could not load your tasks. Try again.",
+				"showing": "Showing the first {{count}} of {{total}} tasks."
 			},
 			"schedule": {
 				"title": "Task schedule",

@@ -9,6 +9,7 @@ type Entry = { path: string; changefreq: string; priority: string };
 const staticEntries: Entry[] = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/guides", changefreq: "weekly", priority: "0.8" },
+  { path: "/updates", changefreq: "weekly", priority: "0.7" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
   { path: "/terms", changefreq: "yearly", priority: "0.3" },
 ];

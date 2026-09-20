@@ -39,6 +39,12 @@ export function Footer() {
               </a>
               <a
                 className="block text-muted-foreground transition-colors hover:text-foreground"
+                href="/updates"
+              >
+                Updates
+              </a>
+              <a
+                className="block text-muted-foreground transition-colors hover:text-foreground"
                 href="/#why"
               >
                 Why MAKI

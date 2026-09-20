@@ -41,6 +41,7 @@ const navigationLinks: NavigationLink[] = [
   { href: "/#features", label: "Features" },
   { href: "/#why", label: "Why MAKI" },
   { href: "/guides", label: "Guides" },
+  { href: "/updates", label: "Updates" },
 ];
 
 export function Navbar() {

@@ -30,6 +30,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { WorkspaceOverviewCharts } from "@/components/charts/workspace-overview-charts";
 import WorkspaceSchedule from "@/components/charts/workspace-schedule";
+import WorkspaceTasks from "@/components/charts/workspace-tasks";
 import WorkspaceLayout from "@/components/common/workspace-layout";
 import PageTitle from "@/components/page-title";
 import CreateProjectModal from "@/components/shared/modals/create-project-modal";
@@ -282,6 +283,7 @@ function RouteComponent() {
         >
           <WorkspaceViewTabs>
             <TabsPanel value="dashboard" className="space-y-6 px-6 pb-8">
+              <Skeleton className="h-96 rounded-2xl" />
               <Skeleton className="h-24 rounded-2xl" />
               <div className="grid gap-6 lg:grid-cols-3">
                 {[1, 2, 3].map((i) => (
@@ -428,6 +430,7 @@ function RouteComponent() {
       >
         <WorkspaceViewTabs>
           <TabsPanel value="dashboard" className="space-y-6 px-6 pb-8">
+            <WorkspaceTasks workspaceId={workspaceId} />
             <WorkspaceOverviewCharts projects={orderedProjects ?? []} />
             <WorkspaceSchedule workspaceId={workspaceId} />
           </TabsPanel>

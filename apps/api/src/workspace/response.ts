@@ -39,3 +39,28 @@ export const workspaceScheduleSchema = z
     upcomingTasks: z.array(workspaceDeadlineSchema),
   })
   .openapi("WorkspaceSchedule");
+
+export const workspaceTaskSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    number: z.number().nullable(),
+    projectId: z.string(),
+    projectName: z.string(),
+    projectSlug: z.string(),
+    status: z.string(),
+    statusName: z.string(),
+    priority: z.string(),
+    dueDate: nullableResponseTimestamp,
+  })
+  .openapi("WorkspaceTask");
+
+export const workspaceTaskListSchema = z
+  .object({
+    scope: z.enum(["mine", "all"]),
+    total: z.number().openapi({
+      description: "Matching open tasks before the limit is applied.",
+    }),
+    tasks: z.array(workspaceTaskSchema),
+  })
+  .openapi("WorkspaceTaskList");
