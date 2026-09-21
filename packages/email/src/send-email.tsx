@@ -24,7 +24,7 @@ async function sendEmail(
   subject: string,
   html: string,
 ): Promise<void> {
-  const { data, error } = await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: getResendSender(),
     to,
     subject,

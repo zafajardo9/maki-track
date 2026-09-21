@@ -4,7 +4,6 @@ import { FadeIn } from "@/components/landing/fade-in";
 import { Footer } from "@/components/landing/footer";
 import { breadcrumbJsonLd, JsonLd } from "@/components/landing/json-ld";
 import { Navbar } from "@/components/landing/navbar";
-import { SectionSeparator } from "@/components/landing/section-separator";
 import { formatBlogDateShort } from "@/lib/format-date";
 import { guideList, guidePath } from "@/lib/guides";
 
