@@ -10,6 +10,7 @@ import {
   taskTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertProjectAccess } from "../../utils/project-access";
 import { claimTaskNumber } from "./claim-task-numbers";
 
 type DbOrTx = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -92,6 +93,7 @@ async function moveTask({
   destinationStatus?: string;
   currentUserId: string;
 }) {
+  await assertProjectAccess(currentUserId, destinationProjectId);
   const existingTask = await db.query.taskTable.findFirst({
     where: eq(taskTable.id, taskId),
   });

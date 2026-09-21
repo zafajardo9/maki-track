@@ -1,11 +1,13 @@
 import { and, asc, eq, exists, gte, isNull, lt, sql } from "drizzle-orm";
 import db from "../../database";
 import { columnTable, projectTable, taskTable } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
 /** Bounded deadline lists; never load every board to render the workspace home. */
 export default async function getWorkspaceSchedule(
   workspaceId: string,
-  now = new Date(),
+  now: Date,
+  userId: string,
 ) {
   const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const openColumn = db
@@ -20,6 +22,7 @@ export default async function getWorkspaceSchedule(
     );
   // Match project statistics: planned/archived buckets have no board column.
   const scope = and(
+    await projectAccessCondition(userId),
     eq(projectTable.workspaceId, workspaceId),
     isNull(projectTable.archivedAt),
     exists(openColumn),

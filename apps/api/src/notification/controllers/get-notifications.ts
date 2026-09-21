@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, isNull, notInArray, or } from "drizzle-orm";
 import db from "../../database";
 import {
   notificationTable,
@@ -6,6 +6,7 @@ import {
   taskTable,
   workspaceTable,
 } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
 async function getNotifications(userId: string) {
   const rows = await db
@@ -22,9 +23,27 @@ async function getNotifications(userId: string) {
         eq(notificationTable.resourceType, "task"),
       ),
     )
-    .leftJoin(projectTable, eq(taskTable.projectId, projectTable.id))
+    .leftJoin(
+      projectTable,
+      or(
+        eq(taskTable.projectId, projectTable.id),
+        and(
+          eq(notificationTable.resourceType, "project"),
+          eq(notificationTable.resourceId, projectTable.id),
+        ),
+      ),
+    )
     .leftJoin(workspaceTable, eq(projectTable.workspaceId, workspaceTable.id))
-    .where(eq(notificationTable.userId, userId))
+    .where(
+      and(
+        eq(notificationTable.userId, userId),
+        or(
+          isNull(notificationTable.resourceType),
+          notInArray(notificationTable.resourceType, ["task", "project"]),
+          await projectAccessCondition(userId),
+        ),
+      ),
+    )
     .orderBy(desc(notificationTable.createdAt))
     .limit(50);
 

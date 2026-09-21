@@ -1,0 +1,62 @@
+---
+title: Project Files
+description: Browse and search every file uploaded to a project in one place
+---
+
+Every file uploaded to a task — in its description or in a comment — also belongs to the project, and the **Files** view in the project header lists them all.
+
+## What the view shows
+
+Each row carries what you need to recognize a file without opening it:
+
+| Field | Meaning |
+| --- | --- |
+| Name | The uploaded filename, and a link that streams the file |
+| Size and date | The file size and when it was uploaded |
+| Uploader | The workspace member who uploaded it |
+| Source | Whether it came from the task description or a comment |
+| Task | The task it was uploaded to, as its short id (`KAN-12`), linking back to the board |
+
+Above the list, a summary shows how many files match and their combined size.
+
+## Finding a file
+
+The search box matches three things at once, so you do not have to remember exactly how a file was named:
+
+- the **filename**
+- the **source task title**
+- the **uploader's name**
+
+Typing filters as you go; results are ordered by relevance rather than by date while a search is active. The two toggles beside it narrow the list to **Images** (files that render inline) or **Files** (everything uploaded for download), and the sort menu switches between newest, oldest, name, and largest.
+
+The search box, the filters, and the sort order all run as database queries — no file content is read to answer them.
+
+## Where files come from
+
+Files are attached inside a task, through the image and file buttons in the description or comment editor. The Files view is a read-only index over what those edits produced, so:
+
+- Uploading a file means editing the task it belongs to.
+- Removing a file from a task description or comment removes it from this list, because it stops being referenced anywhere.
+- Deleting a task removes its files.
+
+Files stay private. Downloading one goes through the same check as opening it from the task: a workspace member is required, unless the project is public and the file belongs to a public project's task.
+
+## Permissions
+
+Listing a project's files requires `project:read`, so viewers can browse the repository while only members and above can add files by editing tasks.
+
+## API
+
+The view is backed by a single endpoint:
+
+```
+GET /api/project/{projectId}/files
+```
+
+It accepts `q`, `kind` (`all`, `image`, `attachment`), `uploadedBy`, `sort` (`newest`, `oldest`, `name`, `largest`), and `page`/`limit` (up to 100 per page). See the API reference for the full response shape.
+
+## Limitations
+
+- Only files reachable from a task appear here. There is no project-level upload that exists outside a task.
+- Search covers names and metadata, not the contents of documents.
+- Files that are not referenced by any task are cleaned up automatically, so the list is always the current set rather than a permanent archive.

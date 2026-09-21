@@ -10,6 +10,7 @@ import {
   errorResponse,
   jsonResponse,
 } from "../openapi";
+import { assertTaskAccess } from "../utils/project-access";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { validateWorkspaceAccess } from "../utils/validate-workspace-access";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
@@ -63,6 +64,7 @@ async function scopeToSourceTask(c: Context, next: Next) {
     throw new HTTPException(404, { message: "Source task not found" });
   }
 
+  await assertTaskAccess(userId, sourceTaskId);
   await validateWorkspaceAccess(userId, workspaceId);
   c.set("workspaceId", workspaceId);
   return next();
@@ -86,6 +88,7 @@ async function scopeToRelation(c: Context, next: Next) {
     throw new HTTPException(404, { message: "Task not found" });
   }
 
+  await assertTaskAccess(userId, rel.sourceTaskId);
   await validateWorkspaceAccess(userId, workspaceId);
   c.set("workspaceId", workspaceId);
   return next();
@@ -102,6 +105,7 @@ const getTaskRelationsRoute = createRoute({
   middleware: [workspaceAccess.fromTaskId("taskId")] as const,
   request: { params: taskIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse(
       "Task relations with the linked task summaries",
       taskRelationWithTasksListSchema,
@@ -166,7 +170,11 @@ const deleteTaskRelationRoute = createRoute({
 const taskRelation = apiRouter<BaseVariables & { workspaceId: string }>()
   .openapi(getTaskRelationsRoute, async (c) =>
     c.json(
-      await getTaskRelations(c.req.valid("param").taskId, c.get("workspaceId")),
+      await getTaskRelations(
+        c.req.valid("param").taskId,
+        c.get("workspaceId"),
+        c.get("userId"),
+      ),
       200,
     ),
   )

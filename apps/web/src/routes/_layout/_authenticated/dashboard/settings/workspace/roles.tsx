@@ -488,10 +488,31 @@ function PermissionList({
             </p>
             <div className="space-y-4">
               {actions.map((action, idx) => {
-                const meta = PERMISSION_LABELS[`${resource}:${action}`] ?? {
-                  label: `${action} ${resource}`,
-                  description: "",
-                };
+                const accessMeta =
+                  resource === "project" && action === "access_all"
+                    ? {
+                        label: t(
+                          "settings:workspaceRoles.permissions.project.access_all.label",
+                        ),
+                        description: t(
+                          "settings:workspaceRoles.permissions.project.access_all.description",
+                        ),
+                      }
+                    : resource === "project" && action === "manage_access"
+                      ? {
+                          label: t(
+                            "settings:workspaceRoles.permissions.project.manage_access.label",
+                          ),
+                          description: t(
+                            "settings:workspaceRoles.permissions.project.manage_access.description",
+                          ),
+                        }
+                      : undefined;
+                const meta = accessMeta ??
+                  PERMISSION_LABELS[`${resource}:${action}`] ?? {
+                    label: `${action} ${resource}`,
+                    description: "",
+                  };
                 const labelKey = `${resource}.${action}.label`;
                 const descriptionKey = `${resource}.${action}.description`;
                 return (
@@ -500,21 +521,23 @@ function PermissionList({
                     <div className="flex items-center justify-between gap-6">
                       <div className="space-y-0.5 flex-1 min-w-0">
                         <Label className="text-sm font-medium">
-                          {t(
-                            `settings:workspaceRoles.permissions.${labelKey}`,
-                            {
-                              defaultValue: meta.label,
-                            },
-                          )}
+                          {accessMeta?.label ??
+                            t(
+                              `settings:workspaceRoles.permissions.${labelKey}`,
+                              {
+                                defaultValue: meta.label,
+                              },
+                            )}
                         </Label>
                         {meta.description && (
                           <p className="text-xs text-muted-foreground">
-                            {t(
-                              `settings:workspaceRoles.permissions.${descriptionKey}`,
-                              {
-                                defaultValue: meta.description,
-                              },
-                            )}
+                            {accessMeta?.description ??
+                              t(
+                                `settings:workspaceRoles.permissions.${descriptionKey}`,
+                                {
+                                  defaultValue: meta.description,
+                                },
+                              )}
                           </p>
                         )}
                       </div>

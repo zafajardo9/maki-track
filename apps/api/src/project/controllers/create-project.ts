@@ -1,6 +1,11 @@
-import { eq, max, sql } from "drizzle-orm";
+import { and, eq, max, sql } from "drizzle-orm";
 import db from "../../database";
-import { columnTable, projectTable } from "../../database/schema";
+import {
+  columnTable,
+  projectMemberTable,
+  projectTable,
+  workspaceUserTable,
+} from "../../database/schema";
 
 export const DEFAULT_PROJECT_COLUMNS = [
   { name: "To Do", slug: "to-do", position: 0, isFinal: false },
@@ -14,6 +19,8 @@ async function createProject(
   name: string,
   icon: string,
   slug: string,
+  userId: string,
+  accessMode: "workspace" | "restricted" = "restricted",
 ) {
   return db.transaction(async (tx) => {
     // Serialize ordering writes per workspace: without this, two concurrent
@@ -34,6 +41,7 @@ async function createProject(
       .insert(projectTable)
       .values({
         workspaceId,
+        accessMode,
         name,
         icon,
         slug,
@@ -42,6 +50,23 @@ async function createProject(
       .returning();
 
     if (createdProject) {
+      const [member] = await tx
+        .select({ id: workspaceUserTable.id })
+        .from(workspaceUserTable)
+        .where(
+          and(
+            eq(workspaceUserTable.workspaceId, workspaceId),
+            eq(workspaceUserTable.userId, userId),
+          ),
+        );
+      if (member)
+        await tx
+          .insert(projectMemberTable)
+          .values({
+            workspaceId,
+            projectId: createdProject.id,
+            workspaceMemberId: member.id,
+          });
       for (const col of DEFAULT_PROJECT_COLUMNS) {
         await tx.insert(columnTable).values({
           projectId: createdProject.id,

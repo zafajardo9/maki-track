@@ -11,36 +11,48 @@ async function updateProject(
   description: string,
   isPublic: boolean,
   workspaceId: string,
+  accessMode?: "workspace" | "restricted",
 ) {
-  const [existingProject] = await db
-    .select()
-    .from(projectTable)
-    .where(
-      and(eq(projectTable.id, id), eq(projectTable.workspaceId, workspaceId)),
-    );
+  return db.transaction(async (tx) => {
+    const [existingProject] = await tx
+      .select()
+      .from(projectTable)
+      .where(
+        and(eq(projectTable.id, id), eq(projectTable.workspaceId, workspaceId)),
+      )
+      .for("update");
 
-  const isProjectExisting = Boolean(existingProject);
+    if (!existingProject) {
+      throw new HTTPException(404, {
+        message:
+          "Project doesn't exist or doesn't belong to the specified workspace",
+      });
+    }
 
-  if (!isProjectExisting) {
-    throw new HTTPException(404, {
-      message:
-        "Project doesn't exist or doesn't belong to the specified workspace",
-    });
-  }
+    const nextAccessMode = accessMode ?? existingProject.accessMode;
+    const restricting =
+      accessMode === "restricted" &&
+      existingProject.accessMode !== "restricted";
+    if (nextAccessMode === "restricted" && isPublic && !restricting) {
+      throw new HTTPException(400, {
+        message: "Restricted projects cannot be public",
+      });
+    }
+    const [updatedWorkspace] = await tx
+      .update(projectTable)
+      .set({
+        name,
+        icon,
+        slug,
+        description,
+        accessMode: nextAccessMode,
+        isPublic: nextAccessMode === "restricted" ? false : isPublic,
+      })
+      .where(eq(projectTable.id, id))
+      .returning();
 
-  const [updatedWorkspace] = await db
-    .update(projectTable)
-    .set({
-      name,
-      icon,
-      slug,
-      description,
-      isPublic,
-    })
-    .where(eq(projectTable.id, id))
-    .returning();
-
-  return updatedWorkspace;
+    return updatedWorkspace;
+  });
 }
 
 export default updateProject;

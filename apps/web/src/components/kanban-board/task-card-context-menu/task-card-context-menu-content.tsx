@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { X } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -57,6 +58,7 @@ export default function TaskCardContextMenuContent({
   onDeleteClick,
 }: TaskCardContextMenuContentProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { project } = useProjectStore();
   const { data: columnsData = [] } = useGetColumns(taskCardContext.projectId);
   const columns =
@@ -192,6 +194,18 @@ export default function TaskCardContextMenuContent({
     toast.success(t("tasks:contextMenu.copyLinkSuccess"));
   };
 
+  // Same destination as the sheet's "Open in full page" button.
+  const handleViewTask = () => {
+    navigate({
+      to: "/dashboard/workspace/$workspaceId/project/$projectId/task/$taskId",
+      params: {
+        workspaceId: taskCardContext.worskpaceId,
+        projectId: taskCardContext.projectId,
+        taskId: task.id,
+      },
+    });
+  };
+
   const handleChange = async (field: keyof Task, value: string | Date) => {
     try {
       switch (field) {
@@ -283,6 +297,10 @@ export default function TaskCardContextMenuContent({
 
   return (
     <ContextMenuContent className="w-46">
+      <ContextMenuItem onClick={handleViewTask}>
+        <span>{t("tasks:contextMenu.viewTask")}</span>
+      </ContextMenuItem>
+
       <ContextMenuItem onClick={handleCopyTaskLink}>
         <span>{t("tasks:contextMenu.copyLink")}</span>
       </ContextMenuItem>

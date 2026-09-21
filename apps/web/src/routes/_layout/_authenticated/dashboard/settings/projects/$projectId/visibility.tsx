@@ -49,7 +49,7 @@ function RouteComponent() {
   }, [hasPermission]);
 
   const handleToggle = useCallback(async () => {
-    if (!project) return;
+    if (!project || project.accessMode === "restricted") return;
     if (savingRef.current) return;
     savingRef.current = true;
     try {
@@ -116,13 +116,13 @@ function RouteComponent() {
                   {t("settings:projectVisibility.publicAccess")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t("settings:projectVisibility.publicAccessHint")}
+                  {project?.accessMode === "restricted" ? t("settings:projectAccess.publicWarning") : t("settings:projectVisibility.publicAccessHint")}
                 </p>
               </div>
               <Switch
                 checked={!!project?.isPublic}
                 onCheckedChange={canShare ? handleToggle : undefined}
-                disabled={!canShare}
+                disabled={!canShare || project?.accessMode === "restricted"}
               />
             </div>
 

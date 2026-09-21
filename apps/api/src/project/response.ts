@@ -3,6 +3,7 @@ import { boardColumnSchema, boardTaskSchema } from "../task/response";
 
 export const projectSchema = z
   .object({
+    accessMode: z.enum(["workspace", "restricted"]),
     id: z.string(),
     workspaceId: z.string(),
     slug: z.string().openapi({
@@ -77,3 +78,83 @@ export const projectListItemSchema = projectSchema
   .openapi("ProjectListItem");
 
 export const projectListSchema = z.array(projectListItemSchema);
+
+export const projectMemberSchema = z
+  .object({
+    userId: z.string(),
+    name: z.string(),
+    email: z.string(),
+    role: z.string(),
+    explicit: z.boolean(),
+    inherited: z.boolean(),
+  })
+  .openapi("ProjectMember");
+
+export const projectFileSourceSchema = z
+  .object({
+    id: z.string(),
+    number: z.number(),
+    title: z.string(),
+  })
+  .openapi("ProjectFileSource");
+
+export const projectFileUploaderSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().nullable(),
+    email: z.string(),
+    image: z.string().nullable(),
+  })
+  .openapi("ProjectFileUploader");
+
+export const projectFileSchema = z
+  .object({
+    id: z.string(),
+    filename: z.string(),
+    mimeType: z.string(),
+    size: z.number().openapi({ description: "Size in bytes." }),
+    kind: z.enum(["image", "attachment"]).openapi({
+      description:
+        "`image` for files the editor renders inline, `attachment` for everything else uploaded for download.",
+    }),
+    surface: z.enum(["description", "comment"]).openapi({
+      description:
+        "Where the file was uploaded from: a task description or a task comment.",
+    }),
+    url: z.string().openapi({
+      description:
+        "Absolute download URL, served by `GET /api/asset/{id}` with the same workspace authorization.",
+    }),
+    createdAt: responseTimestamp,
+    task: projectFileSourceSchema.nullable().openapi({
+      description:
+        "The task the file was uploaded to, or null once that task is gone.",
+    }),
+    activityId: z.string().nullable().openapi({
+      description: "The comment the file belongs to, when it came from one.",
+    }),
+    uploadedBy: projectFileUploaderSchema.nullable().openapi({
+      description: "Null for files whose uploader has since been deleted.",
+    }),
+  })
+  .openapi("ProjectFile");
+
+export const projectFileListSchema = z
+  .object({
+    data: z.array(projectFileSchema),
+    pagination: z
+      .object({
+        total: z.number().openapi({
+          description: "Every file matching the filters, not just this page.",
+        }),
+        page: z.number(),
+        pageSize: z.number(),
+        totalPages: z.number(),
+      })
+      .openapi("ProjectFilePagination"),
+    totalSize: z.number().openapi({
+      description:
+        "Sum of `size` across every matching file, so a caller can show a repository total without walking the pages.",
+    }),
+  })
+  .openapi("ProjectFileList");

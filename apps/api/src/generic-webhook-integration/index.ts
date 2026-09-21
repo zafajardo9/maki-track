@@ -88,6 +88,7 @@ const getGenericWebhookIntegrationRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse(
       "Webhook integration details, or null",
       genericWebhookIntegrationSchema.nullable(),

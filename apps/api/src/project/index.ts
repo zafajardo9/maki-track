@@ -1,4 +1,6 @@
+import { HTTPException } from "hono/http-exception";
 import { requireEntitlement } from "../billing/require-entitlement-middleware";
+import { publishEvent } from "../events";
 import {
   apiRouter,
   type BaseVariables,
@@ -7,21 +9,34 @@ import {
   jsonResponse,
   z,
 } from "../openapi";
+import { normalizeApiServerUrl } from "../utils/openapi-spec";
+import {
+  assertProjectAccess,
+  canManageProjectAccess,
+} from "../utils/project-access";
 import { requireWorkspacePermission } from "../utils/require-workspace-permission";
 import { workspaceAccess } from "../utils/workspace-access-middleware";
+import projectAccessRoutes from "./access";
 import archiveProjectCtrl from "./controllers/archive-project";
 import createProjectCtrl from "./controllers/create-project";
 import deleteProjectCtrl from "./controllers/delete-project";
 import getProjectCtrl from "./controllers/get-project";
+import getProjectFilesCtrl from "./controllers/get-project-files";
 import getProjectsCtrl from "./controllers/get-projects";
 import reorderProjectsCtrl from "./controllers/reorder-projects";
 import { requireProjectVisibilityPermission } from "./controllers/require-project-visibility-permission";
 import unarchiveProjectCtrl from "./controllers/unarchive-project";
 import updateProjectCtrl from "./controllers/update-project";
-import { projectListSchema, projectSchema } from "./response";
+import {
+  projectFileListSchema,
+  projectListSchema,
+  projectSchema,
+} from "./response";
 import {
   createProjectBody,
   listProjectsQuery,
+  projectFilesParam,
+  projectFilesQuery,
   projectParam,
   reorderProjectsBody,
   updateProjectBody,
@@ -83,6 +98,7 @@ const getProjectRoute = createRoute({
   middleware: [workspaceAccess.fromProject()] as const,
   request: { params: projectParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Project details", projectSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -142,6 +158,7 @@ const updateProjectRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated project", projectSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
@@ -164,6 +181,7 @@ const deleteProjectRoute = createRoute({
   ] as const,
   request: { params: projectParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The deleted project", projectSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -188,6 +206,7 @@ const archiveProjectRoute = createRoute({
   ] as const,
   request: { params: projectParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The archived project", projectSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -211,6 +230,7 @@ const unarchiveProjectRoute = createRoute({
   ] as const,
   request: { params: projectParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The restored project", projectSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -221,20 +241,56 @@ const unarchiveProjectRoute = createRoute({
   },
 });
 
+const listProjectFilesRoute = createRoute({
+  method: "get",
+  operationId: "listProjectFiles",
+  path: "/{projectId}/files",
+  tags: ["Projects"],
+  summary: "List project files",
+  description:
+    "List the files and documents uploaded to a project's tasks. `q` matches the filename, the source task title, and the uploader's name, and switches the ordering from `sort` to relevance. Every entry carries a `url` that streams through `/asset/{id}`, so the same workspace authorization applies.",
+  middleware: [
+    workspaceAccess.fromProject("projectId"),
+    requireWorkspacePermission({ project: ["read"] }),
+  ] as const,
+  request: { params: projectFilesParam, query: projectFilesQuery },
+  responses: {
+    404: errorResponse("Resource not found or inaccessible"),
+    200: jsonResponse("Files uploaded to the project", projectFileListSchema),
+    400: errorResponse(
+      "Unknown project, or its workspace could not be determined",
+    ),
+    403: errorResponse(
+      "No access to the project's workspace, or missing project:read permission",
+    ),
+  },
+});
+
 const project = apiRouter<BaseVariables & { workspaceId: string }>()
+  .route("/", projectAccessRoutes)
   .openapi(listProjectsRoute, async (c) => {
     const workspaceId = c.get("workspaceId");
     const { includeArchived } = c.req.valid("query");
     const projects = await getProjectsCtrl(
       workspaceId,
       includeArchived === "true",
+      c.get("userId"),
     );
     return c.json(projects, 200);
   })
   .openapi(createProjectRoute, async (c) => {
-    const { name, icon, slug } = c.req.valid("json");
+    const { name, icon, slug, accessMode } = c.req.valid("json");
     const workspaceId = c.get("workspaceId");
-    const newProject = await createProjectCtrl(workspaceId, name, icon, slug);
+    if (accessMode === "workspace" && !(await canManageProjectAccess(c)))
+      throw new HTTPException(403, { message: "Insufficient permissions" });
+    const newProject = await createProjectCtrl(
+      workspaceId,
+      name,
+      icon,
+      slug,
+      c.get("userId"),
+      accessMode,
+    );
     return c.json(newProject, 200);
   })
   .openapi(getProjectRoute, async (c) => {
@@ -243,15 +299,39 @@ const project = apiRouter<BaseVariables & { workspaceId: string }>()
     const projectData = await getProjectCtrl(id, workspaceId);
     return c.json(projectData, 200);
   })
+  .openapi(listProjectFilesRoute, async (c) => {
+    const { projectId } = c.req.valid("param");
+    const { q, kind, uploadedBy, sort, page, limit } = c.req.valid("query");
+    const files = await getProjectFilesCtrl({
+      projectId,
+      apiBaseUrl: normalizeApiServerUrl(
+        process.env.MAKI_API_URL || new URL(c.req.url).origin,
+      ),
+      q: q?.trim() || undefined,
+      kind,
+      uploadedBy,
+      sort,
+      page,
+      limit,
+    });
+    return c.json(files, 200);
+  })
   .openapi(reorderProjectsRoute, async (c) => {
     const workspaceId = c.get("workspaceId");
     const { projects } = c.req.valid("json");
-    const reordered = await reorderProjectsCtrl(workspaceId, projects);
+    for (const project of projects)
+      await assertProjectAccess(c.get("userId"), project.id);
+    const reordered = await reorderProjectsCtrl(
+      workspaceId,
+      projects,
+      c.get("userId"),
+    );
     return c.json(reordered, 200);
   })
   .openapi(updateProjectRoute, async (c) => {
     const { id } = c.req.valid("param");
-    const { name, icon, slug, description, isPublic } = c.req.valid("json");
+    const { name, icon, slug, description, isPublic, accessMode } =
+      c.req.valid("json");
     const workspaceId = c.get("workspaceId");
     const updatedProject = await updateProjectCtrl(
       id,
@@ -261,7 +341,9 @@ const project = apiRouter<BaseVariables & { workspaceId: string }>()
       description,
       isPublic,
       workspaceId,
+      accessMode,
     );
+    await publishEvent("project.access.changed", { workspaceId });
     return c.json(updatedProject, 200);
   })
   .openapi(deleteProjectRoute, async (c) => {

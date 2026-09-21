@@ -28,6 +28,7 @@ const getTaskTimeEntriesRoute = createRoute({
   middleware: [workspaceAccess.fromTaskId()] as const,
   request: { params: taskIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of time entries for the task", timeEntryListSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",
@@ -46,6 +47,7 @@ const getTimeEntryRoute = createRoute({
   middleware: [workspaceAccess.fromTimeEntry()] as const,
   request: { params: timeEntryParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Time entry details", timeEntrySchema),
     400: errorResponse(
       "Unknown entry, or its workspace could not be determined",
@@ -73,6 +75,7 @@ const createTimeEntryRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The created time entry", timeEntrySchema),
     400: errorResponse("Invalid timestamps, or unknown task"),
     403: errorResponse(
@@ -101,6 +104,7 @@ const updateTimeEntryRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated time entry", timeEntrySchema),
     400: errorResponse("Invalid timestamps, or unknown entry"),
     403: errorResponse(

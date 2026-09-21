@@ -1,0 +1,27 @@
+---
+title: Project access
+description: Choose who can see each project in a workspace.
+---
+
+Project membership controls which projects a workspace member can see. Their workspace role continues to control actions such as creating tasks, assigning work, and deleting projects.
+
+In **Project settings → General → Project access**, choose:
+
+- **Selected members**: only explicitly added members, workspace owners/admins, and roles with **Access all projects** can access the project.
+- **Everyone in the workspace**: all workspace members can access the project.
+
+New projects start with selected members and automatically include their creator. Existing projects remain accessible to everyone in their workspace after upgrading. A creator's membership does not grant permission to manage access.
+
+Workspace owners and admins always see all projects and can manage project access, even when their editable role permissions are changed. Other roles need **Manage project access** and access to that project to change visibility or add/remove members. **Access all projects** grants visibility, not editing privileges.
+
+Add members by searching existing workspace users in project settings. Removing someone removes explicit membership; owner/admin or Access all projects permissions still apply. Leaving a workspace removes project memberships permanently; rejoining does not restore them. Switching between workspace-wide and selected access retains the explicit member list.
+
+Restricting a project disables its public link immediately. Public sharing cannot be enabled while access is restricted. Switching back to workspace-wide access does not restore the public link automatically. Previously configured integrations remain connected; review their external recipients separately when deciding where project information should go.
+
+Restrictions apply to direct links, API and MCP requests, search, tasks, attachments, notifications, and realtime updates. Changes clear affected application caches and revoke unauthorized realtime delivery. Information someone already downloaded or received cannot be recalled.
+
+## Upgrading
+
+Deploy the API, web app, and database migration together. The migration preserves existing workspace-wide access and public sharing while making future projects restricted by default. Redis remains optional.
+
+After restricted projects are in use, do not roll back to a server version that ignores project access. Apply a forward fix, or explicitly restore workspace-wide access before a planned rollback.

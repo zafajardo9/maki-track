@@ -169,7 +169,7 @@ describe("API integration: workspace RBAC enforcement", () => {
       expect(response.status).toBe(200);
     });
 
-    it("returns 403 when the user has no row in workspace_member for the workspace", async () => {
+    it("returns 404 when the user has no row in workspace_member for the workspace", async () => {
       const member = await createWorkspaceMember({ role: "admin" });
       const { project } = await createProjectFixture({
         workspaceId: member.workspace.id,
@@ -191,7 +191,7 @@ describe("API integration: workspace RBAC enforcement", () => {
 
       const response = await postCreateTask(app, project.id);
       // workspaceAccess.fromProject runs first and rejects with its own message
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(404);
     });
 
     it("does not authorize a project through a conflicting workspaceId query", async () => {
@@ -218,7 +218,7 @@ describe("API integration: workspace RBAC enforcement", () => {
         },
       );
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(404);
     });
   });
 

@@ -1,7 +1,11 @@
 import { randomUUID } from "node:crypto";
+import { eq } from "drizzle-orm";
 import type { WSContext } from "hono/ws";
+import db from "../database";
+import { workspaceUserTable } from "../database/schema";
 import { subscribeToEvent } from "../events";
 import { isRedisConfigured } from "../redis";
+import { assertTaskAccess, canAccessProject } from "../utils/project-access";
 import type {
   BroadcastAdapter,
   BroadcastMessage,
@@ -67,6 +71,15 @@ function deliverToLocalUserConnections(
   userId: string,
   message: UserBroadcastMessage,
 ) {
+  if (message.type === "PROJECT_ACCESS_CHANGED") {
+    for (const [projectId, connections] of projectConnections) {
+      if ([...connections].some((conn) => conn.userId === userId))
+        void deliverToLocalConnections(projectId, {
+          type: "PROJECT_ACCESS_CHANGED",
+          projectId,
+        }).catch(console.error);
+    }
+  }
   const connections = userConnections.get(userId);
   if (!connections) return;
 
@@ -113,11 +126,11 @@ export async function initializeWebSocketAdapter() {
 
   try {
     await nextAdapter.subscribe((msg: BroadcastMessage) => {
-      deliverToLocalConnections(
+      void deliverToLocalConnections(
         msg.projectId,
         msg.message,
         msg.excludeInitiatorId,
-      );
+      ).catch((error) => console.error("Project delivery failed", error));
     });
     await nextAdapter.subscribeToUser((msg: UserBroadcast) => {
       if (msg.origin === INSTANCE_ID) {
@@ -158,7 +171,7 @@ export async function shutdownWebSocketAdapter() {
   adapter = null;
 }
 
-function deliverToLocalConnections(
+async function deliverToLocalConnections(
   projectId: string,
   message: ProjectBroadcastMessage,
   excludeInitiatorId?: string,
@@ -167,7 +180,33 @@ function deliverToLocalConnections(
   if (!connections) return;
 
   const payload = JSON.stringify(message);
+  const access = new Map<string, Promise<boolean>>();
   for (const conn of connections) {
+    if (!access.has(conn.userId))
+      access.set(
+        conn.userId,
+        canAccessProject(conn.userId, projectId).catch(() => false),
+      );
+    if (!(await access.get(conn.userId))) {
+      try {
+        conn.ws.send(
+          JSON.stringify({ type: "PROJECT_ACCESS_REVOKED", projectId }),
+        );
+        conn.ws.close(4003, "Project access revoked");
+      } catch {
+        /* Socket may already be closed. */
+      }
+      connections.delete(conn);
+      continue;
+    }
+    if (message.sourceTaskId || message.targetTaskId) {
+      try {
+        for (const taskId of [message.sourceTaskId, message.targetTaskId])
+          if (taskId) await assertTaskAccess(conn.userId, taskId);
+      } catch {
+        continue;
+      }
+    }
     if (excludeInitiatorId && conn.initiatorId === excludeInitiatorId) continue;
     try {
       conn.ws.send(payload);
@@ -400,3 +439,19 @@ for (const eventName of taskUpdateEvents) {
     );
   });
 }
+
+subscribeToEvent<{ workspaceId: string; userIds?: string[] }>(
+  "project.access.changed",
+  async ({ workspaceId, userIds = [] }) => {
+    const members = await db
+      .select({ userId: workspaceUserTable.userId })
+      .from(workspaceUserTable)
+      .where(eq(workspaceUserTable.workspaceId, workspaceId));
+    for (const userId of new Set([
+      ...members.map((member) => member.userId),
+      ...userIds,
+    ])) {
+      broadcastToUser(userId, { type: "PROJECT_ACCESS_CHANGED", workspaceId });
+    }
+  },
+);

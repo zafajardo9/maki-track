@@ -3,6 +3,7 @@ import db from "../../database";
 import { notificationTable } from "../../database/schema";
 import { publishEvent } from "../../events";
 import { deliverNotification } from "../../notification-preferences/delivery";
+import { assertTaskAccess, canAccessProject } from "../../utils/project-access";
 
 async function createNotification({
   userId,
@@ -21,6 +22,19 @@ async function createNotification({
   resourceId?: string;
   resourceType?: string;
 }) {
+  if (resourceType === "task" && resourceId) {
+    try {
+      await assertTaskAccess(userId, resourceId);
+    } catch {
+      return null;
+    }
+  }
+  if (
+    resourceType === "project" &&
+    resourceId &&
+    !(await canAccessProject(userId, resourceId))
+  )
+    return null;
   const preferenceKey =
     type === "task_assignee_changed" || type === "task_created"
       ? "taskAssignmentEnabled"

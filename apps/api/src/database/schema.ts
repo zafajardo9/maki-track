@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   customType,
   foreignKey,
   index,
@@ -169,6 +170,10 @@ export const workspaceUserTable = pgTable(
     joinedAt: timestamp("joined_at", { mode: "date" }).notNull(),
   },
   (table) => [
+    unique("workspace_member_workspace_id_id_unique").on(
+      table.workspaceId,
+      table.id,
+    ),
     index("workspace_member_workspaceId_idx").on(table.workspaceId),
     index("workspace_member_userId_idx").on(table.userId),
   ],
@@ -325,16 +330,55 @@ export const projectTable = pgTable(
     description: text("description"),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
     isPublic: boolean("is_public").default(false),
+    accessMode: text("access_mode", { enum: ["workspace", "restricted"] })
+      .notNull()
+      .default("restricted"),
     archivedAt: timestamp("archived_at", { mode: "date" }),
     lastTaskNumber: integer("last_task_number").notNull().default(0),
     position: integer("position").notNull().default(0),
   },
   (table) => [
+    check(
+      "project_access_mode_check",
+      sql`${table.accessMode} in ('workspace', 'restricted')`,
+    ),
+    check(
+      "project_restricted_not_public",
+      sql`${table.accessMode} <> 'restricted' or ${table.isPublic} is not true`,
+    ),
     unique("project_workspace_id_id_unique").on(table.workspaceId, table.id),
     index("project_workspaceId_position_idx").on(
       table.workspaceId,
       table.position,
     ),
+  ],
+);
+
+export const projectMemberTable = pgTable(
+  "project_member",
+  {
+    id: text("id")
+      .$defaultFn(() => createId())
+      .primaryKey(),
+    workspaceId: text("workspace_id").notNull(),
+    projectId: text("project_id").notNull(),
+    workspaceMemberId: text("workspace_member_id").notNull(),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => [
+    unique("project_member_project_member_unique").on(
+      table.projectId,
+      table.workspaceMemberId,
+    ),
+    index("project_member_workspace_member_idx").on(table.workspaceMemberId),
+    foreignKey({
+      columns: [table.workspaceId, table.projectId],
+      foreignColumns: [projectTable.workspaceId, projectTable.id],
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.workspaceId, table.workspaceMemberId],
+      foreignColumns: [workspaceUserTable.workspaceId, workspaceUserTable.id],
+    }).onDelete("cascade"),
   ],
 );
 

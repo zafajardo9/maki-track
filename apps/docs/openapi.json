@@ -153,6 +153,115 @@
           "redirect"
         ]
       },
+      "ProjectMember": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "explicit": {
+            "type": "boolean"
+          },
+          "inherited": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "email",
+          "role",
+          "explicit",
+          "inherited"
+        ]
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "accessMode": {
+            "type": "string",
+            "enum": [
+              "workspace",
+              "restricted"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Short prefix used in task identifiers, e.g. KAN-12."
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isPublic": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "When true the project's board is readable without signing in, via /api/public-project/{id}."
+          },
+          "archivedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Non-null once archived; archived projects are hidden by default."
+          },
+          "position": {
+            "type": "number",
+            "description": "Sidebar order, ascending."
+          },
+          "lastTaskNumber": {
+            "type": "number",
+            "description": "Highest task number issued in this project; the next task gets this plus one."
+          }
+        },
+        "required": [
+          "accessMode",
+          "id",
+          "workspaceId",
+          "slug",
+          "icon",
+          "name",
+          "description",
+          "createdAt",
+          "isPublic",
+          "archivedAt",
+          "position",
+          "lastTaskNumber"
+        ]
+      },
       "ProjectListItem": {
         "allOf": [
           {
@@ -367,6 +476,12 @@
           },
           "color": {
             "type": "string"
+          },
+          "projectId": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -470,74 +585,175 @@
           "tasks"
         ]
       },
-      "Project": {
+      "ProjectFileList": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectFile"
+            }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/ProjectFilePagination"
+          },
+          "totalSize": {
+            "type": "number",
+            "description": "Sum of `size` across every matching file, so a caller can show a repository total without walking the pages."
+          }
+        },
+        "required": [
+          "data",
+          "pagination",
+          "totalSize"
+        ]
+      },
+      "ProjectFile": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "workspaceId": {
+          "filename": {
             "type": "string"
           },
-          "slug": {
+          "mimeType": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in bytes."
+          },
+          "kind": {
             "type": "string",
-            "description": "Short prefix used in task identifiers, e.g. KAN-12."
+            "enum": [
+              "image",
+              "attachment"
+            ],
+            "description": "`image` for files the editor renders inline, `attachment` for everything else uploaded for download."
           },
-          "icon": {
-            "type": [
-              "string",
-              "null"
-            ]
+          "surface": {
+            "type": "string",
+            "enum": [
+              "description",
+              "comment"
+            ],
+            "description": "Where the file was uploaded from: a task description or a task comment."
           },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": [
-              "string",
-              "null"
-            ]
+          "url": {
+            "type": "string",
+            "description": "Absolute download URL, served by `GET /api/asset/{id}` with the same workspace authorization."
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           },
-          "isPublic": {
-            "type": [
-              "boolean",
-              "null"
-            ],
-            "description": "When true the project's board is readable without signing in, via /api/public-project/{id}."
+          "task": {
+            "$ref": "#/components/schemas/ProjectFileSource"
           },
-          "archivedAt": {
+          "activityId": {
             "type": [
               "string",
               "null"
             ],
-            "format": "date-time",
-            "description": "Non-null once archived; archived projects are hidden by default."
+            "description": "The comment the file belongs to, when it came from one."
           },
-          "position": {
-            "type": "number",
-            "description": "Sidebar order, ascending."
-          },
-          "lastTaskNumber": {
-            "type": "number",
-            "description": "Highest task number issued in this project; the next task gets this plus one."
+          "uploadedBy": {
+            "$ref": "#/components/schemas/ProjectFileUploader"
           }
         },
         "required": [
           "id",
-          "workspaceId",
-          "slug",
-          "icon",
-          "name",
-          "description",
+          "filename",
+          "mimeType",
+          "size",
+          "kind",
+          "surface",
+          "url",
           "createdAt",
-          "isPublic",
-          "archivedAt",
-          "position",
-          "lastTaskNumber"
+          "task",
+          "activityId",
+          "uploadedBy"
+        ]
+      },
+      "ProjectFileSource": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "title"
+        ],
+        "description": "The task the file was uploaded to, or null once that task is gone."
+      },
+      "ProjectFileUploader": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "image": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "image"
+        ],
+        "description": "Null for files whose uploader has since been deleted."
+      },
+      "ProjectFilePagination": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Every file matching the filters, not just this page."
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          },
+          "totalPages": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
         ]
       },
       "BoardResponse": {
@@ -585,6 +801,13 @@
               "null"
             ]
           },
+          "accessMode": {
+            "type": "string",
+            "enum": [
+              "workspace",
+              "restricted"
+            ]
+          },
           "workspaceId": {
             "type": "string"
           },
@@ -614,6 +837,7 @@
           "icon",
           "description",
           "isPublic",
+          "accessMode",
           "workspaceId",
           "columns",
           "archivedTasks",
@@ -1304,6 +1528,12 @@
               "string",
               "null"
             ]
+          },
+          "projectId": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -1313,7 +1543,8 @@
           "createdAt",
           "updatedAt",
           "taskId",
-          "workspaceId"
+          "workspaceId",
+          "projectId"
         ]
       },
       "Notification": {
@@ -1707,6 +1938,56 @@
           "title",
           "createdAt",
           "relevanceScore"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "taskId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "workspaceId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "projectId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "createdAt",
+          "updatedAt",
+          "taskId",
+          "workspaceId",
+          "projectId"
         ]
       },
       "GitHubAppInfo": {
@@ -3039,6 +3320,175 @@
           "email",
           "image",
           "role"
+        ]
+      },
+      "WorkspaceSchedule": {
+        "type": "object",
+        "properties": {
+          "overdue": {
+            "type": "number"
+          },
+          "upcoming": {
+            "type": "number"
+          },
+          "noDueDate": {
+            "type": "number"
+          },
+          "overdueTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceDeadline"
+            }
+          },
+          "upcomingTasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceDeadline"
+            }
+          }
+        },
+        "required": [
+          "overdue",
+          "upcoming",
+          "noDueDate",
+          "overdueTasks",
+          "upcomingTasks"
+        ]
+      },
+      "WorkspaceDeadline": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "number": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "projectSlug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "statusName": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "number",
+          "projectId",
+          "projectName",
+          "projectSlug",
+          "status",
+          "statusName",
+          "dueDate",
+          "createdAt"
+        ]
+      },
+      "WorkspaceTaskList": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "mine",
+              "all"
+            ]
+          },
+          "total": {
+            "type": "number",
+            "description": "Matching open tasks before the limit is applied."
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceTask"
+            }
+          }
+        },
+        "required": [
+          "scope",
+          "total",
+          "tasks"
+        ]
+      },
+      "WorkspaceTask": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "number": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "projectName": {
+            "type": "string"
+          },
+          "projectSlug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "statusName": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "dueDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "number",
+          "projectId",
+          "projectName",
+          "projectSlug",
+          "status",
+          "statusName",
+          "priority",
+          "dueDate"
         ]
       },
       "UserAvatar": {
@@ -5478,6 +5928,317 @@
         }
       }
     },
+    "/project/{id}/members": {
+      "get": {
+        "operationId": "getProjectMembers",
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List explicit members and inherited owner/admin access",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectMember"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or user outside workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "Missing project:manage_access permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/project/{id}/members/{userId}": {
+      "put": {
+        "operationId": "addProjectMember",
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Grant an existing workspace member project access",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "userId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Membership updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or user outside workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "Missing project:manage_access permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeProjectMember",
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Remove explicit membership; inherited role access remains",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "userId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Membership updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or user outside workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "Missing project:manage_access permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/project/{id}/access": {
+      "put": {
+        "operationId": "setProjectAccess",
+        "tags": [
+          "Projects"
+        ],
+        "summary": "Change project access; restricting disables public sharing",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessMode": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "restricted"
+                    ]
+                  }
+                },
+                "required": [
+                  "accessMode"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or user outside workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "Missing project:manage_access permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/project": {
       "get": {
         "operationId": "listProjects",
@@ -5559,6 +6320,13 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "accessMode": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "restricted"
+                    ]
+                  },
                   "name": {
                     "type": "string"
                   },
@@ -5670,6 +6438,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -5679,7 +6457,7 @@
           "Projects"
         ],
         "summary": "Update project",
-        "description": "Replace a project's name, icon, slug, description, and visibility.",
+        "description": "Replace a project's name, icon, slug, description, and visibility. Changing visibility also requires project:share.",
         "parameters": [
           {
             "schema": {
@@ -5697,6 +6475,13 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "accessMode": {
+                    "type": "string",
+                    "enum": [
+                      "workspace",
+                      "restricted"
+                    ]
+                  },
                   "name": {
                     "type": "string"
                   },
@@ -5749,7 +6534,17 @@
             "description": "Missing or invalid credentials"
           },
           "403": {
-            "description": "No workspace access, or missing project:update permission",
+            "description": "No workspace access, missing project:update permission, or a visibility change without project:share",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5803,6 +6598,152 @@
           },
           "403": {
             "description": "No workspace access, or missing project:delete permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/project/{projectId}/files": {
+      "get": {
+        "operationId": "listProjectFiles",
+        "tags": [
+          "Projects"
+        ],
+        "summary": "List project files",
+        "description": "List the files and documents uploaded to a project's tasks. `q` matches the filename, the source task title, and the uploader's name, and switches the ordering from `sort` to relevance. Every entry carries a `url` that streams through `/asset/{id}`, so the same workspace authorization applies.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "projectId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Free-text filter, matched against the filename, the source task title, and the uploader's name. Overrides `sort` so the closest matches come first."
+            },
+            "required": false,
+            "description": "Free-text filter, matched against the filename, the source task title, and the uploader's name. Overrides `sort` so the closest matches come first.",
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "image",
+                "attachment"
+              ],
+              "default": "all",
+              "description": "Restrict to images that render inline or to files attached for download."
+            },
+            "required": false,
+            "description": "Restrict to images that render inline or to files attached for download.",
+            "name": "kind",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Only files uploaded by this workspace user ID."
+            },
+            "required": false,
+            "description": "Only files uploaded by this workspace user ID.",
+            "name": "uploadedBy",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest",
+                "name",
+                "largest"
+              ],
+              "default": "newest",
+              "description": "Ignored while `q` is set."
+            },
+            "required": false,
+            "description": "Ignored while `q` is set.",
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "required": false,
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Files uploaded to the project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectFileList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown project, or its workspace could not be determined",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No access to the project's workspace, or missing project:read permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -5958,6 +6899,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -6006,6 +6957,16 @@
           },
           "403": {
             "description": "No workspace access, or missing project:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6147,6 +7108,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6354,6 +7325,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -6402,6 +7383,16 @@
           },
           "403": {
             "description": "No access to the task's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6516,6 +7507,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -6562,6 +7563,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:delete permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6656,6 +7667,16 @@
                 }
               }
             }
+          },
+          "409": {
+            "description": "Task moved concurrently; reload it and try again",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -6704,6 +7725,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6823,6 +7854,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -6889,6 +7930,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -6969,6 +8020,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -7133,6 +8194,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -7199,6 +8270,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -7499,6 +8580,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -7550,6 +8641,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -7630,6 +8731,16 @@
           },
           "403": {
             "description": "No workspace access, or missing project:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -7739,6 +8850,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -7824,6 +8945,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -7870,6 +9001,16 @@
           },
           "403": {
             "description": "No workspace access, or missing project:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -7938,6 +9079,16 @@
           },
           "403": {
             "description": "No access to the task's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -8029,6 +9180,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -8089,6 +9250,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -8300,6 +9471,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -8379,6 +9560,16 @@
           },
           "403": {
             "description": "No workspace access, or missing task:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -8591,6 +9782,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -8639,6 +9840,16 @@
           },
           "403": {
             "description": "No access to the entry's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -8727,6 +9938,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -8805,6 +10026,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -8856,6 +10087,16 @@
           },
           "403": {
             "description": "No access to the task's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9039,7 +10280,7 @@
             }
           },
           "400": {
-            "description": "Unknown label, or its workspace could not be determined",
+            "description": "Unknown label, its workspace could not be determined, or not a workspace label",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9053,6 +10294,16 @@
           },
           "403": {
             "description": "No access to the label's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9114,7 +10365,7 @@
             }
           },
           "400": {
-            "description": "Invalid body, or unknown label",
+            "description": "Invalid body, unknown label, or not a workspace label",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9128,6 +10379,26 @@
           },
           "403": {
             "description": "No workspace access, or missing label:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A label with this name already exists in the workspace or on an affected task",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9167,7 +10438,7 @@
             }
           },
           "400": {
-            "description": "Unknown label, or its workspace could not be determined",
+            "description": "Unknown label, its workspace could not be determined, or not a workspace label",
             "content": {
               "text/plain": {
                 "schema": {
@@ -9967,6 +11238,465 @@
         }
       }
     },
+    "/tag/project/{projectId}": {
+      "get": {
+        "operationId": "getProjectTags",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Get project tags",
+        "description": "Get all tags for a specific project",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "projectId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tags in the project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown project, or its workspace could not be determined",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag": {
+      "post": {
+        "operationId": "createTag",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Create tag",
+        "description": "Create a new tag in a project",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "color": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "projectId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name",
+                  "color",
+                  "projectId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, project not found, or not a project tag",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No workspace access, or missing tag:create permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/{id}": {
+      "put": {
+        "operationId": "updateTag",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Update tag",
+        "description": "Update an existing tag, cascading within its project",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "color": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "name",
+                  "color"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, or the row is not a project tag",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No workspace access, or missing tag:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A tag with this name already exists in the project or on an affected task",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTag",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Delete tag",
+        "description": "Delete a tag and its copies within its project",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown tag, or the row is not a project tag",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No workspace access, or missing tag:delete permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tag/{id}/task": {
+      "put": {
+        "operationId": "attachTagToTask",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Attach tag to task",
+        "description": "Attach an existing tag to a task",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "taskId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "taskId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag attached to task successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown tag, tag and task in different projects, or not a project tag",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No workspace access, or missing tag:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "detachTagFromTask",
+        "tags": [
+          "Tags"
+        ],
+        "summary": "Detach tag from task",
+        "description": "Detach a tag from its current task",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tag detached from task successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown tag, or tag is not assigned to a task",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No workspace access, or missing tag:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/github-integration/app-info": {
       "get": {
         "operationId": "getGitHubAppInfo",
@@ -10165,6 +11895,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -10679,6 +12419,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -11030,6 +12780,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -11421,6 +13181,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -11755,6 +13525,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -12082,6 +13862,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -12444,6 +14234,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -12653,6 +14453,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -12704,6 +14514,16 @@
           },
           "403": {
             "description": "No access to the project's workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -12790,6 +14610,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -12838,6 +14668,16 @@
           },
           "403": {
             "description": "No workspace access, or missing project:update permission",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found or inaccessible",
             "content": {
               "text/plain": {
                 "schema": {
@@ -12956,6 +14796,132 @@
           },
           "401": {
             "description": "Missing or invalid credentials"
+          },
+          "403": {
+            "description": "No access to the workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspace/{workspaceId}/schedule": {
+      "get": {
+        "operationId": "getWorkspaceSchedule",
+        "tags": [
+          "Workspaces"
+        ],
+        "summary": "Get workspace deadlines",
+        "description": "Counts and the earliest eight overdue and next-seven-day deadlines for open tasks in non-archived projects. Uses the current instant as the overdue boundary. Excludes completed, planned, and archived tasks. Lists sort by due date then ID.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "workspaceId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace deadline summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceSchedule"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No access to the workspace",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspace/{workspaceId}/tasks": {
+      "get": {
+        "operationId": "listWorkspaceTasks",
+        "tags": [
+          "Workspaces"
+        ],
+        "summary": "List workspace tasks",
+        "description": "The workspace's open work, ranked overdue first, then by due date, then by priority. `scope=mine` limits the list to the caller's assigned tasks; `all` covers every member's. Returns at most `limit` rows plus the uncapped total. Excludes completed, planned, and archived tasks.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "workspaceId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mine",
+                "all"
+              ],
+              "default": "mine"
+            },
+            "required": false,
+            "name": "scope",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "default": "8"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workspace task queue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceTaskList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "403": {
             "description": "No access to the workspace",

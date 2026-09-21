@@ -114,6 +114,7 @@ const getIntegrationRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse(
       "GitHub integration details, or null",
       githubIntegrationSchema.nullable(),

@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 import type { Context, Next } from "hono";
+import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { projectTable } from "../../database/schema";
+import { canManageProjectAccess } from "../../utils/project-access";
 import { requireWorkspacePermission } from "../../utils/require-workspace-permission";
 
 // Route middleware runs before the validators, so c.req.valid() is unavailable
@@ -30,6 +32,12 @@ export async function requireProjectVisibilityPermission(
 ) {
   const body = await readJsonBody(c);
 
+  // Explicit access-mode writes always require management permission, even
+  // when unchanged, so a concurrent change cannot turn a stale value into an
+  // unauthorized visibility update between this check and the row lock.
+  if ("accessMode" in body && !(await canManageProjectAccess(c))) {
+    throw new HTTPException(403, { message: "Insufficient permissions" });
+  }
   if (!("isPublic" in body)) {
     return next();
   }

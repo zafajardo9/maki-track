@@ -34,6 +34,7 @@ const getTaskLabelsRoute = createRoute({
   middleware: [workspaceAccess.fromTaskId()] as const,
   request: { params: taskIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of labels for the task", labelListSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",
@@ -95,6 +96,7 @@ const getLabelRoute = createRoute({
   middleware: [workspaceAccess.fromLabel()] as const,
   request: { params: labelParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Label details", labelSchema),
     400: errorResponse(
       "Unknown label, its workspace could not be determined, or not a workspace label",
@@ -174,6 +176,7 @@ const updateLabelRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Label updated successfully", labelSchema),
     409: errorResponse(
       "A label with this name already exists in the workspace or on an affected task",

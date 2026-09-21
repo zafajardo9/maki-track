@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { getApiUrl } from "@/fetchers/get-api-url";
 import { authClient } from "@/lib/auth-client";
+import { refreshProjectAccess } from "@/lib/project-access-cache";
 
 export function getWsUrl(projectId: string) {
   const base = getApiUrl("ws");
@@ -56,6 +57,16 @@ export function useProjectWebSocket(projectId: string) {
       ws.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
+          if (
+            message.type === "PROJECT_ACCESS_CHANGED" ||
+            message.type === "PROJECT_ACCESS_REVOKED"
+          ) {
+            void refreshProjectAccess(
+              queryClient,
+              message.type === "PROJECT_ACCESS_REVOKED",
+            );
+            return;
+          }
           if (message.type === "PROJECT_TAGS_UPDATED") {
             void queryClient.invalidateQueries({
               queryKey: ["tags", message.projectId],
@@ -79,6 +90,13 @@ export function useProjectWebSocket(projectId: string) {
           ) {
             queryClient.invalidateQueries({
               queryKey: ["tasks", message.projectId],
+            });
+
+            // Files are uploaded from task descriptions and comments, so a task
+            // or comment change can add or remove one. Nothing refetches unless
+            // the Files view is on screen.
+            queryClient.invalidateQueries({
+              queryKey: ["files", message.projectId],
             });
 
             if (message.type === "TASK_RELATION_UPDATED") {

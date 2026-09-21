@@ -1,3 +1,10 @@
+vi.mock("../../../apps/api/src/utils/project-access", () => ({
+  assertProjectAccess: async (userId: string) => {
+    if (userId !== "user-member")
+      throw new HTTPException(404, { message: "Project not found" });
+  },
+}));
+
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -59,6 +66,7 @@ describe("authorizeAssetAccess", () => {
     const status = await statusOf(
       authorizeAssetAccess(context, {
         workspaceId: "workspace-1",
+        projectId: "project-1",
         isPublic: true,
       }),
     );
@@ -73,6 +81,7 @@ describe("authorizeAssetAccess", () => {
     const status = await statusOf(
       authorizeAssetAccess(context, {
         workspaceId: "workspace-1",
+        projectId: "project-1",
         isPublic: false,
       }),
     );
@@ -86,11 +95,12 @@ describe("authorizeAssetAccess", () => {
     const status = await statusOf(
       authorizeAssetAccess(context, {
         workspaceId: "workspace-1",
+        projectId: "project-1",
         isPublic: null,
       }),
     );
 
-    expect(status).toBe(403);
+    expect(status).toBe(404);
   });
 
   it("allows a workspace member to read a private asset", async () => {
@@ -99,6 +109,7 @@ describe("authorizeAssetAccess", () => {
     const status = await statusOf(
       authorizeAssetAccess(context, {
         workspaceId: "workspace-1",
+        projectId: "project-1",
         isPublic: false,
       }),
     );

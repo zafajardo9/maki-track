@@ -360,6 +360,10 @@ export const auth = betterAuth({
           }
         },
         afterRemoveMember: async ({ member }) => {
+          await publishEvent("project.access.changed", {
+            workspaceId: member.organizationId,
+            userIds: [member.userId],
+          });
           if (member?.organizationId) {
             void syncWorkspaceSeats(member.organizationId).catch((error) => {
               console.error("Seat sync after member remove failed:", error);
@@ -591,6 +595,27 @@ export const auth = betterAuth({
       }
     }),
     after: createAuthMiddleware(async (ctx) => {
+      if (
+        [
+          "/organization/update-member-role",
+          "/organization/update-role",
+          "/organization/delete-role",
+          "/organization/add-member",
+          "/organization/accept-invitation",
+          "/organization/leave",
+        ].includes(ctx.path)
+      ) {
+        const workspaceId =
+          ctx.body?.organizationId ??
+          ctx.context.session?.session.activeOrganizationId;
+        if (typeof workspaceId === "string")
+          await publishEvent("project.access.changed", {
+            workspaceId,
+            userIds: ctx.context.session?.user.id
+              ? [ctx.context.session.user.id]
+              : [],
+          });
+      }
       if (ctx.path.startsWith("/sign-up") || ctx.path.startsWith("/sign-in")) {
         const newSession = ctx.context.newSession;
         if (newSession) {

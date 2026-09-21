@@ -7,6 +7,7 @@ import {
   taskTable,
 } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertTaskAccess } from "../../utils/project-access";
 
 async function createTaskRelation({
   sourceTaskId,
@@ -21,6 +22,8 @@ async function createTaskRelation({
   userId: string;
   workspaceId: string;
 }) {
+  await assertTaskAccess(userId, sourceTaskId);
+  await assertTaskAccess(userId, targetTaskId);
   if (sourceTaskId === targetTaskId) {
     throw new HTTPException(400, {
       message: "Cannot create a relation between a task and itself",

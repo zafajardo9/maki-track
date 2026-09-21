@@ -8,7 +8,15 @@ import {
 
 export const statement = {
   ...defaultStatements,
-  project: ["create", "read", "update", "delete", "share"],
+  project: [
+    "create",
+    "read",
+    "update",
+    "delete",
+    "share",
+    "access_all",
+    "manage_access",
+  ],
   task: ["create", "read", "update", "delete", "assign"],
   label: ["create", "read", "update", "delete"],
   tag: ["create", "read", "update", "delete"],
@@ -37,7 +45,15 @@ export const member = ac.newRole({
 
 export const admin = ac.newRole({
   ...adminAc.statements,
-  project: ["create", "read", "update", "delete", "share"],
+  project: [
+    "create",
+    "read",
+    "update",
+    "delete",
+    "share",
+    "access_all",
+    "manage_access",
+  ],
   task: ["create", "read", "update", "delete", "assign"],
   label: ["create", "read", "update", "delete"],
   tag: ["create", "read", "update", "delete"],
@@ -46,7 +62,15 @@ export const admin = ac.newRole({
 
 export const owner = ac.newRole({
   ...ownerAc.statements,
-  project: ["create", "read", "update", "delete", "share"],
+  project: [
+    "create",
+    "read",
+    "update",
+    "delete",
+    "share",
+    "access_all",
+    "manage_access",
+  ],
   task: ["create", "read", "update", "delete", "assign"],
   label: ["create", "read", "update", "delete"],
   tag: ["create", "read", "update", "delete"],

@@ -27,6 +27,7 @@ const getWorkflowRulesRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of workflow rules", workflowRuleListSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -55,6 +56,7 @@ const upsertWorkflowRuleRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The created or updated rule", workflowRuleRowSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
@@ -76,6 +78,7 @@ const deleteWorkflowRuleRoute = createRoute({
   ] as const,
   request: { params: workflowRuleParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The deleted rule", workflowRuleRowSchema),
     400: errorResponse(
       "Unknown rule, or its workspace could not be determined",

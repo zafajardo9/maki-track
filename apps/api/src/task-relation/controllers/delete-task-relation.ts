@@ -3,6 +3,7 @@ import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { taskRelationTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
+import { assertTaskAccess } from "../../utils/project-access";
 
 async function deleteTaskRelation(id: string, userId: string) {
   const [rel] = await db
@@ -20,6 +21,8 @@ async function deleteTaskRelation(id: string, userId: string) {
     });
   }
 
+  await assertTaskAccess(userId, rel.sourceTaskId);
+  await assertTaskAccess(userId, rel.targetTaskId);
   const [task] = await db
     .select({ projectId: taskTable.projectId })
     .from(taskTable)

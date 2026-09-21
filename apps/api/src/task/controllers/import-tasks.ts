@@ -4,6 +4,7 @@ import db from "../../database";
 import { columnTable, projectTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
 import { filterAssignableUsers } from "../../utils/assert-assignable-user";
+import { canAccessProject } from "../../utils/project-access";
 import {
   coercePriority,
   coerceStatus,
@@ -49,6 +50,10 @@ async function importTasks(
     project.workspaceId,
   );
 
+  for (const userId of assignableIds) {
+    if (!(await canAccessProject(userId, projectId)))
+      assignableIds.delete(userId);
+  }
   const validStatuses = await getValidTaskStatuses(projectId);
 
   const results = [];

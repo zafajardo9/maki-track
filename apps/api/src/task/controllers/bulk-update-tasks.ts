@@ -168,7 +168,8 @@ async function bulkUpdateTasks({
       const assigneeId = value?.trim() || null;
 
       if (assigneeId) {
-        await assertAssignableUser(assigneeId, workspaceId);
+        for (const projectId of new Set(tasks.map((task) => task.projectId)))
+          await assertAssignableUser(assigneeId, workspaceId, projectId);
       }
 
       const newAssigneeName = assigneeId

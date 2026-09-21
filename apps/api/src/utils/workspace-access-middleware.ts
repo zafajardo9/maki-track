@@ -2,6 +2,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
+import { assertProjectAccess, assertTaskAccess } from "./project-access";
 import { validateWorkspaceAccess } from "./validate-workspace-access";
 
 type WorkspaceIdSource =
@@ -51,6 +52,7 @@ export function workspaceAccessMiddleware(
       throw new HTTPException(401, { message: "Unauthorized" });
     }
 
+    const projectIds = new Set<string>();
     let workspaceId: string | null = null;
 
     for (const source of config.sources) {
@@ -73,6 +75,39 @@ export function workspaceAccessMiddleware(
         const id = c.req.param(source.idKey) || idFromBody;
         if (id) {
           workspaceId = await lookupWorkspaceId(source.resource, id);
+          if (source.resource === "project") projectIds.add(id);
+          else if (source.resource === "label") {
+            const [label] = await db
+              .select({
+                projectId: schema.labelTable.projectId,
+                taskId: schema.labelTable.taskId,
+              })
+              .from(schema.labelTable)
+              .where(eq(schema.labelTable.id, id));
+            if (label?.projectId) projectIds.add(label.projectId);
+            if (label?.taskId) await assertTaskAccess(userId, label.taskId);
+          } else {
+            const resource = source.resource;
+            if (resource === "task") await assertTaskAccess(userId, id);
+            else {
+              const table =
+                resource === "column"
+                  ? schema.columnTable
+                  : resource === "workflowRule"
+                    ? schema.workflowRuleTable
+                    : resource === "timeEntry"
+                      ? schema.timeEntryTable
+                      : schema.activityTable;
+              const [row] = await db
+                .select()
+                .from(table)
+                .where(eq(table.id, id));
+              if (row && "projectId" in row)
+                projectIds.add(row.projectId as string);
+              else if (row && "taskId" in row)
+                await assertTaskAccess(userId, row.taskId as string);
+            }
+          }
         }
       } else if (source.type === "lookupMany") {
         const body = await readJsonObjectBody(c);
@@ -83,13 +118,19 @@ export function workspaceAccessMiddleware(
           );
           if (taskIds.length > 0) {
             const tasks = await db
-              .select({ workspaceId: schema.projectTable.workspaceId })
+              .select({
+                workspaceId: schema.projectTable.workspaceId,
+                projectId: schema.projectTable.id,
+              })
               .from(schema.taskTable)
               .innerJoin(
                 schema.projectTable,
                 eq(schema.taskTable.projectId, schema.projectTable.id),
               )
               .where(inArray(schema.taskTable.id, taskIds));
+            for (const task of tasks) projectIds.add(task.projectId);
+            if (tasks.length !== new Set(taskIds).size)
+              throw new HTTPException(404, { message: "Task not found" });
             const workspaceIds = [
               ...new Set(tasks.map((task) => task.workspaceId)),
             ];
@@ -120,6 +161,8 @@ export function workspaceAccessMiddleware(
     const apiKey = c.get("apiKey");
     const apiKeyId = apiKey?.id;
 
+    for (const projectId of projectIds)
+      await assertProjectAccess(userId, projectId);
     await validateWorkspaceAccess(userId, workspaceId, apiKeyId);
 
     c.set("workspaceId", workspaceId);

@@ -3,6 +3,7 @@ import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import db from "../database";
 import { projectTable } from "../database/schema";
+import { assertProjectAccess } from "../utils/project-access";
 import { validateWorkspaceAccess } from "../utils/validate-workspace-access";
 
 // Route middleware runs before the validators, so c.req.valid() is unavailable.
@@ -30,6 +31,7 @@ export async function scopeToProjectFromBody(c: Context, next: Next) {
     throw new HTTPException(404, { message: "Project not found" });
   }
 
+  await assertProjectAccess(userId, projectId);
   await validateWorkspaceAccess(
     userId,
     project.workspaceId,

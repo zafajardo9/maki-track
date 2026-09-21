@@ -1,3 +1,4 @@
+import { assertProjectAccess } from "./utils/project-access";
 import "./instrument";
 
 import { dirname } from "node:path";
@@ -293,6 +294,7 @@ export function createApp() {
           filename: schema.assetTable.filename,
           workspaceId: schema.assetTable.workspaceId,
           isPublic: schema.projectTable.isPublic,
+          projectId: schema.projectTable.id,
         })
         .from(schema.assetTable)
         .innerJoin(
@@ -698,6 +700,7 @@ export function createApp() {
           throw new HTTPException(401, { message: "Unauthorized" });
         }
 
+        await assertProjectAccess(userId, projectId);
         await validateWorkspaceAccess(userId, project.workspaceId);
       }
 

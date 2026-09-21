@@ -9,6 +9,7 @@ import {
   workspaceUserTable,
 } from "../database/schema";
 import { assertPublicWebhookDestination } from "../plugins/generic-webhook/config";
+import { projectAccessCondition } from "../utils/project-access";
 import { decryptSecret, encryptSecret } from "./secrets";
 
 export type NotificationPreferenceProjectMode = "all" | "selected";
@@ -138,6 +139,7 @@ async function assertWorkspaceMembership(userId: string, workspaceId: string) {
 export async function validateProjectSelection(
   workspaceId: string,
   selectedProjectIds: string[],
+  userId: string,
 ) {
   if (selectedProjectIds.length === 0) {
     throw new HTTPException(400, {
@@ -152,6 +154,7 @@ export async function validateProjectSelection(
       and(
         eq(projectTable.workspaceId, workspaceId),
         inArray(projectTable.id, selectedProjectIds),
+        await projectAccessCondition(userId),
       ),
     );
 
@@ -188,6 +191,14 @@ export async function getNotificationPreferences(
     orderBy: (table, { asc }) => [asc(table.createdAt)],
   });
 
+  const visibleProjects = new Set(
+    (
+      await db
+        .select({ id: projectTable.id })
+        .from(projectTable)
+        .where(await projectAccessCondition(userId))
+    ).map((project) => project.id),
+  );
   return {
     emailAddress,
     emailEnabled: decryptedPreference?.emailEnabled ?? false,
@@ -228,9 +239,9 @@ export async function getNotificationPreferences(
       webhookEnabled: rule.webhookEnabled ?? false,
       projectMode:
         rule.projectMode === "selected" ? "selected" : ("all" as const),
-      selectedProjectIds: rule.selectedProjects.map(
-        (project) => project.projectId,
-      ),
+      selectedProjectIds: rule.selectedProjects
+        .filter((project) => visibleProjects.has(project.projectId))
+        .map((project) => project.projectId),
       createdAt: rule.createdAt,
       updatedAt: rule.updatedAt,
     })),
@@ -513,7 +524,11 @@ export async function upsertWorkspaceRule(
   await assertWorkspaceMembership(userId, workspaceId);
 
   if (input.projectMode === "selected") {
-    await validateProjectSelection(workspaceId, input.selectedProjectIds ?? []);
+    await validateProjectSelection(
+      workspaceId,
+      input.selectedProjectIds ?? [],
+      userId,
+    );
   }
 
   const preference = await db.query.userNotificationPreferenceTable.findFirst({

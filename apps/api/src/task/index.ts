@@ -90,6 +90,7 @@ const listTasksRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam, query: listTasksQuery },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The project board", boardSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -150,6 +151,7 @@ const createTaskRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The created task", taskSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
@@ -168,6 +170,7 @@ const getTaskRoute = createRoute({
   middleware: [workspaceAccess.fromTask()] as const,
   request: { params: taskParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Task details", taskWithAssigneeSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",
@@ -232,6 +235,7 @@ const updateTaskRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body, or unknown task"),
     403: errorResponse(
@@ -251,6 +255,7 @@ const exportTasksRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The exported project and tasks", taskExportSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -280,6 +285,7 @@ const importTasksRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Per-task import outcome", taskImportResultSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
@@ -302,6 +308,7 @@ const deleteTaskRoute = createRoute({
   ] as const,
   request: { params: taskParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The deleted task", taskSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",
@@ -332,6 +339,7 @@ const updateTaskStatusRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body, or unknown task"),
     403: errorResponse(
@@ -360,6 +368,7 @@ const updateTaskPriorityRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid priority, or unknown task"),
     403: errorResponse(
@@ -418,6 +427,7 @@ const updateTaskDueDateRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid date, or unknown task"),
     403: errorResponse(
@@ -446,6 +456,7 @@ const updateTaskTitleRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body, or unknown task"),
     403: errorResponse(
@@ -537,6 +548,7 @@ const updateTaskDescriptionRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated task", taskSchema),
     400: errorResponse("Invalid body, or unknown task"),
     403: errorResponse(

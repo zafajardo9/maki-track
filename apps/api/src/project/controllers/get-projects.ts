@@ -1,6 +1,7 @@
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, type SQL, sql } from "drizzle-orm";
 import db from "../../database";
 import { columnTable, projectTable, taskTable } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
 type ProjectStatistics = {
   completionPercentage: number;
@@ -45,6 +46,7 @@ function scopeToWorkspace(workspaceId: string, includeArchived: boolean) {
 async function getProjectStatistics(
   workspaceId: string,
   includeArchived: boolean,
+  access: SQL,
 ) {
   const statisticsByProject = new Map<string, ProjectStatistics>();
 
@@ -82,7 +84,7 @@ async function getProjectStatistics(
         eq(columnTable.slug, taskTable.status),
       ),
     )
-    .where(scopeToWorkspace(workspaceId, includeArchived))
+    .where(and(scopeToWorkspace(workspaceId, includeArchived), access))
     .groupBy(taskTable.projectId);
 
   // Priority is independent of column membership, so it is counted over every
@@ -96,7 +98,7 @@ async function getProjectStatistics(
     })
     .from(taskTable)
     .innerJoin(projectTable, eq(taskTable.projectId, projectTable.id))
-    .where(scopeToWorkspace(workspaceId, includeArchived))
+    .where(and(scopeToWorkspace(workspaceId, includeArchived), access))
     .groupBy(taskTable.projectId, taskTable.priority);
 
   const byPriorityPerProject = new Map<string, Record<string, number>>();
@@ -127,14 +129,14 @@ async function getProjectStatistics(
   return statisticsByProject;
 }
 
-async function getProjects(workspaceId: string, includeArchived = false) {
+async function getProjects(
+  workspaceId: string,
+  includeArchived: boolean,
+  userId: string,
+) {
+  const access = await projectAccessCondition(userId);
   const projects = await db.query.projectTable.findMany({
-    where: includeArchived
-      ? eq(projectTable.workspaceId, workspaceId)
-      : and(
-          eq(projectTable.workspaceId, workspaceId),
-          isNull(projectTable.archivedAt),
-        ),
+    where: and(scopeToWorkspace(workspaceId, includeArchived), access),
     // `id` is the deterministic tie-breaker: without it, rows sharing both a
     // position and a createdAt come back in an unspecified order.
     orderBy: (project, { asc }) => [
@@ -147,6 +149,7 @@ async function getProjects(workspaceId: string, includeArchived = false) {
   const statisticsByProject = await getProjectStatistics(
     workspaceId,
     includeArchived,
+    access,
   );
 
   return projects.map((project) => ({

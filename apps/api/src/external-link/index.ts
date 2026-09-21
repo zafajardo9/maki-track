@@ -23,6 +23,7 @@ const getExternalLinksByTaskRoute = createRoute({
   middleware: [workspaceAccess.fromTaskId("taskId")] as const,
   request: { params: taskIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("External links for the task", externalLinkListSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",

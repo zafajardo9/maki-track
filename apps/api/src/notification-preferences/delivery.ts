@@ -12,6 +12,7 @@ import {
   workspaceTable,
 } from "../database/schema";
 import { assertPublicWebhookDestination } from "../plugins/generic-webhook/config";
+import { canAccessProject } from "../utils/project-access";
 import { decryptSecret } from "./secrets";
 
 const DEFAULT_OUTBOUND_FETCH_TIMEOUT_MS = 15_000;
@@ -404,6 +405,12 @@ export async function deliverNotification(
     });
     return;
   }
+
+  if (
+    context.projectId &&
+    !(await canAccessProject(notification.userId, context.projectId))
+  )
+    return;
 
   const [user] = await db
     .select({

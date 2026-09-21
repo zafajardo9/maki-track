@@ -1,3 +1,8 @@
+vi.mock("../../../apps/api/src/utils/project-access", () => ({
+  canAccessProject: vi.fn().mockResolvedValue(true),
+  assertTaskAccess: vi.fn().mockResolvedValue(undefined),
+}));
+
 import type { WSContext } from "hono/ws";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { eventContext, publishEvent } from "../../../apps/api/src/events";

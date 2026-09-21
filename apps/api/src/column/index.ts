@@ -30,6 +30,7 @@ const getColumnsRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of columns ordered by position", columnListSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -58,6 +59,7 @@ const createColumnRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The created column", columnSchema),
     400: errorResponse("Invalid body, or unknown project"),
     403: errorResponse(
@@ -87,6 +89,7 @@ const reorderColumnsRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The reordered columns", columnListSchema),
     400: errorResponse("A column does not belong to this project"),
     403: errorResponse(
@@ -115,6 +118,7 @@ const updateColumnRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The updated column", columnSchema),
     400: errorResponse("Invalid body, or unknown column"),
     403: errorResponse(
@@ -137,6 +141,7 @@ const deleteColumnRoute = createRoute({
   ] as const,
   request: { params: columnParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The deleted column", columnSchema),
     400: errorResponse(
       "Unknown column, or its workspace could not be determined",

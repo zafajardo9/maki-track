@@ -54,6 +54,7 @@ async function updateTask(
     await assertAssignableUser(
       normalizedUserId,
       await getProjectWorkspaceId(projectId),
+      projectId,
     );
   }
 

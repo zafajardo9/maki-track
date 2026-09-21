@@ -61,7 +61,11 @@ describe("Workspace schedule", () => {
     await seed(17, -day, "archived");
     await seed(18, -day, "to-do", foreign.project.id);
     await seed(19, -day, "to-do", archived.project.id);
-    const result = await getWorkspaceSchedule(member.workspace.id, now);
+    const result = await getWorkspaceSchedule(
+      member.workspace.id,
+      now,
+      member.user.id,
+    );
     expect(result.overdue).toBe(10);
     expect(result.upcoming).toBe(2);
     expect(result.noDueDate).toBe(1);
@@ -70,7 +74,11 @@ describe("Workspace schedule", () => {
     ]);
     expect(result.upcomingTasks.map((task) => task.number)).toEqual([11, 12]);
     expect(result.overdueTasks[0]).not.toHaveProperty("description");
-    const projects = await getProjects(member.workspace.id);
+    const projects = await getProjects(
+      member.workspace.id,
+      false,
+      member.user.id,
+    );
     expect(projects[0]?.statistics.dueDate?.toISOString()).toBe(
       result.overdueTasks[0]?.dueDate?.toISOString(),
     );

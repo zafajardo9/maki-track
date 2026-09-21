@@ -688,6 +688,14 @@
 					"share": {
 						"label": "Condividere",
 						"description": "Può condividere progetti"
+					},
+					"access_all": {
+						"label": "Access all projects",
+						"description": "View every project, including projects with selected members."
+					},
+					"manage_access": {
+						"label": "Manage project access",
+						"description": "Change visibility and membership for projects you can access."
 					}
 				},
 				"task": {
@@ -1291,6 +1299,23 @@
 			"title": "Tags",
 			"updateError": "Failed to update tag",
 			"updateSuccess": "Tag updated"
+		},
+		"projectAccess": {
+			"title": "Project access",
+			"description": "Membership controls who can see this project. Workspace roles still control what they can do.",
+			"visibility": "Who can access this project",
+			"restricted": "Selected members",
+			"workspace": "Everyone in the workspace",
+			"publicWarning": "Selected members projects cannot have public links. Restricting this project turns off public sharing.",
+			"loading": "Loading members…",
+			"error": "Could not update or load project access. Please try again.",
+			"inherited": "Always has access as a workspace owner or admin",
+			"removeNamed": "Remove {{name}} from project",
+			"addMembers": "Add workspace members",
+			"search": "Search by name or email",
+			"addNamed": "Add {{name}} to project",
+			"add": "Add",
+			"noMatches": "No matching members"
 		}
 	},
 	"navigation": {
@@ -2341,5 +2366,32 @@
 		"copyInternalUrlAria": "Copy internal link",
 		"openInternalUrlAria": "Open internal link in a new tab",
 		"openPublicUrlAria": "Open public link in a new tab"
+	},
+	"files": {
+		"title": "Files",
+		"searchPlaceholder": "Search files, tasks, and uploaders",
+		"clearSearch": "Clear search",
+		"filterAll": "All",
+		"filterImages": "Images",
+		"filterFiles": "Files",
+		"sortNewest": "Newest first",
+		"sortOldest": "Oldest first",
+		"sortName": "Name",
+		"sortLargest": "Largest first",
+		"count_many": "{{count}} files",
+		"count_one": "{{count}} files",
+		"count_other": "{{count}} files",
+		"uploadedBy": "uploaded by {{name}}",
+		"unknownUploader": "uploader removed",
+		"sourceDescription": "in the task description",
+		"sourceComment": "in a comment",
+		"open": "Open {{name}}",
+		"emptyTitle": "No files in this project yet",
+		"emptyDescription": "Files uploaded to a task description or comment show up here.",
+		"noResultsTitle": "No matching files",
+		"noResultsDescription": "Try a different file name, task, or uploader.",
+		"previousPage": "Previous",
+		"nextPage": "Next",
+		"pageOf": "Page {{page}} of {{totalPages}}"
 	}
 }

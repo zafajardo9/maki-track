@@ -6,8 +6,13 @@ import {
   taskTable,
   userTable,
 } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
-async function getTaskRelations(taskId: string, workspaceId: string) {
+async function getTaskRelations(
+  taskId: string,
+  workspaceId: string,
+  userId: string,
+) {
   const relations = await db
     .select({
       id: taskRelationTable.id,
@@ -62,6 +67,7 @@ async function getTaskRelations(taskId: string, workspaceId: string) {
       .where(
         and(
           inArray(taskTable.id, [...taskIds]),
+          await projectAccessCondition(userId),
           eq(projectTable.workspaceId, workspaceId),
         ),
       );

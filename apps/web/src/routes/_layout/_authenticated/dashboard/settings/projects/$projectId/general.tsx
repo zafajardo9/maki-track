@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import PageTitle from "@/components/page-title";
+import { ProjectAccessSettings } from "@/components/project/project-access-settings";
 import { TasksImportExport } from "@/components/project/tasks-import-export.tsx";
 import {
   AlertDialog,
@@ -333,6 +334,7 @@ function RouteComponent() {
           </p>
         </div>
 
+        {project && <ProjectAccessSettings project={project} />}
         <div className="space-y-6">
           <div className="space-y-1">
             <h2 className="text-md font-medium">

@@ -71,7 +71,14 @@ const workspace = apiRouter<BaseVariables & { workspaceId: string }>()
     c.json(await getWorkspaceMembersCtrl(c.get("workspaceId")), 200),
   )
   .openapi(getWorkspaceScheduleRoute, async (c) =>
-    c.json(await getWorkspaceSchedule(c.get("workspaceId")), 200),
+    c.json(
+      await getWorkspaceSchedule(
+        c.get("workspaceId"),
+        new Date(),
+        c.get("userId"),
+      ),
+      200,
+    ),
   )
   .openapi(listWorkspaceTasksRoute, async (c) =>
     c.json(

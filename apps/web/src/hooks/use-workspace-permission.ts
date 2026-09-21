@@ -13,6 +13,7 @@ export type PermissionLevel = "owner" | "admin" | "member";
 // into the auth client, so it would silently return false for any custom
 // role that grants the permission.
 const CAPABILITIES = {
+  manageProjectAccess: { project: ["manage_access"] },
   manageProjects: { project: ["create", "update", "delete"] },
   createProjects: { project: ["create"] },
   updateProjects: { project: ["update"] },
@@ -94,6 +95,8 @@ export function useWorkspacePermission() {
 
   const helpers = useMemo(() => {
     return {
+      canManageProjectAccess: () =>
+        role === "owner" || role === "admin" || can.manageProjectAccess,
       canManageProjects: () => can.manageProjects,
       canCreateProjects: () => can.createProjects,
       canUpdateProjects: () => can.updateProjects,
@@ -128,7 +131,7 @@ export function useWorkspacePermission() {
         }
       },
     };
-  }, [can, workspaceId]);
+  }, [can, workspaceId, role]);
 
   return {
     ...helpers,

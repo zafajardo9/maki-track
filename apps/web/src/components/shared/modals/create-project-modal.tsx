@@ -26,6 +26,7 @@ import {
 import icons from "@/constants/project-icons";
 import useCreateProject from "@/hooks/mutations/project/use-create-project";
 import useActiveWorkspace from "@/hooks/queries/workspace/use-active-workspace";
+import { useWorkspacePermission } from "@/hooks/use-workspace-permission";
 import { cn } from "@/lib/cn";
 import generateProjectSlug from "@/lib/generate-project-id";
 import { toast } from "@/lib/toast";
@@ -37,6 +38,10 @@ type CreateProjectModalProps = {
 
 function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const { t } = useTranslation();
+  const { canManageProjectAccess } = useWorkspacePermission();
+  const [accessMode, setAccessMode] = useState<"workspace" | "restricted">(
+    "restricted",
+  );
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("Layout");
@@ -49,6 +54,7 @@ function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
     slug,
     workspaceId: workspace?.id ?? "",
     icon: selectedIcon,
+    accessMode: canManageProjectAccess() ? accessMode : "restricted",
   });
   const SelectedIcon =
     icons[selectedIcon as keyof typeof icons] || icons.Layout;
@@ -58,6 +64,7 @@ function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const navigate = useNavigate();
 
   const handleClose = () => {
+    setAccessMode("restricted");
     setName("");
     setSlug("");
     setSelectedIcon("Layout");
@@ -219,6 +226,27 @@ function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
             </div>
           </div>
 
+          {canManageProjectAccess() && (
+            <label className="mx-3 flex flex-col gap-2 text-sm">
+              {t("settings:projectAccess.visibility")}
+              <select
+                className="rounded-md border border-input bg-background p-2"
+                value={accessMode}
+                onChange={(event) =>
+                  setAccessMode(
+                    event.target.value as "workspace" | "restricted",
+                  )
+                }
+              >
+                <option value="restricted">
+                  {t("settings:projectAccess.restricted")}
+                </option>
+                <option value="workspace">
+                  {t("settings:projectAccess.workspace")}
+                </option>
+              </select>
+            </label>
+          )}
           <DialogFooter>
             <Button
               type="button"

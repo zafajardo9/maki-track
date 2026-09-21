@@ -62,6 +62,7 @@ export async function createProjectFixture({
     .insert(schema.projectTable)
     .values({
       workspaceId,
+      accessMode: "workspace",
       name,
       icon,
       slug,

@@ -30,6 +30,7 @@ const getTaskCommentsRoute = createRoute({
   middleware: [workspaceAccess.fromTaskId()] as const,
   request: { params: taskIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of comments for the task", commentListSchema),
     400: errorResponse(
       "Unknown task, or its workspace could not be determined",
@@ -58,6 +59,7 @@ const createTaskCommentRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("The created comment", activitySchema),
     400: errorResponse("Invalid body, or unknown task"),
     403: errorResponse(

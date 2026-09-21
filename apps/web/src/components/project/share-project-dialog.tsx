@@ -157,7 +157,9 @@ export function ShareProjectDialog({
   // Nothing worth showing when visibility is unknown, and nothing to offer
   // someone who cannot change it.
   const showVisibilityToggle =
-    canShare && typeof projectVisibility === "boolean";
+    canShare &&
+    project?.accessMode !== "restricted" &&
+    typeof projectVisibility === "boolean";
 
   const openLink = (value: string) => {
     if (!value) return;

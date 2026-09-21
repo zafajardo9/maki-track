@@ -1,11 +1,13 @@
-import { asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { projectTable } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
 async function reorderProjects(
   workspaceId: string,
   projects: Array<{ id: string; position: number }>,
+  userId: string,
 ) {
   const ids = projects.map((project) => project.id);
   const uniqueIds = new Set(ids);
@@ -85,7 +87,10 @@ async function reorderProjects(
     }
 
     return tx.query.projectTable.findMany({
-      where: eq(projectTable.workspaceId, workspaceId),
+      where: and(
+        eq(projectTable.workspaceId, workspaceId),
+        await projectAccessCondition(userId),
+      ),
       orderBy: [
         asc(projectTable.position),
         asc(projectTable.createdAt),

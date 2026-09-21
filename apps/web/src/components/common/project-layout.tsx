@@ -3,6 +3,7 @@ import {
   CalendarDays,
   CalendarRange,
   ChartPie,
+  FolderOpen,
   Share2,
   SquareKanban,
   SquircleDashed,
@@ -35,7 +36,13 @@ type ProjectLayoutProps = {
   headerActions?: ReactNode;
   children: ReactNode;
   showViewSwitcher?: boolean;
-  activeView?: "backlog" | "board" | "calendar" | "gantt" | "overview";
+  activeView?:
+    | "backlog"
+    | "board"
+    | "calendar"
+    | "files"
+    | "gantt"
+    | "overview";
 };
 
 export default function ProjectLayout({
@@ -62,11 +69,13 @@ export default function ProjectLayout({
       ? "backlog"
       : location.pathname.includes("/calendar")
         ? "calendar"
-        : location.pathname.includes("/gantt")
-          ? "gantt"
-          : location.pathname.includes("/overview")
-            ? "overview"
-            : "board");
+        : location.pathname.includes("/files")
+          ? "files"
+          : location.pathname.includes("/gantt")
+            ? "gantt"
+            : location.pathname.includes("/overview")
+              ? "overview"
+              : "board");
 
   const handleNavigateToOverview = () => {
     navigate({
@@ -103,6 +112,13 @@ export default function ProjectLayout({
     });
   };
 
+  const handleNavigateToFiles = () => {
+    navigate({
+      to: "/dashboard/workspace/$workspaceId/project/$projectId/files",
+      params: { workspaceId, projectId },
+    });
+  };
+
   const handleProjectSwitch = (nextProjectId: string) => {
     navigate({
       to:
@@ -110,11 +126,13 @@ export default function ProjectLayout({
           ? "/dashboard/workspace/$workspaceId/project/$projectId/backlog"
           : resolvedView === "calendar"
             ? "/dashboard/workspace/$workspaceId/project/$projectId/calendar"
-            : resolvedView === "gantt"
-              ? "/dashboard/workspace/$workspaceId/project/$projectId/gantt"
-              : resolvedView === "overview"
-                ? "/dashboard/workspace/$workspaceId/project/$projectId/overview"
-                : "/dashboard/workspace/$workspaceId/project/$projectId/board",
+            : resolvedView === "files"
+              ? "/dashboard/workspace/$workspaceId/project/$projectId/files"
+              : resolvedView === "gantt"
+                ? "/dashboard/workspace/$workspaceId/project/$projectId/gantt"
+                : resolvedView === "overview"
+                  ? "/dashboard/workspace/$workspaceId/project/$projectId/overview"
+                  : "/dashboard/workspace/$workspaceId/project/$projectId/board",
       params: {
         workspaceId,
         projectId: nextProjectId,
@@ -170,6 +188,7 @@ export default function ProjectLayout({
                 onSelectBoard={handleNavigateToBoard}
                 onSelectCalendar={handleNavigateToCalendar}
                 onSelectGantt={handleNavigateToGantt}
+                onSelectFiles={handleNavigateToFiles}
                 onSelectProject={handleProjectSwitch}
                 onAddProject={() => setIsCreateProjectModalOpen(true)}
               />
@@ -226,6 +245,20 @@ export default function ProjectLayout({
                 >
                   <CalendarDays className="size-3.5" />
                   <span className="sr-only lg:not-sr-only">Gantt</span>
+                </Button>
+                <Button
+                  variant={resolvedView === "files" ? "secondary" : "ghost"}
+                  size="xs"
+                  onClick={handleNavigateToFiles}
+                  className={cn(
+                    "h-6 gap-1.5 rounded-md px-2 text-xs",
+                    resolvedView !== "files" && "text-muted-foreground",
+                  )}
+                >
+                  <FolderOpen className="size-3.5" />
+                  <span className="sr-only lg:not-sr-only">
+                    {t("files:title")}
+                  </span>
                 </Button>
                 <Button
                   variant={resolvedView === "overview" ? "secondary" : "ghost"}

@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { getApiUrl } from "@/fetchers/get-api-url";
 import { authClient } from "@/lib/auth-client";
+import { refreshProjectAccess } from "@/lib/project-access-cache";
 
 export function getUserWsUrl() {
   const base = getApiUrl("ws");
@@ -59,6 +60,16 @@ export function useUserWebSocket() {
           const message = JSON.parse(event.data as string) as {
             type?: string;
           };
+          if (
+            message.type === "PROJECT_ACCESS_CHANGED" ||
+            message.type === "PROJECT_ACCESS_REVOKED"
+          ) {
+            void refreshProjectAccess(
+              queryClient,
+              message.type === "PROJECT_ACCESS_REVOKED",
+            );
+            return;
+          }
           if (message.type === "NOTIFICATION_CREATED") {
             queryClient.invalidateQueries({ queryKey: ["notifications"] });
           }

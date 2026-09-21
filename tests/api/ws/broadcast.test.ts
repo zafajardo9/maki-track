@@ -1,3 +1,8 @@
+vi.mock("../../../apps/api/src/utils/project-access", () => ({
+  canAccessProject: vi.fn().mockResolvedValue(true),
+  assertTaskAccess: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock events to prevent side effects from ws/index.ts top-level subscriptions

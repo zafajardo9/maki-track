@@ -10,6 +10,7 @@ import {
   invitationTable,
   labelTable,
   notificationTable,
+  projectMemberTable,
   projectTable,
   sessionTable,
   taskRelationTable,
@@ -368,6 +369,20 @@ export const taskReminderSentTableRelations = relations(
     task: one(taskTable, {
       fields: [taskReminderSentTable.taskId],
       references: [taskTable.id],
+    }),
+  }),
+);
+
+export const projectMemberTableRelations = relations(
+  projectMemberTable,
+  ({ one }) => ({
+    project: one(projectTable, {
+      fields: [projectMemberTable.projectId],
+      references: [projectTable.id],
+    }),
+    workspaceMember: one(workspaceUserTable, {
+      fields: [projectMemberTable.workspaceMemberId],
+      references: [workspaceUserTable.id],
     }),
   }),
 );

@@ -1,6 +1,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { HTTPException } from "hono/http-exception";
 import db, { schema } from "../database";
+import { canAccessProject } from "./project-access";
 
 const NOT_ASSIGNABLE = "Assignee is not a member of this workspace";
 
@@ -49,10 +50,14 @@ export async function filterAssignableUsers(
 export async function assertAssignableUser(
   userId: string,
   workspaceId: string,
+  projectId?: string,
 ): Promise<void> {
   const assignable = await filterAssignableUsers([userId], workspaceId);
 
-  if (!assignable.has(userId)) {
+  if (
+    !assignable.has(userId) ||
+    (projectId && !(await canAccessProject(userId, projectId)))
+  ) {
     throw new HTTPException(403, { message: NOT_ASSIGNABLE });
   }
 }

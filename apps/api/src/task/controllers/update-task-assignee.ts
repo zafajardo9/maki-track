@@ -36,6 +36,7 @@ async function updateTaskAssignee({
     await assertAssignableUser(
       nextAssigneeId,
       await getProjectWorkspaceId(existingTask.projectId),
+      existingTask.projectId,
     );
   }
 

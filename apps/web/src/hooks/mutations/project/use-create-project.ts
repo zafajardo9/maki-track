@@ -6,14 +6,17 @@ function useCreateProject({
   slug,
   workspaceId,
   icon,
+  accessMode,
 }: {
   name: string;
   slug: string;
   workspaceId: string;
   icon: string;
+  accessMode?: "workspace" | "restricted";
 }) {
   return useMutation({
-    mutationFn: () => createProject({ name, slug, workspaceId, icon }),
+    mutationFn: () =>
+      createProject({ name, slug, workspaceId, icon, accessMode }),
   });
 }
 

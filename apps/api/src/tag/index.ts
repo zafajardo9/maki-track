@@ -31,6 +31,7 @@ const getProjectTagsRoute = createRoute({
   middleware: [workspaceAccess.fromProject("projectId")] as const,
   request: { params: projectIdParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("List of tags in the project", tagListSchema),
     400: errorResponse(
       "Unknown project, or its workspace could not be determined",
@@ -83,6 +84,7 @@ const updateTagRoute = createRoute({
     },
   },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Tag updated successfully", tagSchema),
     409: errorResponse(
       "A tag with this name already exists in the project or on an affected task",
@@ -105,6 +107,7 @@ const deleteTagRoute = createRoute({
   ] as const,
   request: { params: tagParam },
   responses: {
+    404: errorResponse("Resource not found or inaccessible"),
     200: jsonResponse("Tag deleted successfully", tagSchema),
     400: errorResponse("Unknown tag, or the row is not a project tag"),
     403: errorResponse("No workspace access, or missing tag:delete permission"),

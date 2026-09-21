@@ -1,6 +1,7 @@
 import { and, asc, eq, exists, isNull, lt, sql } from "drizzle-orm";
 import db from "../../database";
 import { columnTable, projectTable, taskTable } from "../../database/schema";
+import { projectAccessCondition } from "../../utils/project-access";
 
 type WorkspaceTaskScope = "mine" | "all";
 
@@ -35,6 +36,7 @@ export default async function getWorkspaceTasks(
     );
   // Match project statistics: planned/archived buckets have no board column.
   const scopeCondition = and(
+    await projectAccessCondition(userId),
     eq(projectTable.workspaceId, workspaceId),
     isNull(projectTable.archivedAt),
     exists(openColumn),

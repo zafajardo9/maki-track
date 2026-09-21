@@ -130,6 +130,7 @@ describe("ProjectLayout header", () => {
       "Tasks",
       "tasks:calendar.title",
       "Gantt",
+      "files:title",
       "tasks:view.overview",
     ]) {
       expect(screen.getByRole("button", { name })).toBeInTheDocument();

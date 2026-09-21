@@ -6,7 +6,10 @@ import getTasks from "../../task/controllers/get-tasks";
 
 export async function getPublicProject(id: string) {
   const [project] = await db
-    .select({ isPublic: projectTable.isPublic })
+    .select({
+      isPublic: projectTable.isPublic,
+      accessMode: projectTable.accessMode,
+    })
     .from(projectTable)
     .where(eq(projectTable.id, id))
     .limit(1);
@@ -17,7 +20,7 @@ export async function getPublicProject(id: string) {
     });
   }
 
-  if (!project.isPublic) {
+  if (!project.isPublic || project.accessMode === "restricted") {
     throw new HTTPException(403, {
       message: "Project is not public",
     });

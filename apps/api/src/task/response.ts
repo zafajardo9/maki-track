@@ -105,6 +105,7 @@ export const boardSchema = z
         icon: z.string().nullable(),
         description: z.string().nullable(),
         isPublic: z.boolean().nullable(),
+        accessMode: z.enum(["workspace", "restricted"]),
         workspaceId: z.string(),
         columns: z.array(boardColumnSchema),
         archivedTasks: z.array(boardTaskSchema),

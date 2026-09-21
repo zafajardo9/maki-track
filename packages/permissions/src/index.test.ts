@@ -19,6 +19,8 @@ describe("@maki/permissions statement surface", () => {
       "update",
       "delete",
       "share",
+      "access_all",
+      "manage_access",
     ]);
     expect(statement.task).toEqual([
       "create",

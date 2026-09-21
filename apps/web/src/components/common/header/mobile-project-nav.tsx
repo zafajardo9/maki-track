@@ -3,6 +3,7 @@ import {
   CalendarRange,
   ChartPie,
   Check,
+  FolderOpen,
   Menu,
   Plus,
   SquareKanban,
@@ -21,12 +22,13 @@ import { cn } from "@/lib/cn";
 type MobileProjectNavProps = {
   workspaceId: string;
   projectId: string;
-  activeView: "backlog" | "board" | "calendar" | "gantt" | "overview";
+  activeView: "backlog" | "board" | "calendar" | "files" | "gantt" | "overview";
   onSelectOverview: () => void;
   onSelectBoard: () => void;
   onSelectBacklog: () => void;
   onSelectCalendar: () => void;
   onSelectGantt: () => void;
+  onSelectFiles: () => void;
   onSelectProject: (projectId: string) => void;
   onAddProject: () => void;
 };
@@ -40,6 +42,7 @@ export default function MobileProjectNav({
   onSelectBacklog,
   onSelectCalendar,
   onSelectGantt,
+  onSelectFiles,
   onSelectProject,
   onAddProject,
 }: MobileProjectNavProps) {
@@ -65,8 +68,8 @@ export default function MobileProjectNav({
             <p className="px-1 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
               View
             </p>
-            {/* Three columns so the five views settle as 3 + 2 rather than
-                leaving a single orphan on a second row. */}
+            {/* Three columns so the six views settle as 3 + 3 rather than
+                leaving an orphan on a second row. */}
             <div className="grid grid-cols-3 gap-1">
               <button
                 type="button"
@@ -118,6 +121,19 @@ export default function MobileProjectNav({
               >
                 <CalendarDays className="size-3.5" />
                 Gantt
+              </button>
+              <button
+                type="button"
+                onClick={onSelectFiles}
+                className={cn(
+                  "flex w-full items-center justify-center gap-1 whitespace-nowrap rounded-md border px-2 py-1.5 text-xs font-medium transition-colors",
+                  activeView === "files"
+                    ? "border-border bg-secondary text-foreground"
+                    : "border-transparent text-muted-foreground hover:bg-accent",
+                )}
+              >
+                <FolderOpen className="size-3.5" />
+                {t("files:title")}
               </button>
               <button
                 type="button"
