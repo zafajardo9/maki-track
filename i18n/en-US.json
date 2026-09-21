@@ -2297,7 +2297,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"completed": "Completed",
+			"open": "Open",
+			"centerCaption": "done"
 		},
 		"readOnly": "Read-only",
 		"error": {
