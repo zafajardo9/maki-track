@@ -1356,7 +1356,8 @@
 			"members": "Участники",
 			"invitations": "Приглашения",
 			"more": "Ещё",
-			"backToBoard": "Назад к доске"
+			"backToBoard": "Назад к доске",
+			"announcements": "Announcements"
 		},
 		"projectList": {
 			"viewProject": "Открыть проект",
@@ -1437,6 +1438,16 @@
 				"quickSelectNumber": "Выбрать вариант по номеру",
 				"calendarView": "Switch to calendar view"
 			}
+		},
+		"announcementsPage": {
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			},
+			"pageTitle": "Announcements",
+			"readMore": "Read more"
 		}
 	},
 	"notifications": {
@@ -2024,7 +2035,8 @@
 			"labels": "Labels",
 			"noLabels": "No labels",
 			"noTags": "No tags",
-			"tags": "Tags"
+			"tags": "Tags",
+			"viewTask": "View task"
 		},
 		"actions": {
 			"archive": "Архивировать",
@@ -2383,7 +2395,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"centerCaption": "done",
+			"completed": "Completed",
+			"open": "Open"
 		},
 		"readOnly": "Только для чтения",
 		"error": {

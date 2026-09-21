@@ -1346,7 +1346,8 @@
 			"members": "Μέλη",
 			"invitations": "Προσκλήσεις",
 			"more": "Περισσότερα",
-			"backToBoard": "Επιστροφή στον πίνακα"
+			"backToBoard": "Επιστροφή στον πίνακα",
+			"announcements": "Announcements"
 		},
 		"projectList": {
 			"viewProject": "Προβολή έργου",
@@ -1427,6 +1428,16 @@
 				"quickSelectNumber": "Επιλογή επιλογής με αριθμό",
 				"calendarView": "Switch to calendar view"
 			}
+		},
+		"announcementsPage": {
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			},
+			"pageTitle": "Announcements",
+			"readMore": "Read more"
 		}
 	},
 	"notifications": {
@@ -1992,7 +2003,8 @@
 			"labels": "Labels",
 			"noLabels": "No labels",
 			"noTags": "No tags",
-			"tags": "Tags"
+			"tags": "Tags",
+			"viewTask": "View task"
 		},
 		"actions": {
 			"archive": "Αρχειοθέτηση",
@@ -2311,7 +2323,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"centerCaption": "done",
+			"completed": "Completed",
+			"open": "Open"
 		},
 		"readOnly": "Μόνο για ανάγνωση",
 		"error": {

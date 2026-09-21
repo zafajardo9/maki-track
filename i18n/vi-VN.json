@@ -1345,7 +1345,8 @@
 			"members": "Thành viên",
 			"invitations": "Lời mời",
 			"more": "Thêm",
-			"backToBoard": "Quay lại bảng"
+			"backToBoard": "Quay lại bảng",
+			"announcements": "Announcements"
 		},
 		"projectList": {
 			"viewProject": "Xem dự án",
@@ -1426,6 +1427,16 @@
 				"quickSelectNumber": "Chọn tùy chọn theo số",
 				"calendarView": "Switch to calendar view"
 			}
+		},
+		"announcementsPage": {
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			},
+			"pageTitle": "Announcements",
+			"readMore": "Read more"
 		}
 	},
 	"notifications": {
@@ -1986,7 +1997,8 @@
 			"labels": "Labels",
 			"noLabels": "No labels",
 			"noTags": "No tags",
-			"tags": "Tags"
+			"tags": "Tags",
+			"viewTask": "View task"
 		},
 		"actions": {
 			"archive": "Lưu trữ",
@@ -2303,7 +2315,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"centerCaption": "done",
+			"completed": "Completed",
+			"open": "Open"
 		},
 		"readOnly": "Chỉ đọc",
 		"error": {

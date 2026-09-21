@@ -1345,7 +1345,8 @@
 			"members": "멤버",
 			"invitations": "초대",
 			"more": "더 보기",
-			"backToBoard": "보드로 돌아가기"
+			"backToBoard": "보드로 돌아가기",
+			"announcements": "Announcements"
 		},
 		"projectList": {
 			"viewProject": "프로젝트 보기",
@@ -1426,6 +1427,16 @@
 				"openTask": "선택한 작업 열기",
 				"quickSelectNumber": "번호로 옵션 선택"
 			}
+		},
+		"announcementsPage": {
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			},
+			"pageTitle": "Announcements",
+			"readMore": "Read more"
 		}
 	},
 	"notifications": {
@@ -1999,7 +2010,8 @@
 			"labels": "Labels",
 			"noLabels": "No labels",
 			"noTags": "No tags",
-			"tags": "Tags"
+			"tags": "Tags",
+			"viewTask": "View task"
 		},
 		"actions": {
 			"archive": "보관",
@@ -2303,7 +2315,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"centerCaption": "done",
+			"completed": "Completed",
+			"open": "Open"
 		},
 		"readOnly": "읽기 전용",
 		"error": {

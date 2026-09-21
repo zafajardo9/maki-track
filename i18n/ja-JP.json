@@ -1345,7 +1345,8 @@
 			"members": "メンバー",
 			"invitations": "招待",
 			"more": "その他",
-			"backToBoard": "ボードに戻る"
+			"backToBoard": "ボードに戻る",
+			"announcements": "Announcements"
 		},
 		"projectList": {
 			"viewProject": "プロジェクトを表示",
@@ -1426,6 +1427,16 @@
 				"openTask": "選択したタスクを開く",
 				"quickSelectNumber": "番号で項目を選択"
 			}
+		},
+		"announcementsPage": {
+			"description": "Product news and updates from the Maki team.",
+			"empty": "No announcements yet.",
+			"kinds": {
+				"announcement": "Announcement",
+				"update": "Update"
+			},
+			"pageTitle": "Announcements",
+			"readMore": "Read more"
 		}
 	},
 	"notifications": {
@@ -1999,7 +2010,8 @@
 			"labels": "Labels",
 			"noLabels": "No labels",
 			"noTags": "No tags",
-			"tags": "Tags"
+			"tags": "Tags",
+			"viewTask": "View task"
 		},
 		"actions": {
 			"archive": "アーカイブ",
@@ -2303,7 +2315,10 @@
 		"progress": {
 			"title": "Progress",
 			"counts": "{{completed}} of {{total}} done",
-			"percent": "{{percent}}%"
+			"percent": "{{percent}}%",
+			"centerCaption": "done",
+			"completed": "Completed",
+			"open": "Open"
 		},
 		"readOnly": "閲覧専用",
 		"error": {
