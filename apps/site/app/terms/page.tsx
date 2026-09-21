@@ -38,8 +38,8 @@ export default function TermsPage() {
                 Last updated: July 28, 2026
               </p>
               <p className="mt-5 text-foreground/85 text-base leading-relaxed">
-                These terms govern your use of the managed Maki Cloud service
-                at cloud.kaneo.app, operated by Andrej Acevski (sole proprietor,
+                These terms govern your use of the managed Maki Cloud service at
+                cloud.kaneo.app, operated by Andrej Acevski (sole proprietor,
                 Macedonia), referred to as “we” or “us”. By creating an account
                 you agree to these terms. The open-source Maki software itself
                 is separately licensed under the MIT license, and self-hosted

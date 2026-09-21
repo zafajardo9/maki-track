@@ -104,9 +104,7 @@ function MakiIssueLinkView({ node }: NodeViewProps) {
             <span className="maki-issue-link-preview-key">
               {resolvedIssueKey || t("tasks:entity.task")}
             </span>
-            <span className="maki-issue-link-preview-assignee">
-              {assignee}
-            </span>
+            <span className="maki-issue-link-preview-assignee">{assignee}</span>
           </div>
           <p className="maki-issue-link-preview-title">{title}</p>
           <div className="maki-issue-link-preview-meta">

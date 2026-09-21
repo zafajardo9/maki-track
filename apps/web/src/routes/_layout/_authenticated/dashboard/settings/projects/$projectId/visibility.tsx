@@ -116,7 +116,9 @@ function RouteComponent() {
                   {t("settings:projectVisibility.publicAccess")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {project?.accessMode === "restricted" ? t("settings:projectAccess.publicWarning") : t("settings:projectVisibility.publicAccessHint")}
+                  {project?.accessMode === "restricted"
+                    ? t("settings:projectAccess.publicWarning")
+                    : t("settings:projectVisibility.publicAccessHint")}
                 </p>
               </div>
               <Switch

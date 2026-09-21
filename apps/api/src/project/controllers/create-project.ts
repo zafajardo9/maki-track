@@ -60,13 +60,11 @@ async function createProject(
           ),
         );
       if (member)
-        await tx
-          .insert(projectMemberTable)
-          .values({
-            workspaceId,
-            projectId: createdProject.id,
-            workspaceMemberId: member.id,
-          });
+        await tx.insert(projectMemberTable).values({
+          workspaceId,
+          projectId: createdProject.id,
+          workspaceMemberId: member.id,
+        });
       for (const col of DEFAULT_PROJECT_COLUMNS) {
         await tx.insert(columnTable).values({
           projectId: createdProject.id,

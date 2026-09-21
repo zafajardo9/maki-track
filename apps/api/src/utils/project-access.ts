@@ -49,27 +49,29 @@ export async function projectAccessCondition(userId: string): Promise<SQL> {
       }
     })
     .map((member) => member.workspaceId);
-  return (or(
-    allProjects.length
-      ? inArray(projectTable.workspaceId, allProjects)
-      : sql`false`,
-    and(
-      memberships.length
-        ? inArray(
-            projectTable.workspaceId,
-            memberships.map((member) => member.workspaceId),
-          )
+  return (
+    or(
+      allProjects.length
+        ? inArray(projectTable.workspaceId, allProjects)
         : sql`false`,
-      or(
-        eq(projectTable.accessMode, "workspace"),
-        sql`exists (
+      and(
+        memberships.length
+          ? inArray(
+              projectTable.workspaceId,
+              memberships.map((member) => member.workspaceId),
+            )
+          : sql`false`,
+        or(
+          eq(projectTable.accessMode, "workspace"),
+          sql`exists (
         select 1 from ${projectMemberTable} pm
         join ${workspaceUserTable} wm on wm.id = pm.workspace_member_id
         where pm.project_id = ${projectTable.id} and wm.user_id = ${userId}
       )`,
+        ),
       ),
-    ),
-  ) ?? sql`false`);
+    ) ?? sql`false`
+  );
 }
 
 export async function canAccessProject(userId: string, projectId: string) {

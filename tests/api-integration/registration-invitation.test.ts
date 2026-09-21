@@ -62,14 +62,17 @@ describe("API integration: invite-only registration", () => {
     ["expired", { expiresAt: new Date(Date.now() - 86_400_000) }],
     ["already accepted", { status: "accepted" }],
     ["canceled", { status: "canceled" }],
-  ])("rejects a signup when the invitation is %s", async (_label, overrides) => {
-    const email = `invited-${randomUUID()}@example.com`;
-    const invitation = await seedInvitation(email, overrides);
+  ])(
+    "rejects a signup when the invitation is %s",
+    async (_label, overrides) => {
+      const email = `invited-${randomUUID()}@example.com`;
+      const invitation = await seedInvitation(email, overrides);
 
-    const result = await checkRegistrationAllowed(email, invitation.id);
+      const result = await checkRegistrationAllowed(email, invitation.id);
 
-    expect(result.allowed).toBe(false);
-  });
+      expect(result.allowed).toBe(false);
+    },
+  );
 
   it("rejects a signup without an invitation id", async () => {
     const email = `invited-${randomUUID()}@example.com`;

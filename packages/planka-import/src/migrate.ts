@@ -1,6 +1,6 @@
 import { labelColorToHex } from "./colors.js";
-import type { MakiClient } from "./maki.js";
 import { toProjectKey, uniqueKey } from "./keys.js";
+import type { MakiClient } from "./maki.js";
 import {
   boardProjectName,
   buildDescription,

@@ -60,8 +60,7 @@ describe("resolve-database-url", () => {
     process.env.POSTGRES_USER = "maki";
 
     expect(resolveDatabaseConfig()).toMatchObject({
-      connectionString:
-        "postgresql://maki:password@db.internal:6543/maki_dev",
+      connectionString: "postgresql://maki:password@db.internal:6543/maki_dev",
       source: "POSTGRES_ENV",
       host: "db.internal",
       port: 6543,

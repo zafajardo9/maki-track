@@ -32,8 +32,7 @@ describe("uploadTaskImage", () => {
         ok: true,
         json: async () => ({
           fileId: "file_test",
-          filePath:
-            "workspace/w1/project/p1/task/t1/comments/server-123.conf",
+          filePath: "workspace/w1/project/p1/task/t1/comments/server-123.conf",
         }),
       }),
     );
@@ -85,8 +84,7 @@ describe("uploadTaskImage", () => {
       expect.objectContaining({
         contentType: "application/octet-stream",
         fileId: "file_test",
-        filePath:
-          "workspace/w1/project/p1/task/t1/comments/server-123.conf",
+        filePath: "workspace/w1/project/p1/task/t1/comments/server-123.conf",
       }),
     );
     expect(asset.mimeType).toBe("application/octet-stream");

@@ -3,7 +3,10 @@ import { HTTPException } from "hono/http-exception";
 import db from "../../database";
 import { taskRelationTable, taskTable } from "../../database/schema";
 import { publishEvent } from "../../events";
-import { deleteImageKitFiles, getTaskAssetFileIds } from "../../storage/cleanup-assets";
+import {
+  deleteImageKitFiles,
+  getTaskAssetFileIds,
+} from "../../storage/cleanup-assets";
 import getTask from "./get-task";
 
 async function deleteTask(taskId: string, currentUserId: string) {

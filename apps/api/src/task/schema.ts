@@ -111,9 +111,9 @@ export const imageUploadBody = z.object({
 });
 
 export const finalizeImageUploadBody = z.object({
-  filePath: z
-    .string()
-    .openapi({ description: "The ImageKit file path from the upload response." }),
+  filePath: z.string().openapi({
+    description: "The ImageKit file path from the upload response.",
+  }),
   fileId: z
     .string()
     .openapi({ description: "The ImageKit file ID from the upload response." }),

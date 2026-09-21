@@ -176,9 +176,7 @@ async function sendDiscordMessage(
             },
           ],
           footer: {
-            text: safeActor
-              ? `Triggered by ${safeActor}`
-              : "Triggered by Maki",
+            text: safeActor ? `Triggered by ${safeActor}` : "Triggered by Maki",
           },
         },
       ],

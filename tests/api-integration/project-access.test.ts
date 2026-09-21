@@ -23,14 +23,12 @@ import {
 async function fixture() {
   const owner = await createWorkspaceMember({ role: "owner" });
   const other = await createWorkspaceMember({ role: "member" });
-  await db
-    .insert(schema.workspaceUserTable)
-    .values({
-      workspaceId: owner.workspace.id,
-      userId: other.user.id,
-      role: "member",
-      joinedAt: new Date(),
-    });
+  await db.insert(schema.workspaceUserTable).values({
+    workspaceId: owner.workspace.id,
+    userId: other.user.id,
+    role: "member",
+    joinedAt: new Date(),
+  });
   const { project, columns } = await createProjectFixture({
     workspaceId: owner.workspace.id,
   });
@@ -179,14 +177,12 @@ describe("Project access", () => {
           eq(schema.workspaceUserTable.workspaceId, owner.workspace.id),
         ),
       );
-    await db
-      .insert(schema.workspaceUserTable)
-      .values({
-        workspaceId: owner.workspace.id,
-        userId: other.user.id,
-        role: "member",
-        joinedAt: new Date(),
-      });
+    await db.insert(schema.workspaceUserTable).values({
+      workspaceId: owner.workspace.id,
+      userId: other.user.id,
+      role: "member",
+      joinedAt: new Date(),
+    });
     expect(await canAccessProject(other.user.id, project.id)).toBe(false);
     await request(`/project/${project.id}/members/${other.user.id}`, "PUT");
     await db
@@ -206,14 +202,12 @@ describe("Project access", () => {
           eq(schema.workspaceUserTable.workspaceId, owner.workspace.id),
         ),
       );
-    await db
-      .insert(schema.workspaceRoleTable)
-      .values({
-        workspaceId: owner.workspace.id,
-        role: "admin",
-        permission: "{}",
-        createdAt: new Date(),
-      });
+    await db.insert(schema.workspaceRoleTable).values({
+      workspaceId: owner.workspace.id,
+      role: "admin",
+      permission: "{}",
+      createdAt: new Date(),
+    });
     mockAuthenticatedSession(other.user);
     expect((await request(`/project/${project.id}`)).status).toBe(200);
     expect(
@@ -444,15 +438,13 @@ describe("Project access", () => {
         size: 1,
       })
       .returning();
-    await db
-      .insert(schema.notificationTable)
-      .values({
-        userId: other.user.id,
-        type: "task_created",
-        resourceType: "task",
-        resourceId: task.id,
-        title: "Secret",
-      });
+    await db.insert(schema.notificationTable).values({
+      userId: other.user.id,
+      type: "task_created",
+      resourceType: "task",
+      resourceId: task.id,
+      title: "Secret",
+    });
     const visible = await createProjectFixture({
       workspaceId: owner.workspace.id,
     });

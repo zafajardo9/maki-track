@@ -70,11 +70,11 @@ export default function PrivacyPage() {
                 <strong className="font-medium text-foreground">
                   Payment data.
                 </strong>{" "}
-                Payments for Maki Cloud are processed by Creem (creem.io)
-                acting as merchant of record. Creem collects and processes your
-                payment details under its own privacy policy; we never see or
-                store your card number. We receive only what is needed to manage
-                your subscription (such as plan, status, and billing country).
+                Payments for Maki Cloud are processed by Creem (creem.io) acting
+                as merchant of record. Creem collects and processes your payment
+                details under its own privacy policy; we never see or store your
+                card number. We receive only what is needed to manage your
+                subscription (such as plan, status, and billing country).
               </p>
               <p>
                 <strong className="font-medium text-foreground">

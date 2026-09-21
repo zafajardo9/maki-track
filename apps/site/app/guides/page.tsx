@@ -53,8 +53,8 @@ export default function Page() {
               <FadeIn delay={120}>
                 <p className="mt-5 text-balance text-foreground/70 text-lg leading-relaxed">
                   The questions people actually ask before choosing a project
-                  manager, answered without pretending Maki is the answer to
-                  all of them.
+                  manager, answered without pretending Maki is the answer to all
+                  of them.
                 </p>
               </FadeIn>
             </div>

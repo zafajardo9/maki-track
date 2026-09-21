@@ -84,7 +84,6 @@ export const projectManagementToolsWithFreeSso: Guide = {
         "No. Signing in with a Google or GitHub account is single sign-on for most small teams, and both are free. A dedicated provider such as Keycloak or Authentik is worth it once you want central offboarding and group mapping.",
     },
   ],
-  related: [
-          ],
+  related: [],
   updatedOn: "2026-08-19",
 };

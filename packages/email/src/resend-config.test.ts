@@ -7,18 +7,18 @@ describe("isResendConfigured", () => {
   });
 
   it("is false without an API key", () => {
-    expect(isResendConfigured({ RESEND_FROM: "Maki <no-reply@maki.app>" })).toBe(
-      false,
-    );
+    expect(
+      isResendConfigured({ RESEND_FROM: "Maki <no-reply@maki.app>" }),
+    ).toBe(false);
     expect(isResendConfigured({})).toBe(false);
   });
 });
 
 describe("getResendSender", () => {
   it("returns the configured sender when set", () => {
-    expect(
-      getResendSender({ RESEND_FROM: "Maki <hello@maki.app>" }),
-    ).toBe("Maki <hello@maki.app>");
+    expect(getResendSender({ RESEND_FROM: "Maki <hello@maki.app>" })).toBe(
+      "Maki <hello@maki.app>",
+    );
   });
 
   it("falls back to the Resend sandbox sender", () => {

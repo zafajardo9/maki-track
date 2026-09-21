@@ -32,9 +32,7 @@ describe("hashTrialEmail", () => {
   });
 
   it("differs for different mailboxes", () => {
-    expect(hashTrialEmail("a@maki.app")).not.toBe(
-      hashTrialEmail("b@maki.app"),
-    );
+    expect(hashTrialEmail("a@maki.app")).not.toBe(hashTrialEmail("b@maki.app"));
   });
 
   it("does not store the address itself", () => {
